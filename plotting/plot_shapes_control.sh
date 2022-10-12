@@ -7,5 +7,6 @@ VAR=$3
 CHANNEL=$4
 TAG=$5
 
-python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}
+python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} --category-postfix MC_base
+
 

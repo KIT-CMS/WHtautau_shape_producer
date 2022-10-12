@@ -35,43 +35,26 @@ def lumi_weight(era):
 
 
 def MC_base_process_selection(channel, era):
+    if channel == "emt":
+        isoweight = ("iso_wgt_mu_2", "isoweight")
+        idweight = ("id_wgt_ele_wp90nonIso_1 * id_wgt_mu_2", "idweight")
+        tauidweight = (
+            "((gen_match_3==5)*id_wgt_tau_vsJet_VTight_3 + (gen_match_3!=5))",
+            "taubyIsoIdWeight",
+        )
+        vsmu_weight = ("id_wgt_tau_vsMu_Tight_3", "vsmuweight")
+        vsele_weight = ("id_wgt_tau_vsEle_Tight_3", "vseleweight")
     MC_base_process_weights = [
-        ("puweight", "puweight"),
-        ("id_wgt_mu_1*id_wgt_mu_2", "idweight"),
         ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+        ("puweight", "puweight"),
         ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
         lumi_weight(era),
+        isoweight,
+        idweight,
+        tauidweight,
+        vsmu_weight,
+        vsele_weight,
+        ("1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)", "generator_weight"),
     ]
-    return Selection(name="MC base", weights=MC_base_process_weights)
 
-
-def DY_process_selection(channel, era):
-    DY_process_weights = MC_base_process_selection(channel, era).weights
-    return Selection(name="DY", weights=DY_process_weights)
-
-
-def TT_process_selection(channel, era):
-    TT_process_weights = MC_base_process_selection(channel, era).weights
-    return Selection(name="TT", weights=TT_process_weights)
-
-
-def VV_process_selection(channel, era):
-    VV_process_weights = MC_base_process_selection(channel, era).weights
-    return Selection(name="VV", weights=VV_process_weights)
-
-
-def W_process_selection(channel, era):
-    W_process_weights = MC_base_process_selection(channel, era).weights
-    return Selection(name="W", weights=W_process_weights)
-
-
-def ZL_process_selection(channel):
-    return Selection(name="ZL", weights=[("1.0", "zl_weight")])
-
-
-def TTL_process_selection(channel):
-    return Selection(name="TTL", weights=[("1.0", "ttl_weight")])
-
-
-def VVL_process_selection(channel):
-    return Selection(name="VVL", weights=[("1.0", "vvl_weight")])
+    return Selection(name="MC_base", weights=MC_base_process_weights)

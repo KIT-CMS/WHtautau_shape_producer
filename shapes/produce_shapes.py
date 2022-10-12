@@ -18,20 +18,8 @@ from ntuple_processor import (
 
 from config.shapes.channel_selection import channel_selection
 from config.shapes.file_names import files
-from config.shapes.process_selection import (
-    DY_process_selection,
-    TT_process_selection,
-    VV_process_selection,
-    W_process_selection,
-    ZL_process_selection,
-    TTL_process_selection,
-    VVL_process_selection,
-)
 
-# Muon ID weight uncertainties
-from config.shapes.variations import (
-    mu_id_weight,
-)
+from config.shapes.process_selection import MC_base_process_selection
 
 from config.shapes.control_binning import control_binning, minimal_control_plot_set
 
@@ -66,39 +54,11 @@ def parse_arguments():
         "--directory", required=True, type=str, help="Directory with Artus outputs."
     )
     parser.add_argument(
-        "--et-friend-directory",
+        "--emt-friend-directory",
         type=str,
         default=[],
         nargs="+",
         help="Directories arranged as Artus output and containing a friend tree for et.",
-    )
-    parser.add_argument(
-        "--mt-friend-directory",
-        type=str,
-        default=[],
-        nargs="+",
-        help="Directories arranged as Artus output and containing a friend tree for mt.",
-    )
-    parser.add_argument(
-        "--tt-friend-directory",
-        type=str,
-        default=[],
-        nargs="+",
-        help="Directories arranged as Artus output and containing a friend tree for tt.",
-    )
-    parser.add_argument(
-        "--mm-friend-directory",
-        type=str,
-        default=[],
-        nargs="+",
-        help="Directories arranged as Artus output and containing a friend tree for tt.",
-    )
-    parser.add_argument(
-        "--em-friend-directory",
-        type=str,
-        default=[],
-        nargs="+",
-        help="Directories arranged as Artus output and containing a friend tree for em.",
     )
     parser.add_argument(
         "--optimization-level",
@@ -152,12 +112,6 @@ def parse_arguments():
         help="Directory the graph file is written to.",
     )
     parser.add_argument(
-        "--classdict",
-        default=None,
-        type=str,
-        help="path to config file from NN training to extract the classes",
-    )
-    parser.add_argument(
         "--ntuple_type", default="artus", type=str, help="Options: crown or artus"
     )
     parser.add_argument(
@@ -171,7 +125,7 @@ def parse_arguments():
 def main(args):
     # Parse given arguments.
     friend_directories = {
-        "mm": args.mm_friend_directory,
+        "emt": args.emt_friend_directory,
     }
 
     if ".root" in args.output_file:
@@ -241,13 +195,13 @@ def main(args):
                     ],
                 )
             ],
-            "zl": [
+            "ggzz": [
                 Unit(
-                    datasets["DY"],
+                    datasets["ggZZ"],
                     [
                         channel_selection(channel, era),
-                        DY_process_selection(channel, era),
-                        ZL_process_selection(channel),
+                        MC_base_process_selection(channel, era),
+                        # VV_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -256,13 +210,56 @@ def main(args):
                     ],
                 )
             ],
-            "ttl": [
+            "wz": [
+                Unit(
+                    datasets["WZ"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                        # VV_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "zz": [
+                Unit(
+                    datasets["ZZ"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                        # VV_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "vh": [
+                Unit(
+                    datasets["rem_VH"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "tt": [
                 Unit(
                     datasets["TT"],
                     [
                         channel_selection(channel, era),
-                        TT_process_selection(channel, era),
-                        TTL_process_selection(channel),
+                        MC_base_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -271,13 +268,12 @@ def main(args):
                     ],
                 )
             ],
-            "vvl": [
+            "ttv": [
                 Unit(
-                    datasets["VV"],
+                    datasets["rem_ttbar"],
                     [
                         channel_selection(channel, era),
-                        VV_process_selection(channel, era),
-                        VVL_process_selection(channel),
+                        MC_base_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -286,12 +282,82 @@ def main(args):
                     ],
                 )
             ],
-            "w": [
+            "vvv": [
                 Unit(
-                    datasets["W"],
+                    datasets["triboson"],
                     [
                         channel_selection(channel, era),
-                        W_process_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "wh": [
+                Unit(
+                    datasets["WH"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "zh": [
+                Unit(
+                    datasets["ZH"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "wjets": [
+                Unit(
+                    datasets["Wjets"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "dy": [
+                Unit(
+                    datasets["DY"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "rem_vv": [
+                Unit(
+                    datasets["rem_VV"],
+                    [
+                        channel_selection(channel, era),
+                        MC_base_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -318,10 +384,18 @@ def main(args):
     if args.process_selection is None:
         procS = {
             "data",
-            "zl",
-            "ttl",
-            "vvl",
-            "w",
+            "ggzz",
+            "vh",
+            "ttv",
+            "vvv",
+            "wh",
+            "zh",
+            "wz",
+            "zz",
+            "dy",
+            "tt",
+            "wjets",
+            "rem_vv",
         }
     else:
         procS = args.process_selection
@@ -329,18 +403,26 @@ def main(args):
     print("Processes to be computed: ", procS)
     dataS = {"data"} & procS
     simulatedProcsDS = {
-        "mm": {
-            "zl",
-            "ttl",
-            "vvl",
-            "w",
+        "emt": {
+            "ggzz",
+            "vh",
+            "ttv",
+            "vvv",
+            "wh",
+            "zh",
+            "wz",
+            "zz",
+            "dy",
+            "tt",
+            "wjets",
+            "rem_vv",
         }
     }
     for ch_ in args.channels:
         um.book(
             [
                 unit
-                for d in dataS | simulatedProcsDS[ch_]
+                for d in dataS | (simulatedProcsDS[ch_] & procS)
                 for unit in nominals[args.era]["units"][ch_][d]
             ],
             enable_check=args.enable_booking_check,

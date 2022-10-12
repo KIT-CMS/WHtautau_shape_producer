@@ -98,7 +98,7 @@ def main(info):
     channel_dict = {
         "ee": "#font[42]{#scale[0.85]{ee}}",
         "em": "#scale[0.85]{e}#mu",
-        "et": "#font[42]{#scale[0.85]{e}}#tau_{#font[42]{h}}",
+        "emt": "#font[42]{#scale[0.85]{e}}#mu#tau_{#font[42]{h}}",
         "mm": "#mu#mu",
         "mt": "#mu#tau_{#font[42]{h}}",
         "tt": "#tau_{#font[42]{h}}#tau_{#font[42]{h}}",
@@ -111,48 +111,22 @@ def main(info):
         else:
             split_value = 101
 
-    split_dict = {c: split_value for c in ["et", "mt", "tt", "em", "mm"]}
+    split_dict = {c: split_value for c in ["emt", "et", "mt", "tt", "em", "mm"]}
 
     bkg_processes = [
-        "VVL",
-        "TTL",
-        "ZL",
-        "jetFakesEMB",
-        "EMB",
-        "HTT",
-    ]  # "ggH125", "qqH125"
+        "ggZZ",
+        "VHWW",
+        "TTV",
+        "VVV",
+        "WZ",
+        "ZZ",
+        "WH",
+        "TT",
+        "DY",
+        "Wjets",
+        "VVToQ",
+    ]
 
-    if not args.fake_factor and args.embedding:
-        bkg_processes = ["QCDEMB", "VVL", "VVJ", "W", "TTL", "TTJ", "ZJ", "ZL", "EMB"]
-    if not args.embedding and args.fake_factor:
-        bkg_processes = ["VVT", "VVL", "TTT", "TTL", "ZL", "jetFakes", "ZTT"]
-    if not args.embedding and not args.fake_factor:
-        bkg_processes = [
-            "VVL",
-            "W",
-            "TTL",
-            "ZL",
-        ]
-    if args.draw_jet_fake_variation is not None:
-        bkg_processes = ["VVL", "TTL", "ZL", "EMB"]
-        if not args.fake_factor and args.embedding:
-            bkg_processes = ["VVL", "VVJ", "W", "TTL", "TTJ", "ZJ", "ZL", "EMB"]
-        if not args.embedding and args.fake_factor:
-            bkg_processes = ["VVT", "VVL", "TTT", "TTL", "ZL", "ZTT"]
-        if not args.embedding and not args.fake_factor:
-            bkg_processes = [
-                "VV",
-                "W",
-                "TTT",
-                "TTL",
-                "TTJ",
-                "ZJ",
-                "ZL",
-                "ZTT",
-            ]
-    all_bkg_processes = [b for b in bkg_processes]
-    legend_bkg_processes = copy.deepcopy(bkg_processes)
-    legend_bkg_processes.reverse()
     if "2016" in args.era:
         era = "Run2016"
     elif "2017" in args.era:
@@ -163,25 +137,7 @@ def main(info):
         logger.critical("Era {} is not implemented.".format(args.era))
         raise Exception
 
-    category = "_".join([channel, variable])
-    if args.category_postfix is not None:
-        category += "_%s" % args.category_postfix
     rootfile = rootfile_parser.Rootfile_parser(args.input, variable)
-    bkg_processes = [b for b in all_bkg_processes]
-    if "em" in channel:
-        if not args.embedding:
-            bkg_processes = ["QCD", "VVT", "VVL", "W", "TTT", "TTL", "ZL", "ZTT"]
-        if args.embedding:
-            bkg_processes = ["QCDEMB", "VVL", "W", "TTL", "ZL", "EMB"]
-        if args.draw_jet_fake_variation is not None:
-            if not args.embedding:
-                bkg_processes = ["VVT", "VVL", "W", "TTT", "TTL", "ZL", "ZTT"]
-            if args.embedding:
-                bkg_processes = ["VVL", "W", "TTL", "ZL", "EMB"]
-
-    if "mm" in channel:
-        bkg_processes = ["VVL", "W", "TTL", "ZL"]
-
     legend_bkg_processes = copy.deepcopy(bkg_processes)
     legend_bkg_processes.reverse()
 
@@ -209,30 +165,14 @@ def main(info):
                 "bkg",
             )
         else:
-            if process == "HTT":
-                HTT = rootfile.get(
-                    channel, "ggH125", args.category_postfix, shape_type=stype
-                ).Clone()
-                HTT.Add(
-                    rootfile.get(
-                        channel, "qqH125", args.category_postfix, shape_type=stype
-                    )
-                )
-                total_bkg.Add(HTT)
-                plot.add_hist(HTT, "HTT", "bkg")
-            else:
-                total_bkg.Add(
-                    rootfile.get(
-                        channel, process, args.category_postfix, shape_type=stype
-                    )
-                )
-                plot.add_hist(
-                    rootfile.get(
-                        channel, process, args.category_postfix, shape_type=stype
-                    ),
-                    process,
-                    "bkg",
-                )
+            total_bkg.Add(
+                rootfile.get(channel, process, args.category_postfix, shape_type=stype)
+            )
+            plot.add_hist(
+                rootfile.get(channel, process, args.category_postfix, shape_type=stype),
+                process,
+                "bkg",
+            )
 
         plot.setGraphStyle(process, "hist", fillcolor=styles.color_dict[process])
 
@@ -241,11 +181,12 @@ def main(info):
         "total_bkg", "e2", markersize=0, fillcolor=styles.color_dict["unc"], linecolor=0
     )
 
+    # add data hist
     plot.add_hist(
-        rootfile.get(channel, "data", args.category_postfix, shape_type=stype),
+        rootfile.get(channel, "data", "", shape_type=stype),
         "data_obs",
     )
-    data_norm = plot.subplot(0).get_hist("data_obs").Integral()
+
     plot.subplot(0).get_hist("data_obs").GetXaxis().SetMaxDigits(4)
     if args.blinded:
         plot.subplot(0).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
@@ -257,15 +198,13 @@ def main(info):
         pass
     else:
         if args.blinded:
-            plot.subplot(1).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
+            plot.subplot(2).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
         else:
-            plot.subplot(1).setGraphStyle("data_obs", "e0")
-
-    plot.subplot(2).normalize(["total_bkg", "data_obs"], "total_bkg")
+            plot.subplot(2).setGraphStyle("data_obs", "e0")
 
     # stack background processes
     plot.create_stack(bkg_processes, "stack")
-
+    plot.subplot(2).normalize(["total_bkg", "data_obs"], "total_bkg")
     # normalize stacks by bin-width
     if args.normalize_by_bin_width:
         plot.subplot(0).normalizeByBinWidth()
@@ -275,19 +214,19 @@ def main(info):
     plot.subplot(0).setYlims(
         split_dict[channel],
         max(
-            2 * plot.subplot(0).get_hist("data_obs").GetMaximum(),
+            1.5 * plot.subplot(0).get_hist("data_obs").GetMaximum(),
             split_dict[channel] * 2,
         ),
     )
 
-    plot.subplot(2).setYlims(0.75, 1.55)
-    if channel == "mm":
-        plot.subplot(0).setLogY()
-        plot.subplot(0).setYlims(1, 8 * 10**10)
-        plot.subplot(0).setXlims(50, 150)
-        plot.subplot(1).setXlims(50, 150)
-        plot.subplot(2).setXlims(50, 150)
-
+    plot.subplot(2).setYlims(
+        plot.subplot(2).get_hist("data_obs").GetMinimum(),
+        1.5 * plot.subplot(2).get_hist("data_obs").GetMaximum(),
+    )
+    plot.subplot(2).setYlims(
+        0.8,
+        5,
+    )
     if args.linear != True:
         plot.subplot(1).setYlims(0.1, split_dict[channel])
         plot.subplot(1).setYlabel("")  # otherwise number labels are not drawn on axis
@@ -330,9 +269,7 @@ def main(info):
             plot.legend(i).add_entry(
                 0,
                 process,
-                styles.legend_label_dict[
-                    process.replace("TTL", "TT").replace("VVL", "VV").replace("NLO", "")
-                ],
+                styles.legend_label_dict[process],
                 "f",
             )
 

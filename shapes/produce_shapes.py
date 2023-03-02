@@ -19,9 +19,31 @@ from ntuple_processor import (
 from config.shapes.channel_selection import channel_selection
 from config.shapes.file_names import files
 
-from config.shapes.process_selection import MC_base_process_selection
+from config.shapes.process_selection import (
+    VV_process_selection,
+    VH_process_selection,
+    TT_process_selection,
+    WWW_process_selection,
+    WWZ_process_selection,
+    WZZ_process_selection,
+    ZZZ_process_selection,
+    W_process_selection,
+    DY_process_selection,
+)
 
 from config.shapes.control_binning import control_binning, minimal_control_plot_set
+from config.shapes.variations import (
+    anti_iso_ltt,
+    anti_iso_llt_tau,
+    anti_isoid_ele_2,
+    anti_isoid_mu_1,
+    anti_isoid_ele_1,
+    anti_isoid_mu_2,
+    anti_isoid_ele_2_tau,
+    anti_isoid_mu_1_tau,
+    anti_isoid_ele_1_tau,
+    anti_isoid_mu_2_tau,
+)
 
 logger = logging.getLogger("")
 
@@ -58,7 +80,35 @@ def parse_arguments():
         type=str,
         default=[],
         nargs="+",
-        help="Directories arranged as Artus output and containing a friend tree for et.",
+        help="Directories arranged as Artus output and containing a friend tree for emt.",
+    )
+    parser.add_argument(
+        "--met-friend-directory",
+        type=str,
+        default=[],
+        nargs="+",
+        help="Directories arranged as Artus output and containing a friend tree for met.",
+    )
+    parser.add_argument(
+        "--mmt-friend-directory",
+        type=str,
+        default=[],
+        nargs="+",
+        help="Directories arranged as Artus output and containing a friend tree for mmt.",
+    )
+    parser.add_argument(
+        "--ett-friend-directory",
+        type=str,
+        default=[],
+        nargs="+",
+        help="Directories arranged as Artus output and containing a friend tree for ett.",
+    )
+    parser.add_argument(
+        "--mtt-friend-directory",
+        type=str,
+        default=[],
+        nargs="+",
+        help="Directories arranged as Artus output and containing a friend tree for mtt.",
     )
     parser.add_argument(
         "--optimization-level",
@@ -126,6 +176,10 @@ def main(args):
     # Parse given arguments.
     friend_directories = {
         "emt": args.emt_friend_directory,
+        "met": args.met_friend_directory,
+        "mmt": args.mmt_friend_directory,
+        "ett": args.ett_friend_directory,
+        "mtt": args.mtt_friend_directory,
     }
 
     if ".root" in args.output_file:
@@ -179,6 +233,7 @@ def main(args):
                         for fdir in friend_directories[channel]
                         if filter_friends(key, fdir)
                     ],
+                    validate_samples=True,
                 )
         return datasets
 
@@ -200,7 +255,7 @@ def main(args):
                     datasets["ggZZ"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        VV_process_selection(channel, era),
                         # VV_process_selection(channel, era),
                     ],
                     [
@@ -215,8 +270,7 @@ def main(args):
                     datasets["WZ"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
-                        # VV_process_selection(channel, era),
+                        VV_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -230,8 +284,7 @@ def main(args):
                     datasets["ZZ"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
-                        # VV_process_selection(channel, era),
+                        VV_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -240,12 +293,12 @@ def main(args):
                     ],
                 )
             ],
-            "vh": [
+            "rem_vh": [
                 Unit(
                     datasets["rem_VH"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        VH_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -259,7 +312,7 @@ def main(args):
                     datasets["TT"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        TT_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -268,12 +321,12 @@ def main(args):
                     ],
                 )
             ],
-            "ttv": [
+            "rem_ttbar": [
                 Unit(
                     datasets["rem_ttbar"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        TT_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -282,12 +335,54 @@ def main(args):
                     ],
                 )
             ],
-            "vvv": [
+            "www": [
                 Unit(
-                    datasets["triboson"],
+                    datasets["WWW"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        WWW_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "wwz": [
+                Unit(
+                    datasets["WWZ"],
+                    [
+                        channel_selection(channel, era),
+                        WWZ_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "wzz": [
+                Unit(
+                    datasets["WZZ"],
+                    [
+                        channel_selection(channel, era),
+                        WZZ_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "zzz": [
+                Unit(
+                    datasets["ZZZ"],
+                    [
+                        channel_selection(channel, era),
+                        ZZZ_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -301,7 +396,7 @@ def main(args):
                     datasets["WH"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        VH_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -315,7 +410,7 @@ def main(args):
                     datasets["ZH"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        VH_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -329,7 +424,7 @@ def main(args):
                     datasets["Wjets"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        W_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -343,7 +438,7 @@ def main(args):
                     datasets["DY"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        DY_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -357,7 +452,7 @@ def main(args):
                     datasets["rem_VV"],
                     [
                         channel_selection(channel, era),
-                        MC_base_process_selection(channel, era),
+                        VV_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -370,6 +465,7 @@ def main(args):
 
     # Step 1: create units and book actions
     for channel in args.channels:
+        print(channel)
         nominals[args.era]["datasets"][channel] = get_nominal_datasets(
             args.era, channel
         )
@@ -385,13 +481,17 @@ def main(args):
         procS = {
             "data",
             "ggzz",
-            "vh",
-            "ttv",
-            "vvv",
+            "rem_vh",
+            "rem_ttbar",
+            "www",
+            "wwz",
+            "wzz",
+            "zzz",
             "wh",
             "zh",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
@@ -405,9 +505,12 @@ def main(args):
     simulatedProcsDS = {
         "emt": {
             "ggzz",
-            "vh",
-            "ttv",
-            "vvv",
+            "rem_vh",
+            "rem_ttbar",
+            "www",
+            "wwz",
+            "wzz",
+            "zzz",
             "wh",
             "zh",
             "wz",
@@ -416,17 +519,130 @@ def main(args):
             "tt",
             "wjets",
             "rem_vv",
-        }
+        },
+        "met": {
+            "ggzz",
+            "rem_vh",
+            "rem_ttbar",
+            "www",
+            "wwz",
+            "wzz",
+            "zzz",
+            "wh",
+            "zh",
+            "wz",
+            "zz",
+            "dy",
+            "tt",
+            "wjets",
+            "rem_vv",
+        },
+        "mmt": {
+            "ggzz",
+            "rem_vh",
+            "rem_ttbar",
+            "www",
+            "wwz",
+            "wzz",
+            "zzz",
+            "wh",
+            "zh",
+            "wz",
+            "zz",
+            "dy",
+            "tt",
+            "wjets",
+            "rem_vv",
+        },
+        "mtt": {
+            "ggzz",
+            "rem_vh",
+            "rem_ttbar",
+            "www",
+            "wwz",
+            "wzz",
+            "zzz",
+            "wh",
+            "zh",
+            "wz",
+            "zz",
+            "dy",
+            "tt",
+            "wjets",
+            "rem_vv",
+        },
+        "ett": {
+            "ggzz",
+            "rem_vh",
+            "rem_ttbar",
+            "www",
+            "wwz",
+            "wzz",
+            "zzz",
+            "wh",
+            "zh",
+            "wz",
+            "zz",
+            "dy",
+            "tt",
+            "wjets",
+            "rem_vv",
+        },
     }
     for ch_ in args.channels:
-        um.book(
-            [
-                unit
-                for d in dataS | (simulatedProcsDS[ch_] & procS)
-                for unit in nominals[args.era]["units"][ch_][d]
-            ],
-            enable_check=args.enable_booking_check,
-        )
+        print("procs:", (simulatedProcsDS[ch_] & procS))
+        if ch_ == "emt":
+            um.book(
+                [
+                    unit
+                    for d in dataS | (simulatedProcsDS[ch_] & procS)
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [
+                    anti_iso_llt_tau,
+                    anti_isoid_ele_1,
+                    anti_isoid_mu_2,
+                    anti_isoid_ele_1_tau,
+                    anti_isoid_mu_2_tau,
+                ],
+                enable_check=args.enable_booking_check,
+            )
+        elif ch_ == "met":
+            um.book(
+                [
+                    unit
+                    for d in dataS | (simulatedProcsDS[ch_] & procS)
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [
+                    anti_iso_llt_tau,
+                    anti_isoid_ele_2,
+                    anti_isoid_mu_1,
+                    anti_isoid_ele_2_tau,
+                    anti_isoid_mu_1_tau,
+                ],
+                enable_check=args.enable_booking_check,
+            )
+        elif ch_ == "mmt":
+            um.book(
+                [
+                    unit
+                    for d in dataS | (simulatedProcsDS[ch_] & procS)
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [anti_iso_llt_tau, anti_isoid_mu_2, anti_isoid_mu_2_tau],
+                enable_check=args.enable_booking_check,
+            )
+        elif ch_ in ["ett", "mtt"]:
+            um.book(
+                [
+                    unit
+                    for d in dataS | (simulatedProcsDS[ch_] & procS)
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [anti_iso_ltt],
+                enable_check=args.enable_booking_check,
+            )
         if args.skip_systematic_variations:
             pass
         else:

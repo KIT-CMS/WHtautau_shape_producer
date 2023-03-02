@@ -72,6 +72,12 @@ def parse_arguments():
         "--blinded", action="store_true", help="if true, no data is plottet"
     )
     parser.add_argument(
+        "--simulation", action="store_true", help="if true, no data is plottet"
+    )
+    parser.add_argument(
+        "--closure_test", action="store_true", help="if true, no data is plottet"
+    )
+    parser.add_argument(
         "--tag", type=str, default=None, help="plots are stored in plots/tag/"
     )
 
@@ -99,6 +105,10 @@ def main(info):
         "ee": "#font[42]{#scale[0.85]{ee}}",
         "em": "#scale[0.85]{e}#mu",
         "emt": "#font[42]{#scale[0.85]{e}}#mu#tau_{#font[42]{h}}",
+        "met": "#font[42]{#mu#scale[0.85]{e}#tau_{#font[42]{h}}}",
+        "mmt": "#font[42]{#mu#mu#tau_{#font[42]{h}}}",
+        "mtt": "#font[42]{#mu#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
+        "ett": "#font[42]{#{e}#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
         "mm": "#mu#mu",
         "mt": "#mu#tau_{#font[42]{h}}",
         "tt": "#tau_{#font[42]{h}}#tau_{#font[42]{h}}",
@@ -111,21 +121,44 @@ def main(info):
         else:
             split_value = 101
 
-    split_dict = {c: split_value for c in ["emt", "et", "mt", "tt", "em", "mm"]}
+    split_dict = {
+        c: split_value
+        for c in ["met", "emt", "mmt", "ett", "mtt", "et", "mt", "tt", "em", "mm"]
+    }
+    VVV_processes = ["WWW", "WWZ", "WZZ", "ZZZ"]
 
-    bkg_processes = [
-        "ggZZ",
-        "VHWW",
-        "TTV",
-        "VVV",
-        "WZ",
-        "ZZ",
-        "WH",
-        "TT",
-        "DY",
-        "Wjets",
-        "VVToQ",
-    ]
+    if args.simulation:
+        bkg_processes = [
+            "TT",
+            "DY",
+            "Wjets",
+            "rem_VV",
+            "ggZZ",
+            "VHWW",
+            "TTV",
+            "VVV",
+            "ZZ",
+            "WH",
+            "WZ",
+        ]
+    elif args.closure_test:
+        bkg_processes = [
+            "TT",
+            "DY",
+            "Wjets",
+            "rem_VV",
+        ]
+    else:
+        bkg_processes = [
+            "jetFakes",
+            "ggZZ",
+            "VHWW",
+            "TTV",
+            "VVV",
+            "ZZ",
+            "WH",
+            "WZ",
+        ]
 
     if "2016" in args.era:
         era = "Run2016"
@@ -164,6 +197,24 @@ def main(info):
                 process,
                 "bkg",
             )
+        elif "VVV" in process:
+            for v, vvv in enumerate(VVV_processes):
+                if v == 0:
+                    triboson = rootfile.get(
+                        channel, vvv, args.category_postfix, shape_type=stype
+                    ).Clone()
+                else:
+                    triboson.Add(
+                        rootfile.get(
+                            channel, vvv, args.category_postfix, shape_type=stype
+                        )
+                    )
+            total_bkg.Add(triboson)
+            plot.add_hist(
+                triboson,
+                process,
+                "bkg",
+            )
         else:
             total_bkg.Add(
                 rootfile.get(channel, process, args.category_postfix, shape_type=stype)
@@ -182,10 +233,16 @@ def main(info):
     )
 
     # add data hist
-    plot.add_hist(
-        rootfile.get(channel, "data", "", shape_type=stype),
-        "data_obs",
-    )
+    if args.closure_test:
+        plot.add_hist(
+            rootfile.get(channel, "jetFakes", args.category_postfix, shape_type=stype),
+            "data_obs",
+        )
+    else:
+        plot.add_hist(
+            rootfile.get(channel, "data", args.category_postfix, shape_type=stype),
+            "data_obs",
+        )
 
     plot.subplot(0).get_hist("data_obs").GetXaxis().SetMaxDigits(4)
     if args.blinded:
@@ -202,7 +259,8 @@ def main(info):
         else:
             plot.subplot(2).setGraphStyle("data_obs", "e0")
 
-    # stack background processes
+    # stack background processess
+    print(bkg_processes)
     plot.create_stack(bkg_processes, "stack")
     plot.subplot(2).normalize(["total_bkg", "data_obs"], "total_bkg")
     # normalize stacks by bin-width
@@ -210,23 +268,31 @@ def main(info):
         plot.subplot(0).normalizeByBinWidth()
         plot.subplot(1).normalizeByBinWidth()
 
+    # set the size of the y axis
+    y_max = 1.5 * max(
+        plot.subplot(0).get_hist("data_obs").GetMaximum(),
+        plot.subplot(0).get_hist("total_bkg").GetMaximum(),
+    )
     # set axes limits and labels
     plot.subplot(0).setYlims(
         split_dict[channel],
         max(
-            1.5 * plot.subplot(0).get_hist("data_obs").GetMaximum(),
+            y_max,
             split_dict[channel] * 2,
         ),
     )
-
+    # plot.subplot(0).setYlims(
+    #     split_dict[channel],
+    #     60,
+    # )
     plot.subplot(2).setYlims(
-        plot.subplot(2).get_hist("data_obs").GetMinimum(),
-        1.5 * plot.subplot(2).get_hist("data_obs").GetMaximum(),
+        0.75,
+        1.4,
     )
-    plot.subplot(2).setYlims(
-        0.8,
-        5,
-    )
+    # plot.subplot(2).setYlims(
+    #     0.8,
+    #     5,
+    # )
     if args.linear != True:
         plot.subplot(1).setYlims(0.1, split_dict[channel])
         plot.subplot(1).setYlabel("")  # otherwise number labels are not drawn on axis
@@ -260,7 +326,6 @@ def main(info):
     if args.linear != True:
         plot.subplot(1).Draw(["stack", "total_bkg", "data_obs"])
     plot.subplot(2).Draw(["total_bkg", "data_obs"])
-
     # create legends
     suffix = ["", "_top"]
     for i in range(2):
@@ -274,12 +339,14 @@ def main(info):
             )
 
         plot.legend(i).add_entry(0, "total_bkg", "Bkg. stat. unc.", "f")
-        plot.legend(i).add_entry(0, "data_obs", "Observed", "PE2L")
+        if args.closure_test:
+            plot.legend(i).add_entry(0, "data_obs", "jet fake estimation method", "PE2L")
+        else:
+            plot.legend(i).add_entry(0, "data_obs", "Observed", "PE2L")
         plot.legend(i).setNColumns(2)
     plot.legend(0).Draw()
     plot.legend(1).setAlpha(0.0)
     plot.legend(1).Draw()
-
     for i in range(2):
         plot.add_legend(reference_subplot=2, pos=1, width=0.6, height=0.03)
         plot.legend(i + 2).add_entry(0, "data_obs", "Observed", "PE2L")
@@ -302,7 +369,7 @@ def main(info):
 
     posChannelCategoryLabelLeft = None
     plot.DrawChannelCategoryLabel(
-        "%s, %s" % (channel_dict[channel], "{cat}".format(cat=args.category_postfix)),
+        "%s" % (channel_dict[channel]),
         begin_left=posChannelCategoryLabelLeft,
     )
     # save plot
@@ -315,39 +382,54 @@ def main(info):
     if args.embedding and args.fake_factor:
         postfix = "emb_ff"
     if args.draw_jet_fake_variation is not None:
-        postfix = postfix + "_" + args.draw_jet_fake_variation
+        postfix = args.draw_jet_fake_variation
 
     if not os.path.exists("plots/%s" % (args.tag)):
         os.makedirs("plots/%s/%s_plots_%s/%s" % (args.tag, args.era, postfix, channel))
-
-    plot.save(
-        "plots/%s/%s_plots_%s/%s/%s_%s_%s_%s.%s"
-        % (
-            args.tag,
-            args.era,
-            postfix,
-            channel,
-            args.era,
-            channel,
-            variable,
-            args.category_postfix,
-            "pdf",
+    if args.closure_test:
+        plot.save(
+            "plots/%s/%s_plots_%s/%s/%s_%s_%s_%s_closure_test.%s"
+            % (
+                args.tag,
+                args.era,
+                postfix,
+                channel,
+                args.era,
+                channel,
+                variable,
+                args.category_postfix,
+                "png",
+            )
         )
-    )
-    plot.save(
-        "plots/%s/%s_plots_%s/%s/%s_%s_%s_%s.%s"
-        % (
-            args.tag,
-            args.era,
-            postfix,
-            channel,
-            args.era,
-            channel,
-            variable,
-            args.category_postfix,
-            "png",
+    else:
+        plot.save(
+            "plots/%s/%s_plots_%s/%s/%s_%s_%s_%s.%s"
+            % (
+                args.tag,
+                args.era,
+                postfix,
+                channel,
+                args.era,
+                channel,
+                variable,
+                args.category_postfix,
+                "pdf",
+            )
         )
-    )
+        plot.save(
+            "plots/%s/%s_plots_%s/%s/%s_%s_%s_%s.%s"
+            % (
+                args.tag,
+                args.era,
+                postfix,
+                channel,
+                args.era,
+                channel,
+                variable,
+                args.category_postfix,
+                "png",
+            )
+        )
 
 
 if __name__ == "__main__":
@@ -368,7 +450,7 @@ if __name__ == "__main__":
     for ch in channels:
         for v in variables:
             infolist.append({"args": args, "channel": ch, "variable": v})
-    pool = Pool(1)
+    pool = Pool(6)
     pool.map(main, infolist)
     # for info in infolist:
     #     main(info)

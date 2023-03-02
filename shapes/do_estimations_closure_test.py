@@ -148,13 +148,13 @@ def replace_negative_entries_and_renormalize(histogram, tolerance):
 
 def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nominal"):
 
-    procs_to_subtract = ["WWW", "ZZZ", "WWZ", "WZZ", "ggZZ", "ZZ", "rem_ttbar", "WZ"]
+    procs_to_add = ["Wjets", "DY", "rem_VV"]
     logger.debug(
         "Trying to get object {}".format(
             _name_string.format(
-                dataset="data",
+                dataset="TT",
                 channel=channel,
-                process="",
+                process="-" + _process_map["TT"],
                 selection="-" + selection if selection != "" else "",
                 variation=variation,
                 variable=variable,
@@ -164,15 +164,15 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
 
     base_hist = rootfile.Get(
         _name_string.format(
-            dataset="data",
+            dataset="TT",
             channel=channel,
-            process="",
+            process="-" + _process_map["TT"],
             selection="-" + selection if selection != "" else "",
             variation=variation,
             variable=variable,
         )
     ).Clone()
-    for proc in procs_to_subtract:
+    for proc in procs_to_add:
         logger.debug(
             "Trying to get object {}".format(
                 _name_string.format(
@@ -206,14 +206,12 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
                     variable=variable,
                 )
             ),
-            -1.0,
+            1.0,
         )
 
     proc_name = "jetFakes"
     variation_name = (
-        base_hist.GetName()
-        .replace("data", proc_name)
-        .replace("#" + channel, "#" + "-".join([channel, proc_name]), 1)
+        base_hist.GetName().replace("TT", proc_name).replace("-TT", proc_name)
     )
     base_hist.SetName(variation_name)
     base_hist.SetTitle(variation_name)

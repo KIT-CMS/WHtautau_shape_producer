@@ -39,10 +39,12 @@ from config.shapes.variations import (
     anti_isoid_mu_1,
     anti_isoid_ele_1,
     anti_isoid_mu_2,
+    mmt_anti_isoid_mu_2,
     anti_isoid_ele_2_tau,
     anti_isoid_mu_1_tau,
     anti_isoid_ele_1_tau,
     anti_isoid_mu_2_tau,
+    mmt_anti_isoid_mu_2_tau,
 )
 
 logger = logging.getLogger("")
@@ -630,7 +632,7 @@ def main(args):
                     for d in dataS | (simulatedProcsDS[ch_] & procS)
                     for unit in nominals[args.era]["units"][ch_][d]
                 ],
-                [anti_iso_llt_tau, anti_isoid_mu_2, anti_isoid_mu_2_tau],
+                [anti_iso_llt_tau, mmt_anti_isoid_mu_2, mmt_anti_isoid_mu_2_tau],
                 enable_check=args.enable_booking_check,
             )
         elif ch_ in ["ett", "mtt"]:

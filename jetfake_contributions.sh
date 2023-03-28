@@ -1,7 +1,7 @@
 source utils/setup_cvmfs_sft.sh
 source utils/setup_python.sh
 CHANNELS="emt met mmt"
-NAME="fakerates_AN"
+NAME="fakerates_incl_bveto_ortho_det_reg"
 for CHANNEL in ${CHANNELS}
 do
     INPUT="output/shapes/27_01_all_ch/${CHANNEL}/control_region_${NAME}.root"

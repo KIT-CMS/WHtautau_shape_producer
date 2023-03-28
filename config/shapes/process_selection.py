@@ -44,15 +44,21 @@ def MC_base_process_selection(channel, era):
         vsmu_weight = ("id_wgt_tau_vsMu_Tight_3", "vsmuweight")
         vsele_weight = ("id_wgt_tau_vsEle_Tight_3", "vseleweight")
         if channel == "emt":
-            isoweight = ("iso_wgt_mu_2", "isoweight")
-            idweight = ("id_wgt_ele_wp90nonIso_1*id_wgt_mu_2", "idweight")
+            isoweight = ("iso_wgt_mu_2*(iso_2<0.15)+1.*(iso_2>0.15)", "isoweight")
+            idweight = (
+                "(id_wgt_ele_wp90nonIso_1*electron_is_nonisowp90_1>0.5+1.0*electron_is_nonisowp90_1<0.5)*(id_wgt_mu_2*muon_is_mediumid_2 > 0.5 + 1.0*muon_is_mediumid_2 < 0.5)",
+                "idweight",
+            )
             trgweight = (
                 "(pt_2>=25 * trg_wgt_single_mu24) + ((pt_1>33 && pt_2<25)* trg_wgt_single_ele32)",
                 "trgweight",
             )
         elif channel == "met":
-            isoweight = ("iso_wgt_mu_1", "isoweight")
-            idweight = ("id_wgt_mu_1* id_wgt_ele_wp90nonIso_2", "idweight")
+            isoweight = ("iso_wgt_mu_1*(iso_1<0.15)+1.*(iso_1>0.15)", "isoweight")
+            idweight = (
+                "(id_wgt_mu_1*muon_is_mediumid_1>0.5+1.0*muon_is_mediumid_1<0.5) * (id_wgt_ele_wp90nonIso_2*electron_is_nonisowp90_2>0.5+1.0*electron_is_nonisowp90_2<0.5)",
+                "idweight",
+            )
             trgweight = (
                 "(pt_1>=25 * trg_wgt_single_mu24) + ((pt_2>33 && pt_1<25)* trg_wgt_single_ele32)",
                 "trgweight",
@@ -65,8 +71,14 @@ def MC_base_process_selection(channel, era):
         vsmu_weight = ("id_wgt_tau_vsMu_Tight_3", "vsmuweight")
         vsele_weight = ("id_wgt_tau_vsEle_VLoose_3", "vseleweight")
 
-        isoweight = ("iso_wgt_mu_1 * iso_wgt_mu_2", "isoweight")
-        idweight = ("id_wgt_mu_1 * id_wgt_mu_2", "idweight")
+        isoweight = (
+            "(iso_wgt_mu_1*(iso_1<0.15)+1.*(iso_1>0.15))*(iso_wgt_mu_2*(iso_2<0.15)+1.*(iso_2>0.15))",
+            "isoweight",
+        )
+        idweight = (
+            "id_wgt_mu_1 * (id_wgt_mu_2*muon_is_mediumid_2 > 0.5 + 1.0*muon_is_mediumid_2 < 0.5)",
+            "idweight",
+        )
         trgweight = (
             "(pt_1>=25 * trg_wgt_single_mu24)",
             "trgweight",

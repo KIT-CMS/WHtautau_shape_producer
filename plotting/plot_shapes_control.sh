@@ -1,6 +1,6 @@
 source utils/setup_cvmfs_sft.sh
 source utils/setup_python.sh
-NAME="control_region_q1q2os_noq3"
+NAME="control_region_fakerates_incl_bveto_ortho_det_reg"
 ERA="2018"
 CHANNELS="emt met mmt"
 for CHANNEL in $CHANNELS
@@ -18,9 +18,9 @@ do
     then
         for WP in Loose Tight
         do 
-            NAME="id_wp_mu_${WP}_wo_mtcut_only_single_ele_data"
-            INPUT="output/shapes/09_02_eem_mme_2/${CHANNEL}/control_shapes/${NAME}.root"
-            TAG="09_02_eem_mme_2/${CHANNEL}/${NAME}_incl_red_bkg_nbbwidth"
+            NAME="id_wp_mu_${WP}"
+            INPUT="output/shapes/09_02_eem_mme_2/${CHANNEL}/fakerate_measurement_v3_final/${NAME}.root"
+            TAG="09_02_eem_mme_2/${CHANNEL}/${NAME}_incl_red_bkg_nbbwidth_v3_final"
             for VAR in pt_3 mt_3 met #m_vis pt_1 pt_2 m_vis mjj njets pt_vis phi_2 eta_2 phi_1 nbtag met_uncorrected pfmet pfmet_uncorrected metphi metphi_uncorrected pfmetphi pfmetphi_uncorrected
             do
                 python plotting/plot_shapes_control_eem_mme.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --normalize-by-bin-width
@@ -30,9 +30,9 @@ do
     then 
         for WP in Loose Tight
         do     
-            NAME="id_wp_ele_${WP}_wo_mtcut_only_single_mu_data"
-            INPUT="output/shapes/09_02_eem_mme_2/${CHANNEL}/control_shapes/${NAME}.root"
-            TAG="09_02_eem_mme_2/${CHANNEL}/${NAME}_incl_red_bkg_nbbwidth"
+            NAME="id_wp_ele_${WP}"
+            INPUT="output/shapes/09_02_eem_mme_2/${CHANNEL}/fakerate_measurement_v3_final/${NAME}.root"
+            TAG="09_02_eem_mme_2/${CHANNEL}/${NAME}_incl_red_bkg_nbbwidth_v3_final"
             for VAR in pt_3 mt_3 met #m_vis pt_1 pt_2 m_vis mjj njets pt_vis phi_2 eta_2 phi_1 nbtag met_uncorrected pfmet pfmet_uncorrected metphi metphi_uncorrected pfmetphi pfmetphi_uncorrected
             do
                 python plotting/plot_shapes_control_eem_mme.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --normalize-by-bin-width

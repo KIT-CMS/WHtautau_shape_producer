@@ -76,7 +76,7 @@ def plot_rates(rates_dict, plot_output):
             label="TightvsMu+VLoosevsEle",
         )
         plt.legend()
-        plt.ylim(0, 0.15)
+        #plt.ylim(0, 0.15)
         plt.ylabel(r"jet $\rightarrow\tau_{\mathrm{h}}$ fake rate")
         plt.xlabel(r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$")
         plt.savefig("{plot_output}/{dm}.png".format(plot_output=plot_output, dm=dm))

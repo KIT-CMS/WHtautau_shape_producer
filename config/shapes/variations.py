@@ -15,110 +15,140 @@ from ntuple_processor.variations import ReplaceMultipleCutsAndAddWeight
 from ntuple_processor.variations import ReplaceVariableReplaceCutAndAddWeight
 from ntuple_processor.variations import ChangeDatasetReplaceMultipleCutsAndAddWeight
 
-
+###incl. bveto
 anti_iso_llt_tau = ReplaceCutAndAddWeight(
     "tau_anti_iso",
     "tau_iso",
     Cut("id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
-    Weight("tau_fakerate/(1-tau_fakerate)", "fake_factor"),
+    Weight("tau_fakerate", "fake_factor"),
 )
 anti_isoid_mu_1 = ReplaceMultipleCutsAndAddWeight(
     "mu1_anti_isoid",
-    ["iso_cut_1", "id_cut_1"],
+    ["id_iso_cut_1"],
     [
         Cut(
-            "(iso_1>0.15 || muon_is_mediumid_1<0.5) && !(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25)",
+            "(iso_1>0.15 || muon_is_mediumid_1<0.5) && pt_1<25",
             "mu_1_anti_isoid",
         )
     ],
-    Weight("lep_1_fakerate/(1-lep_1_fakerate)", "fake_factor"),
+    Weight("lep_1_fakerate", "fake_factor"),
 )
 anti_isoid_mu_2 = ReplaceMultipleCutsAndAddWeight(
     "mu2_anti_isoid",
-    ["iso_cut_2", "id_cut_2"],
+    ["id_iso_cut_2"],
     [
         Cut(
-            "(iso_2>0.15 || muon_is_mediumid_2<0.5) && !(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_2 > 25)",
+            "(iso_2>0.15 || muon_is_mediumid_2<0.5) && pt_2<25",
             "mu_2_anti_isoid",
         )
     ],
-    Weight("lep_2_fakerate/(1-lep_2_fakerate)", "fake_factor"),
+    Weight("lep_2_fakerate", "fake_factor"),
+)
+mmt_anti_isoid_mu_2 = ReplaceMultipleCutsAndAddWeight(
+    "mu2_anti_isoid",
+    ["id_iso_cut_2"],
+    [
+        Cut(
+            "(iso_2>0.15 || muon_is_mediumid_2<0.5)",
+            "mmt_mu_2_anti_isoid",
+        )
+    ],
+    Weight("lep_2_fakerate", "fake_factor"),
 )
 anti_isoid_ele_1 = ReplaceMultipleCutsAndAddWeight(
     "ele1_anti_isoid",
-    ["iso_cut_1", "id_cut_1"],
+    ["id_iso_cut_1"],
     [
         Cut(
-            "(iso_1>0.15 || electron_is_nonisowp90_1<0.5) && !(pt_1 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
+            "(iso_1>0.15 || electron_is_nonisowp90_1<0.5) && pt_2>25",
             "ele_1_anti_isoid",
         )
     ],
-    Weight("lep_1_fakerate/(1-lep_1_fakerate)", "fake_factor"),
+    Weight("lep_1_fakerate", "fake_factor"),
 )
 anti_isoid_ele_2 = ReplaceMultipleCutsAndAddWeight(
     "ele2_anti_isoid",
-    ["iso_cut_2", "id_cut_2"],
+    ["id_iso_cut_2"],
     [
         Cut(
-            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && !(pt_2 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
+            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && pt_1>25",
             "ele_2_anti_isoid",
         )
     ],
-    Weight("lep_2_fakerate/(1-lep_2_fakerate)", "fake_factor"),
+    Weight("lep_2_fakerate", "fake_factor"),
 )
 anti_isoid_mu_1_tau = ReplaceMultipleCutsAndAddWeight(
     "mu1tau_anti_isoid",
-    ["iso_cut_1", "id_cut_1", "tau_iso"],
+    ["id_iso_cut_1", "tau_iso"],
     [
         Cut(
-            "(iso_1>0.15 || muon_is_mediumid_1<0.5) && !(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25) &&(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
-            "mu_1_tau_anti_isoid",
-        )
+            "(iso_1>0.15 || muon_is_mediumid_1<0.5) && pt_1<25",
+            "mu_1_anti_iso",
+        ),
+        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
-        "-tau_fakerate*lep_1_fakerate/(1-lep_1_fakerate)/(1-tau_fakerate)",
+        "-tau_fakerate*lep_1_fakerate",
         "fake_factor",
     ),
 )
 anti_isoid_mu_2_tau = ReplaceMultipleCutsAndAddWeight(
     "mu2tau_anti_isoid",
-    ["iso_cut_2", "id_cut_2", "tau_iso"],
+    ["id_iso_cut_2", "tau_iso"],
     [
         Cut(
-            "(iso_2>0.15 || muon_is_mediumid_2<0.5) && !(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_2 > 25)&&(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
-            "mu_2_tau_anti_isoid",
-        )
+            "(iso_2>0.15 || muon_is_mediumid_2<0.5) && pt_2<25",
+            "mu_2_anti_iso",
+        ),
+        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
-        "-tau_fakerate*lep_2_fakerate/(1-lep_2_fakerate)/(1-tau_fakerate)",
+        "-tau_fakerate*lep_2_fakerate",
+        "fake_factor",
+    ),
+)
+mmt_anti_isoid_mu_2_tau = ReplaceMultipleCutsAndAddWeight(
+    "mu2tau_anti_isoid",
+    ["id_iso_cut_2", "tau_iso"],
+    [
+        Cut(
+            "(iso_2>0.15|| muon_is_mediumid_2<0.5)",
+            "mu_2_anti_iso",
+        ),
+        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+    ],
+    Weight(
+        "-tau_fakerate*lep_2_fakerate",
         "fake_factor",
     ),
 )
 anti_isoid_ele_1_tau = ReplaceMultipleCutsAndAddWeight(
     "ele1tau_anti_isoid",
-    ["iso_cut_1", "id_cut_1", "tau_iso"],
+    ["id_iso_cut_1", "tau_iso"],
     [
         Cut(
-            "(iso_1>0.15 || electron_is_nonisowp90_1<0.5) && !(pt_1 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))&&(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
+            "(iso_1>0.15 || electron_is_nonisowp90_1<0.5) && pt_2>25",
             "ele_1_tau_anti_isoid",
-        )
+        ),
+        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
-        "-tau_fakerate*lep_1_fakerate/(1-lep_1_fakerate)/(1-tau_fakerate)",
+        "-tau_fakerate*lep_1_fakerate",
         "fake_factor",
     ),
 )
 anti_isoid_ele_2_tau = ReplaceMultipleCutsAndAddWeight(
     "ele2tau_anti_isoid",
-    ["iso_cut_2", "id_cut_2", "tau_iso"],
+    ["id_iso_cut_2", "tau_iso"],
     [
         Cut(
-            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && !(pt_2 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))&&(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
-            "ele_2_tau_anti_isoid",
-        )
+            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && pt_1>25",
+            "ele_2_anti_iso",
+        ),
+        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
-        "-tau_fakerate*lep_2_fakerate/(1-lep_2_fakerate)/(1-tau_fakerate)",
+        "-tau_fakerate*lep_2_fakerate",
         "fake_factor",
     ),
 )

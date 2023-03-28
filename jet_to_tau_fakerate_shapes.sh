@@ -6,9 +6,8 @@ NTUPLE_PATH="/work/rschmieder/WH_analysis/WHtautau_shape_producer/temp_ntuples_f
 FRIEND_PATH="/work/rschmieder/WH_analysis/WHtautau_shape_producer/temp_ntuples_friends/${TAG}/friends"
 CHANNEL="mmt"
 ERA="2018"
-OUTPUT_DIR="output/shapes/${TAG}/${CHANNEL}/fakerate_measurement2"
+OUTPUT_DIR="output/shapes/${TAG}/${CHANNEL}/fakerate_measurement_incl_bveto_ortho_det_reg"
 mkdir -p ${OUTPUT_DIR}
-
 for DM in 0 1 10 11
 do
     for WP_JET in VTight VVVLoose

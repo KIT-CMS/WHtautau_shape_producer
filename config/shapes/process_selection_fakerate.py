@@ -43,7 +43,6 @@ def MC_base_process_selection(
     id_wp_ele,
     id_wp_mu,
 ):
-    print(channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, id_wp_ele, id_wp_mu)
     if channel == "mmt":
         tauidweight = (
             "((gen_match_3==5)*id_wgt_tau_vsJet_{wp_vs_jet}_3 + (gen_match_3!=5))".format(
@@ -78,16 +77,22 @@ def MC_base_process_selection(
         ]
     elif channel == "mme":
         isoweight = ("iso_wgt_mu_1 * iso_wgt_mu_2", "isoweight")
-        idweight = ("id_wgt_mu_1 * id_wgt_mu_2", "idweight")
+        # idweight = ("id_wgt_mu_1 * id_wgt_mu_2", "idweight")
+        idweight = ("id_wgt_mu_1 * id_wgt_mu_2* id_wgt_ele_wp90nonIso_3", "idweight")
         trgweight = (
             "(pt_1>=25 * trg_wgt_single_mu24)",
             "trgweight",
         )
-        if id_wp_ele == "Tight":
-            idweight = (
-                "id_wgt_mu_1 * id_wgt_mu_2 * id_wgt_ele_wp90nonIso_3",
-                "idweight",
-            )
+        # if id_wp_ele == "Tight":
+        #     idweight = (
+        #         "id_wgt_mu_1 * id_wgt_mu_2 * id_wgt_ele_wp90nonIso_3",
+        #         "idweight",
+        #     )
+        # else:
+        #     idweight = (
+        #         "id_wgt_mu_1 * id_wgt_mu_2*((electron_is_nonisowp90_3>0.5)*id_wgt_ele_wp90nonIso_3+1.0*(electron_is_nonisowp90_3<0.5))",
+        #         "idweight",
+        #     )
         MC_base_process_weights = [
             ("puweight", "puweight"),
             lumi_weight(era),
@@ -96,18 +101,28 @@ def MC_base_process_selection(
             trgweight,
         ]
     elif channel == "eem":
-        idweight = ("id_wgt_ele_wp90nonIso_1 * id_wgt_ele_wp90nonIso_2", "idweight")
+        idweight = (
+            "id_wgt_ele_wp90nonIso_1 * id_wgt_ele_wp90nonIso_2 * id_wgt_mu_3",
+            "idweight",
+        )
+        # idweight = ("id_wgt_ele_wp90nonIso_1 * id_wgt_ele_wp90nonIso_2", "idweight")
         trgweight = (
             "pt_1>33* trg_wgt_single_ele32",
             "trgweight",
         )
         isoweight = ("1", "isoweight")
         if id_wp_mu == "Tight":
-            idweight = (
-                "id_wgt_ele_wp90nonIso_1 * id_wgt_ele_wp90nonIso_2 * id_wgt_mu_3",
-                "idweight",
-            )
+            # idweight = (
+            #     "id_wgt_ele_wp90nonIso_1 * id_wgt_ele_wp90nonIso_2 * id_wgt_mu_3",
+            #     "idweight",
+            # )
             isoweight = ("iso_wgt_mu_3", "isoweight")
+        # else:
+        #     idweight = (
+        #         "id_wgt_ele_wp90nonIso_1 * id_wgt_ele_wp90nonIso_2 * (id_wgt_mu_3*(muon_is_mediumid_3 > 0.5)+1.0*(muon_is_mediumid_3 < 0.5))",
+        #         "idweight",
+        #     )
+        #     isoweight = ("iso_wgt_mu_3*(iso_3<0.15)+1.0*(iso_3>0.15)", "isoweight")
         MC_base_process_weights = [
             ("puweight", "puweight"),
             lumi_weight(era),

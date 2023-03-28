@@ -7,37 +7,25 @@ def channel_selection(channel, era):
     # Specify general channel and era independent cuts.
     if channel in ["emt", "met"]:
         cuts = [
-            ("q_1*q_2<0.0", "ss"),
-            #("q_2*q_3<0.0", "os"),
+            ("q_1*q_2>0.0", "ss"),
+            ("q_2*q_3<0.0", "os"),
             ("pt_1>15.", "pt_1_cut"),
             ("pt_2>15.", "pt_2_cut"),
             ("nbtag<0.5", "b_veto"),
             ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
             ("id_tau_vsEle_Tight_3>0.5", "againstElectronDiscriminator"),
             ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
-            ("iso_1<0.15", "iso_cut_1"),
-            ("iso_2<0.15", "iso_cut_2"),
-            # (
-            #     "Lt<100 || (abs(eta_1-eta_2)>2.0) || (abs(eta_1-eta_3)>2.0) || (abs(deltaPhi_elemu)<2.0) || (abs(deltaPhi_eletau)<2.0)",
-            #     "ctrl1",
-            # ),
             (
                 "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
                 "ctrl_region",
             ),
-            # (
-            #     "Lt>100. && (abs(eta_1-eta_2)<2.0) && (abs(eta_1-eta_3)<2.0) && (abs(deltaPhi_elemu)>2.0) && (abs(deltaPhi_eletau)>2.0)",
-            #     "sig",
-            # ),
-            # (
-            #     "Lt>100. && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
-            #     "sig2",
-            # ),
         ]
         if channel == "emt":
             # triggermatching for single ele and single mu trigger and corresponding pt requirements
-            cuts.append(("muon_is_mediumid_2 > 0.5", "id_cut_2"))
-            cuts.append(("electron_is_nonisowp90_1>0.5", "id_cut_1"))
+            # id and iso cuts have to be in one cut, cause of the variations
+            # cuts.append(("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"))
+            cuts.append(("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"))
+            cuts.append(("electron_is_nonisowp90_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
             cuts.append(
                 (
                     "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_2 > 25) || (pt_2 < 25 && pt_1 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
@@ -45,8 +33,8 @@ def channel_selection(channel, era):
                 )
             )
         elif channel == "met":
-            cuts.append(("muon_is_mediumid_1 > 0.5", "id_cut_1"))
-            cuts.append(("electron_is_nonisowp90_2>0.5", "id_cut_2"))
+            cuts.append(("muon_is_mediumid_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
+            cuts.append(("electron_is_nonisowp90_2>0.5 && iso_2<0.15", "id_iso_cut_2"))
             # triggermatching for single ele and single mu trigger and corresponding pt requirements
             cuts.append(
                 (
@@ -56,8 +44,8 @@ def channel_selection(channel, era):
             )
     elif channel == "mmt":
         cuts = [
-            ("q_1*q_2<0.0", "ss"),
-            #("q_2*q_3<0.0", "os"),
+            ("q_1*q_2>0.0", "ss"),
+            ("q_2*q_3<0.0", "os"),
             ("pt_1>15.", "pt_1_cut"),
             ("pt_2>15.", "pt_2_cut"),
             ("nbtag<0.5", "b_veto"),
@@ -65,14 +53,13 @@ def channel_selection(channel, era):
             ("id_tau_vsEle_VLoose_3>0.5", "againstElectronDiscriminator"),
             ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
             ("iso_1<0.15", "iso_cut_1"),
-            ("iso_2<0.15", "iso_cut_2"),
             ("deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
             (
                 "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
                 "ctrl_region",
             ),
             ("muon_is_mediumid_1 > 0.5", "id_cut_1"),
-            ("muon_is_mediumid_2 > 0.5", "id_cut_2"),
+            ("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"),
         ]
         cuts.append(
             (

@@ -54,9 +54,13 @@ def channel_selection(channel, era):
             ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
             ("iso_1<0.15", "iso_cut_1"),
             ("deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
+            # (
+            #     "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
+            #     "ctrl_region",
+            # ),
             (
-                "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
-                "ctrl_region",
+                "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
+                "sig_region",
             ),
             ("muon_is_mediumid_1 > 0.5", "id_cut_1"),
             ("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"),
@@ -92,10 +96,10 @@ def channel_selection(channel, era):
                 "trg_selection",
             ),
             # control region cut
-            # (
-            #     "Lt<130 || pt_123>70 || met>70",
-            #     "ctrl_region",
-            # ),
+            (
+                "Lt<130 || pt_123>70 || met>70",
+                "ctrl_region",
+            ),
         ]
     elif channel == "mtt":
         cuts = [

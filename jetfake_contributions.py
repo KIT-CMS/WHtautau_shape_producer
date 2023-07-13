@@ -174,21 +174,24 @@ def main(args):
                 plot.subplot(0).get_hist("lep2tau").GetMinimum(),
             ]
         )
-        plot.subplot(0).setYlims(y_min, y_max)
-        # Assemble ratio plot.
+        if channel == "emt":
+            plot.subplot(0).setYlims(-3, 10)
+        else:
+            plot.subplot(0).setYlims(-10, 35)
         plot.subplot(0).setYlabel("N_{events}")
         plot.scaleYLabelSize(0.8)
         plot.scaleYTitleOffset(1.1)
-        plot.subplot(0).setXlabel(styles.x_label_dict["emt"]["pt_1"])
         plot.subplot(0).Draw(["tau", "lep1", "lep2", "lep1tau", "lep2tau"])
         plot.add_legend(width=0.15, height=0.15, pos=3)
         plot.legend(0).add_entry(0, "tau", "#tau anti iso", "l")
         if channel == "emt":
+            plot.subplot(0).setXlabel(styles.x_label_dict["emt"]["pt_1"])
             plot.legend(0).add_entry(0, "lep1", "e anti iso", "l")
             plot.legend(0).add_entry(0, "lep2", "#mu anti iso", "l")
             plot.legend(0).add_entry(0, "lep1tau", "#tau+e anti iso", "l")
             plot.legend(0).add_entry(0, "lep2tau", "#tau+#mu anti iso", "l")
         else:
+            plot.subplot(0).setXlabel(styles.x_label_dict["met"]["pt_1"])
             plot.legend(0).add_entry(0, "lep2", "e anti iso", "l")
             plot.legend(0).add_entry(0, "lep1", "#mu anti iso", "l")
             plot.legend(0).add_entry(0, "lep2tau", "#tau+e anti iso", "l")
@@ -223,12 +226,12 @@ def main(args):
                 plot.subplot(0).get_hist("lep2tau").GetMinimum(),
             ]
         )
-        plot.subplot(0).setYlims(y_min, y_max)
+        plot.subplot(0).setYlims(-7, 30)
         # Assemble ratio plot.
         plot.subplot(0).setYlabel("N_{events}")
         plot.scaleYLabelSize(0.8)
         plot.scaleYTitleOffset(1.1)
-        plot.subplot(0).setXlabel(styles.x_label_dict["emt"]["pt_1"])
+        plot.subplot(0).setXlabel(styles.x_label_dict["mmt"]["pt_1"])
         plot.subplot(0).Draw(["tau", "lep2", "lep2tau"])
         plot.add_legend(width=0.15, height=0.15, pos=3)
         plot.legend(0).add_entry(0, "tau", "#tau anti iso", "l")

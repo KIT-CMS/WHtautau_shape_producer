@@ -60,9 +60,11 @@ common_files_2018 = {
     #     "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
     #     "ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
     # ],
-    "WH": [
-        "WminusHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
+    "WHplus": [
         "WplusHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
+    ],
+    "WHminus": [
+        "WminusHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
     ],
     "ZH": ["ZHToTauTau_M125_CP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X"],
     "DY": [

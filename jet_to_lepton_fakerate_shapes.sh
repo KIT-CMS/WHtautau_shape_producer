@@ -3,8 +3,8 @@
 source utils/setup_root.sh
 
 TAG="09_02_eem_mme_2"
-NTUPLE_PATH="/work/rschmieder/WH_analysis/WHtautau_shape_producer/temp_ntuples_friends/${TAG}/ntuples"
-FRIEND_PATH="/work/rschmieder/WH_analysis/WHtautau_shape_producer/temp_ntuples_friends/${TAG}/friends"
+NTUPLE_PATH="/ceph/rschmieder/WH_analysis/ntuple_sets/${TAG}/ntuples"
+FRIEND_PATH="/ceph/rschmieder/WH_analysis/friend_sets/${TAG}/friends"
 ERA="2018"
 
 #jet to electron fakerate shapes

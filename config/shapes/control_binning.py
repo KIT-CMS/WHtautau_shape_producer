@@ -35,10 +35,10 @@ minimal_control_plot_set = [
 ]
 
 common_binning = {
-    "pt_W_lt": Histogram("pt_W_lt", "pt_W_lt", np.arange(0, 200, 20)),
-    "m_tt_lt": Histogram("m_tt_lt", "m_tt_lt", np.arange(0, 200, 20)),
-    "pt_W_tt": Histogram("pt_W_tt", "pt_W_tt", np.arange(0, 200, 10)),
-    "m_tt_tt": Histogram("m_tt_tt", "m_tt_tt", np.arange(0, 200, 10)),
+    "pt_W": Histogram("pt_W", "pt_W", np.arange(0, 200, 20)),
+    "m_tt": Histogram("m_tt", "m_tt", np.arange(0, 200, 20)),
+    "pt_W_tt": Histogram("pt_W_tt", "pt_W_tt", np.arange(0, 200, 20)),
+    "m_tt_tt": Histogram("m_tt_tt", "m_tt_tt", np.arange(0, 200, 20)),
     "phi_2": Histogram("phi_2", "phi_2", np.linspace(-3.14, 3.14, 10)),
     "genbosonpt": Histogram("genbosonpt", "genbosonpt", np.arange(0, 150, 10)),
     "deltaR_ditaupair": Histogram("DiTauDeltaR", "DiTauDeltaR", np.arange(0, 5, 0.2)),
@@ -76,7 +76,7 @@ common_binning = {
     "mt_tot": Histogram("mt_tot", "mt_tot", np.arange(0, 400, 8)),
     "mt_tot_puppi": Histogram("mt_tot_puppi", "mt_tot_puppi", np.arange(0, 400, 8)),
     "pt_1": Histogram("pt_1", "pt_1", np.append(np.array([0]), np.arange(20, 200, 20))),
-    "pt_2": Histogram("pt_2", "pt_2", np.append(np.array([0]), np.arange(20, 200, 20))),
+    "pt_2": Histogram("pt_2", "pt_2", [0, 200]),
     "pt_3": Histogram("pt_3", "pt_3", np.append(np.array([0]), np.arange(20, 200, 20))),
     # "pt_3": Histogram("pt_3", "pt_3", np.append(np.array([0]), np.arange(0, 160, 10))),
     "Lt": Histogram("Lt", "Lt", np.arange(0, 100, 5)),
@@ -142,8 +142,8 @@ common_binning = {
     ),
 }
 mmt_binning = {
-    "pt_W_lt": Histogram("pt_W_lt", "pt_W_lt", np.arange(0, 200, 10)),
-    "m_tt_lt": Histogram("m_tt_lt", "m_tt_lt", np.arange(0, 200, 10)),
+    "pt_W": Histogram("pt_W", "pt_W", np.arange(0, 200, 20)),
+    "m_tt": Histogram("m_tt", "m_tt", np.arange(0, 200, 20)),
     "pt_W_tt": Histogram("pt_W_tt", "pt_W_tt", np.arange(0, 200, 10)),
     "m_tt_tt": Histogram("m_tt_tt", "m_tt_tt", np.arange(0, 200, 10)),
     "phi_2": Histogram("phi_2", "phi_2", np.linspace(-3.14, 3.14, 10)),
@@ -183,7 +183,7 @@ mmt_binning = {
     "mt_tot": Histogram("mt_tot", "mt_tot", np.arange(0, 400, 8)),
     "mt_tot_puppi": Histogram("mt_tot_puppi", "mt_tot_puppi", np.arange(0, 400, 8)),
     "pt_1": Histogram("pt_1", "pt_1", np.append(np.array([0]), np.arange(20, 200, 20))),
-    "pt_2": Histogram("pt_2", "pt_2", np.append(np.array([0]), np.arange(20, 200, 20))),
+    "pt_2": Histogram("pt_2", "pt_2", [0, 200]),
     # "pt_3": Histogram("pt_3", "pt_3", [20, 25, 30, 35, 40, 50, 60, 120]),
     "pt_3": Histogram("pt_3", "pt_3", np.append(np.array([0]), np.arange(20, 200, 20))),
     "Lt": Histogram("Lt", "Lt", np.arange(0, 100, 5)),
@@ -249,8 +249,8 @@ mmt_binning = {
     ),
 }
 eem_mme_binning = {
-    "pt_W_lt": Histogram("pt_W_lt", "pt_W_lt", np.arange(0, 200, 10)),
-    "m_tt_lt": Histogram("m_tt_lt", "m_tt_lt", np.arange(0, 200, 10)),
+    "pt_W": Histogram("pt_W", "pt_W", np.arange(0, 200, 10)),
+    "m_tt": Histogram("m_tt", "m_tt", np.arange(0, 200, 10)),
     "pt_W_tt": Histogram("pt_W_tt", "pt_W_tt", np.arange(0, 200, 10)),
     "m_tt_tt": Histogram("m_tt_tt", "m_tt_tt", np.arange(0, 200, 10)),
     "phi_2": Histogram("phi_2", "phi_2", np.linspace(-3.14, 3.14, 10)),

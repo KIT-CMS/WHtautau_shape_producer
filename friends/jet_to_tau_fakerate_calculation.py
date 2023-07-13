@@ -17,6 +17,12 @@ def parse_arguments():
         help="Input root file of sig region.",
     )
     parser.add_argument(
+        "--syst_unc",
+        type=float,
+        required=True,
+        help="systematic uncertainty on the yield of subtraced processes in %",
+    )
+    parser.add_argument(
         "-out",
         "--output_file",
         type=str,
@@ -51,7 +57,7 @@ def plot_rates(rates_dict, plot_output):
         plt.errorbar(
             pt_center,
             rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["rate"],
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["unc"],
+            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["stat_unc"],
             marker=".",
             linestyle="",
             markersize="7",
@@ -60,7 +66,7 @@ def plot_rates(rates_dict, plot_output):
         plt.errorbar(
             pt_center,
             rates_dict["VTight_vs_jets"]["VLoose_vs_mu"]["Tight_vs_ele"][dm]["rate"],
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["unc"],
+            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["stat_unc"],
             marker=".",
             linestyle="",
             markersize="7",
@@ -69,14 +75,14 @@ def plot_rates(rates_dict, plot_output):
         plt.errorbar(
             pt_center,
             rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["VLoose_vs_ele"][dm]["rate"],
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["unc"],
+            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["stat_unc"],
             marker=".",
             linestyle="",
             markersize="7",
             label="TightvsMu+VLoosevsEle",
         )
         plt.legend()
-        #plt.ylim(0, 0.15)
+        # plt.ylim(0, 0.15)
         plt.ylabel(r"jet $\rightarrow\tau_{\mathrm{h}}$ fake rate")
         plt.xlabel(r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$")
         plt.savefig("{plot_output}/{dm}.png".format(plot_output=plot_output, dm=dm))
@@ -96,29 +102,125 @@ def base_file(base_path, working_points, decay_mode):
     return base_file
 
 
-def rates(shapes, base_path):
+def rates(shapes, base_path, syst_unc):
     rates_dict = {
         "VTight_vs_jets": {
             "Tight_vs_mu": {
                 "Tight_vs_ele": {
-                    "DM0": {"pt": [], "rate": [], "unc": []},
-                    "DM1": {"pt": [], "rate": [], "unc": []},
-                    "DM10": {"pt": [], "rate": [], "unc": []},
-                    "DM11": {"pt": [], "rate": [], "unc": []},
+                    "DM0": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM1": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM10": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM11": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
                 },
                 "VLoose_vs_ele": {
-                    "DM0": {"pt": [], "rate": [], "unc": []},
-                    "DM1": {"pt": [], "rate": [], "unc": []},
-                    "DM10": {"pt": [], "rate": [], "unc": []},
-                    "DM11": {"pt": [], "rate": [], "unc": []},
+                    "DM0": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM1": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM10": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM11": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
                 },
             },
             "VLoose_vs_mu": {
                 "Tight_vs_ele": {
-                    "DM0": {"pt": [], "rate": [], "unc": []},
-                    "DM1": {"pt": [], "rate": [], "unc": []},
-                    "DM10": {"pt": [], "rate": [], "unc": []},
-                    "DM11": {"pt": [], "rate": [], "unc": []},
+                    "DM0": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM1": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM10": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
+                    "DM11": {
+                        "pt": [],
+                        "rate": [],
+                        "rate_stat_up": [],
+                        "rate_stat_down": [],
+                        "rate_syst_up": [],
+                        "rate_syst_down": [],
+                        "stat_unc": [],
+                    },
                 },
             },
         }
@@ -141,126 +243,296 @@ def rates(shapes, base_path):
             tight_data = tight_file.Get("data#mmt#Nominal#pt_3")
             tight_diff = tight_data.Clone()
             if "DM0." in shape:
-                base_DM0 = base_file(base_path, wp, "DM0")
-                base_data = base_DM0.Get("data#mmt#Nominal#pt_3")
-                base_diff = base_data.Clone()
-                for proc in procs_to_subtract.values():
-                    tight_hist = tight_file.Get(proc)
-                    base_hist = base_DM0.Get(proc)
-                    tight_diff.Add(tight_hist, -1)
-                    base_diff.Add(base_hist, -1)
-                ratio_hist = tight_diff.Clone()
-                ratio_hist.Divide(base_diff)
-                for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["rate"].append(
-                        ratio_hist.GetBinContent(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["unc"].append(
-                        ratio_hist.GetBinError(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["pt"].append(
-                        tight_data.GetBinLowEdge(bin_i)
-                    )
-                rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["pt"].append(
-                    tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
-                )
-                base_DM0.Close()
-                del base_data
-                del base_diff
-                del ratio_hist
+                for syst_shift, scale in enumerate(
+                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
+                ):
+                    base_DM0 = base_file(base_path, wp, "DM0")
+                    base_data = base_DM0.Get("data#mmt#Nominal#pt_3")
+                    base_diff = base_data.Clone()
+                    for proc in procs_to_subtract.values():
+                        tight_hist = tight_file.Get(proc)
+                        base_hist = base_DM0.Get(proc)
+                        tight_diff.Add(tight_hist, scale)
+                        base_diff.Add(base_hist, scale)
+                    ratio_hist = tight_diff.Clone()
+                    ratio_hist.Divide(base_diff)
+                    if syst_shift == 0:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["rate"].append(
+                                ratio_hist.GetBinContent(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["stat_unc"].append(
+                                ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
+                                "rate_stat_up"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                + ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
+                                "rate_stat_down"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                - ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["pt"].append(
+                                tight_data.GetBinLowEdge(bin_i)
+                            )
+                        rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["pt"].append(
+                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+                        )
+                        base_DM0.Close()
+                    elif syst_shift == 1:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
+                                "rate_syst_down"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM0.Close()
+                    elif syst_shift == 2:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
+                                "rate_syst_up"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM0.Close()
+                    del base_data
+                    del base_diff
+                    del ratio_hist
             elif "DM1." in shape:
-                base_DM1 = base_file(base_path, wp, "DM1")
-                base_data = base_DM1.Get("data#mmt#Nominal#pt_3")
-                base_diff = base_data.Clone()
-                for proc in procs_to_subtract.values():
-                    tight_hist = tight_file.Get(proc)
-                    base_hist = base_DM1.Get(proc)
-                    tight_diff.Add(tight_hist, -1)
-                    base_diff.Add(base_hist, -1)
-                ratio_hist = tight_diff.Clone()
-                ratio_hist.Divide(base_diff)
-                for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["rate"].append(
-                        ratio_hist.GetBinContent(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["unc"].append(
-                        ratio_hist.GetBinError(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["pt"].append(
-                        tight_data.GetBinLowEdge(bin_i)
-                    )
-                rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["pt"].append(
-                    tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
-                )
-                base_DM1.Close()
-                del base_data
-                del base_diff
-                del ratio_hist
+                for syst_shift, scale in enumerate(
+                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
+                ):
+                    base_DM1 = base_file(base_path, wp, "DM1")
+                    base_data = base_DM1.Get("data#mmt#Nominal#pt_3")
+                    base_diff = base_data.Clone()
+                    for proc in procs_to_subtract.values():
+                        tight_hist = tight_file.Get(proc)
+                        base_hist = base_DM1.Get(proc)
+                        tight_diff.Add(tight_hist, scale)
+                        base_diff.Add(base_hist, scale)
+                    ratio_hist = tight_diff.Clone()
+                    ratio_hist.Divide(base_diff)
+                    if syst_shift == 0:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["rate"].append(
+                                ratio_hist.GetBinContent(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["stat_unc"].append(
+                                ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
+                                "rate_stat_up"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                + ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
+                                "rate_stat_down"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                - ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["pt"].append(
+                                tight_data.GetBinLowEdge(bin_i)
+                            )
+                        rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["pt"].append(
+                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+                        )
+                        base_DM1.Close()
+                    elif syst_shift == 1:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
+                                "rate_syst_down"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM1.Close()
+                    elif syst_shift == 2:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
+                                "rate_syst_up"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM1.Close()
+                    del base_data
+                    del base_diff
+                    del ratio_hist
             elif "DM10" in shape:
-                base_DM10 = base_file(base_path, wp, "DM10")
-                base_data = base_DM10.Get("data#mmt#Nominal#pt_3")
-                base_diff = base_data.Clone()
-                for proc in procs_to_subtract.values():
-                    tight_hist = tight_file.Get(proc)
-                    base_hist = base_DM10.Get(proc)
-                    tight_diff.Add(tight_hist, -1)
-                    base_diff.Add(base_hist, -1)
-                ratio_hist = tight_diff.Clone()
-                ratio_hist.Divide(base_diff)
-                for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["rate"].append(
-                        ratio_hist.GetBinContent(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["unc"].append(
-                        ratio_hist.GetBinError(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["pt"].append(
-                        tight_data.GetBinLowEdge(bin_i)
-                    )
-                rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["pt"].append(
-                    tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
-                )
-                base_DM10.Close()
-                del base_data
-                del base_diff
-                del ratio_hist
+                for syst_shift, scale in enumerate(
+                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
+                ):
+                    base_DM10 = base_file(base_path, wp, "DM10")
+                    base_data = base_DM10.Get("data#mmt#Nominal#pt_3")
+                    base_diff = base_data.Clone()
+                    for proc in procs_to_subtract.values():
+                        tight_hist = tight_file.Get(proc)
+                        base_hist = base_DM10.Get(proc)
+                        tight_diff.Add(tight_hist, scale)
+                        base_diff.Add(base_hist, scale)
+                    ratio_hist = tight_diff.Clone()
+                    ratio_hist.Divide(base_diff)
+                    if syst_shift == 0:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["rate"].append(
+                                ratio_hist.GetBinContent(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["stat_unc"].append(
+                                ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
+                                "rate_stat_up"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                + ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
+                                "rate_stat_down"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                - ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["pt"].append(
+                                tight_data.GetBinLowEdge(bin_i)
+                            )
+                        rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["pt"].append(
+                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+                        )
+                        base_DM10.Close()
+                    elif syst_shift == 1:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
+                                "rate_syst_down"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM10.Close()
+                    elif syst_shift == 2:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
+                                "rate_syst_up"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM10.Close()
+                    del base_data
+                    del base_diff
+                    del ratio_hist
             elif "DM11" in shape:
-                base_DM11 = base_file(base_path, wp, "DM11")
-                base_data = base_DM11.Get("data#mmt#Nominal#pt_3")
-                base_diff = base_data.Clone()
-                for proc in procs_to_subtract.values():
-                    tight_hist = tight_file.Get(proc)
-                    base_hist = base_DM11.Get(proc)
-                    tight_diff.Add(tight_hist, -1)
-                    base_diff.Add(base_hist, -1)
-                ratio_hist = tight_diff.Clone()
-                ratio_hist.Divide(base_diff)
-                for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["rate"].append(
-                        ratio_hist.GetBinContent(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["unc"].append(
-                        ratio_hist.GetBinError(bin_i)
-                    )
-                    rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["pt"].append(
-                        tight_data.GetBinLowEdge(bin_i)
-                    )
-                rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["pt"].append(
-                    tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
-                )
-                base_DM11.Close()
-                del base_data
-                del base_diff
-                del ratio_hist
-            tight_file.Close()
-            del tight_data
-            del tight_diff
-        # print(
-        #     rates_dict,
-        #     len(rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["pt"]),
-        #     len(rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["rate"]),
-        # )
+                for syst_shift, scale in enumerate(
+                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
+                ):
+                    base_DM11 = base_file(base_path, wp, "DM11")
+                    base_data = base_DM11.Get("data#mmt#Nominal#pt_3")
+                    base_diff = base_data.Clone()
+                    for proc in procs_to_subtract.values():
+                        tight_hist = tight_file.Get(proc)
+                        base_hist = base_DM11.Get(proc)
+                        tight_diff.Add(tight_hist, scale)
+                        base_diff.Add(base_hist, scale)
+                    ratio_hist = tight_diff.Clone()
+                    ratio_hist.Divide(base_diff)
+                    if syst_shift == 0:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["rate"].append(
+                                ratio_hist.GetBinContent(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["stat_unc"].append(
+                                ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
+                                "rate_stat_up"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                + ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
+                                "rate_stat_down"
+                            ].append(
+                                ratio_hist.GetBinContent(bin_i)
+                                - ratio_hist.GetBinError(bin_i)
+                            )
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["pt"].append(
+                                tight_data.GetBinLowEdge(bin_i)
+                            )
+                        rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["pt"].append(
+                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+                        )
+                        base_DM11.Close()
+                    elif syst_shift == 1:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
+                                "rate_syst_down"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM11.Close()
+                    elif syst_shift == 2:
+                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
+                                "rate_syst_up"
+                            ].append(ratio_hist.GetBinContent(bin_i))
+                        base_DM11.Close()
+                    del base_data
+                    del base_diff
+                    del ratio_hist
     return rates_dict
+
+
+def values(rates_dict, wp_jets, wp_mu, wp_ele, dm):
+    content = []
+    for bin in range(len(rates_dict[wp_jets][wp_mu][wp_ele][dm]["pt"]) - 1):
+        content.append(
+            {
+                "nodetype": "category",
+                "input": "syst",
+                "content": [
+                    {
+                        "key": "syst_up",
+                        "value": rates_dict[wp_jets][wp_mu][wp_ele][dm]["rate_syst_up"][
+                            bin
+                        ],
+                    },
+                    {
+                        "key": "syst_down",
+                        "value": rates_dict[wp_jets][wp_mu][wp_ele][dm][
+                            "rate_syst_down"
+                        ][bin],
+                    },
+                    {
+                        "key": "stat_up",
+                        "value": rates_dict[wp_jets][wp_mu][wp_ele][dm]["rate_stat_up"][
+                            bin
+                        ],
+                    },
+                    {
+                        "key": "stat_down",
+                        "value": rates_dict[wp_jets][wp_mu][wp_ele][dm][
+                            "rate_stat_down"
+                        ][bin],
+                    },
+                    {
+                        "key": "nom",
+                        "value": rates_dict[wp_jets][wp_mu][wp_ele][dm]["rate"][bin],
+                    },
+                ],
+            }
+        )
+    return content
+
+
+def decay_modes(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele):
+    content = []
+    for dm in [(0, "DM0"), (1, "DM1"), (10, "DM10"), (11, "DM11")]:
+        content.append(
+            {
+                "key": dm[0],
+                "value": {
+                    "nodetype": "binning",
+                    "input": "pt",
+                    "edges": rates_dict[wp_vs_jets][wp_vs_mu][wp_vs_ele][dm[1]]["pt"],
+                    "content": values(
+                        rates_dict,
+                        wp_vs_jets,
+                        wp_vs_mu,
+                        wp_vs_ele,
+                        dm[1],
+                    ),
+                    "flow": "clamp",
+                },
+            }
+        )
+    return content
 
 
 def correction_lib_format(rates_dict):
@@ -297,6 +569,11 @@ def correction_lib_format(rates_dict):
                         "type": "real",
                         "description": "Reconstructed tau pT",
                     },
+                    {
+                        "name": "syst",
+                        "type": "string",
+                        "description": "Systematic variation: 'nom', 'up', 'down'",
+                    },
                 ],
                 "output": {
                     "name": "rate",
@@ -324,120 +601,12 @@ def correction_lib_format(rates_dict):
                                                     "value": {
                                                         "nodetype": "category",
                                                         "input": "dm",
-                                                        "content": [
-                                                            {
-                                                                "key": 0,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM0"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM0"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 1,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM1"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM1"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 10,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM10"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM10"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 11,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM11"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM11"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                        ],
+                                                        "content": decay_modes(
+                                                            rates_dict,
+                                                            "VTight_vs_jets",
+                                                            "Tight_vs_mu",
+                                                            "Tight_vs_ele",
+                                                        ),
                                                     },
                                                 },
                                                 {
@@ -445,120 +614,12 @@ def correction_lib_format(rates_dict):
                                                     "value": {
                                                         "nodetype": "category",
                                                         "input": "dm",
-                                                        "content": [
-                                                            {
-                                                                "key": 0,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM0"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM0"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 1,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM1"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM1"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 10,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM10"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM10"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 11,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["Tight_vs_mu"][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM11"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "Tight_vs_mu"
-                                                                    ][
-                                                                        "VLoose_vs_ele"
-                                                                    ][
-                                                                        "DM11"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                        ],
+                                                        "content": decay_modes(
+                                                            rates_dict,
+                                                            "VTight_vs_jets",
+                                                            "Tight_vs_mu",
+                                                            "VLoose_vs_ele",
+                                                        ),
                                                     },
                                                 },
                                             ],
@@ -575,120 +636,12 @@ def correction_lib_format(rates_dict):
                                                     "value": {
                                                         "nodetype": "category",
                                                         "input": "dm",
-                                                        "content": [
-                                                            {
-                                                                "key": 0,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["VLoose_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM0"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "VLoose_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM0"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 1,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["VLoose_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM1"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "VLoose_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM1"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 10,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["VLoose_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM10"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "VLoose_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM10"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                            {
-                                                                "key": 11,
-                                                                "value": {
-                                                                    "nodetype": "binning",
-                                                                    "input": "pt",
-                                                                    "edges": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ]["VLoose_vs_mu"][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM11"
-                                                                    ][
-                                                                        "pt"
-                                                                    ],
-                                                                    "content": rates_dict[
-                                                                        "VTight_vs_jets"
-                                                                    ][
-                                                                        "VLoose_vs_mu"
-                                                                    ][
-                                                                        "Tight_vs_ele"
-                                                                    ][
-                                                                        "DM11"
-                                                                    ][
-                                                                        "rate"
-                                                                    ],
-                                                                    "flow": "clamp",
-                                                                },
-                                                            },
-                                                        ],
+                                                        "content": decay_modes(
+                                                            rates_dict,
+                                                            "VTight_vs_jets",
+                                                            "VLoose_vs_mu",
+                                                            "Tight_vs_ele",
+                                                        ),
                                                     },
                                                 },
                                             ],
@@ -710,8 +663,8 @@ def correction_lib_format(rates_dict):
     return corr_lib
 
 
-def main(shapes, base_path, output_file, plot_output):
-    rates_dict = rates(shapes, base_path)
+def main(shapes, base_path, output_file, plot_output, syst_unc):
+    rates_dict = rates(shapes, base_path, syst_unc)
     print(rates_dict)
     plot_rates(rates_dict, plot_output)
     with open("{output}".format(output=output_file), "w") as outfile:
@@ -723,6 +676,7 @@ if __name__ == "__main__":
     base_path = args.base_path
     output_file = args.output_file
     plot_output = args.plot_output
+    syst_unc = args.syst_unc / 100.0
     path = os.path.join(base_path, "*.root")
     shapes = glob.glob(path)
-    main(shapes, base_path, output_file, plot_output)
+    main(shapes, base_path, output_file, plot_output, syst_unc)

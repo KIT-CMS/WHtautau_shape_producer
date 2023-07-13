@@ -32,6 +32,8 @@ from config.shapes.process_selection import (
 )
 
 from config.shapes.control_binning import control_binning, minimal_control_plot_set
+
+# Variations for estimation of fake processes
 from config.shapes.variations import (
     anti_iso_ltt,
     anti_iso_llt_tau,
@@ -45,7 +47,69 @@ from config.shapes.variations import (
     anti_isoid_ele_1_tau,
     anti_isoid_mu_2_tau,
     mmt_anti_isoid_mu_2_tau,
+    anti_iso_ltt_var,
+    anti_iso_llt_tau_var,
+    anti_isoid_ele_2_var,
+    anti_isoid_mu_1_var,
+    anti_isoid_ele_1_var,
+    anti_isoid_mu_2_var,
+    mmt_anti_isoid_mu_2_var,
+    anti_isoid_ele_2_tau_var,
+    anti_isoid_mu_1_tau_var,
+    anti_isoid_ele_1_tau_var,
+    anti_isoid_mu_2_tau_var,
+    mmt_anti_isoid_mu_2_tau_var,
 )
+
+# Energy scale uncertainties
+from config.shapes.variations import (
+    tau_es_3prong,
+    tau_es_3prong1pizero,
+    tau_es_1prong,
+    tau_es_1prong1pizero,
+    mu_fake_es_inc,
+    ele_fake_es,
+    jet_es,
+    # TODO add missing ES
+    # mu_fake_es_1prong,
+    # mu_fake_es_1prong1pizero,
+    # ele_es,
+    # ele_res,
+    # ele_fake_es_1prong,
+    # ele_fake_es_1prong1pizero,
+    # ele_fake_es,
+)
+
+# MET related uncertainties.
+from config.shapes.variations import (
+    met_unclustered,
+    recoil_resolution,
+    recoil_response,
+)
+
+# efficiency uncertainties
+from config.shapes.variations import (
+    tau_id_eff_lt,
+    tau_id_eff_tt,
+)
+
+# TODO add trigger efficiency uncertainties
+# # trigger efficiencies
+from config.shapes.variations import (
+    trigger_eff_mu,
+    trigger_eff_e,
+)
+
+# Additional uncertainties
+from config.shapes.variations import (
+    prefiring,
+    zpt,
+    top_pt,
+    pileup_reweighting,
+)
+
+# fake rate uncertainties
+from config.shapes.variations import jet_to_tau_fake, vsE_fake_rate, vsMu_fake_rate
 
 logger = logging.getLogger("")
 
@@ -171,6 +235,11 @@ def parse_arguments():
         action="store_true",
         help="Enables check for double actions during booking. Takes long for all variations.",
     )
+    parser.add_argument(
+        "--xrootd",
+        action="store_true",
+        help="Read input ntuples and friends via xrootd from gridka dCache",
+    )
     return parser.parse_args()
 
 
@@ -236,6 +305,7 @@ def main(args):
                         if filter_friends(key, fdir)
                     ],
                     validate_samples=True,
+                    xrootd=args.xrootd,
                 )
         return datasets
 
@@ -393,9 +463,23 @@ def main(args):
                     ],
                 )
             ],
-            "wh": [
+            "whminus": [
                 Unit(
-                    datasets["WH"],
+                    datasets["WHminus"],
+                    [
+                        channel_selection(channel, era),
+                        VH_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "whplus": [
+                Unit(
+                    datasets["WHplus"],
                     [
                         channel_selection(channel, era),
                         VH_process_selection(channel, era),
@@ -489,7 +573,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -513,7 +598,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -530,7 +616,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -547,7 +634,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -564,7 +652,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -581,7 +670,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -592,7 +682,7 @@ def main(args):
         },
     }
     for ch_ in args.channels:
-        print("procs:", (simulatedProcsDS[ch_] & procS))
+        # signalsS = {"wh"} & procS
         if ch_ == "emt":
             um.book(
                 [
@@ -602,10 +692,15 @@ def main(args):
                 ],
                 [
                     anti_iso_llt_tau,
+                    *anti_iso_llt_tau_var,
                     anti_isoid_ele_1,
+                    *anti_isoid_ele_1_var,
                     anti_isoid_mu_2,
+                    *anti_isoid_mu_2_var,
                     anti_isoid_ele_1_tau,
+                    *anti_isoid_ele_1_tau_var,
                     anti_isoid_mu_2_tau,
+                    *anti_isoid_mu_2_tau_var,
                 ],
                 enable_check=args.enable_booking_check,
             )
@@ -618,10 +713,15 @@ def main(args):
                 ],
                 [
                     anti_iso_llt_tau,
+                    *anti_iso_llt_tau_var,
                     anti_isoid_ele_2,
+                    *anti_isoid_ele_2_var,
                     anti_isoid_mu_1,
+                    *anti_isoid_mu_1_var,
                     anti_isoid_ele_2_tau,
+                    *anti_isoid_ele_2_tau_var,
                     anti_isoid_mu_1_tau,
+                    *anti_isoid_mu_1_tau_var,
                 ],
                 enable_check=args.enable_booking_check,
             )
@@ -632,7 +732,14 @@ def main(args):
                     for d in dataS | (simulatedProcsDS[ch_] & procS)
                     for unit in nominals[args.era]["units"][ch_][d]
                 ],
-                [anti_iso_llt_tau, mmt_anti_isoid_mu_2, mmt_anti_isoid_mu_2_tau],
+                [
+                    anti_iso_llt_tau,
+                    *anti_iso_llt_tau_var,
+                    mmt_anti_isoid_mu_2,
+                    *mmt_anti_isoid_mu_2_var,
+                    mmt_anti_isoid_mu_2_tau,
+                    *mmt_anti_isoid_mu_2_tau_var,
+                ],
                 enable_check=args.enable_booking_check,
             )
         elif ch_ in ["ett", "mtt"]:
@@ -642,27 +749,236 @@ def main(args):
                     for d in dataS | (simulatedProcsDS[ch_] & procS)
                     for unit in nominals[args.era]["units"][ch_][d]
                 ],
-                [anti_iso_ltt],
+                [anti_iso_ltt, *anti_iso_ltt_var],
                 enable_check=args.enable_booking_check,
             )
+        ##################################
+        # SYSTEMATICS
+        ############################
         if args.skip_systematic_variations:
             pass
         else:
-            # Book variations common to all channels
-            if "artus" in args.ntuple_type:
-                pass
-            else:
+            # book_histograms(
+            #     um,
+            #     processes={"ggh"} & procS,
+            #     datasets=nominals[era]["units"][channel],
+            #     variations=[ggh_acceptance],
+            #     enable_check=do_check,
+            # )
+            # book_histograms(
+            #     um,
+            #     processes={"qqh"} & procS,
+            #     datasets=nominals[era]["units"][channel],
+            #     variations=[qqh_acceptance],
+            #     enable_check=do_check,
+            # )
+            um.book(
+                [
+                    unit
+                    for d in simulatedProcsDS[ch_] & procS
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [*jet_es],
+                enable_check=args.enable_booking_check,
+            )
+            # TODO add btag stuff
+            # um.book(
+            #     um,
+            #     processes=simulatedProcsDS[channel],
+            #     datasets=nominals[era]["units"][channel],
+            #     variations=[mistag_eff, btag_eff],
+            #     enable_check=args.enable_booking_check,
+            # )
+            um.book(
+                [
+                    unit
+                    for d in simulatedProcsDS[ch_] & procS
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [*recoil_resolution, *recoil_response],
+                enable_check=args.enable_booking_check,
+            )
+            um.book(
+                [
+                    unit
+                    for d in simulatedProcsDS[ch_] & procS
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [*met_unclustered, *pileup_reweighting],
+                enable_check=args.enable_booking_check,
+            )
+            um.book(
+                [
+                    unit
+                    for d in {"dy"} & procS
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [*zpt],
+                enable_check=args.enable_booking_check,
+            )
+            um.book(
+                [
+                    unit
+                    for d in {"rem_ttbar", "tt"} & procS
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [*top_pt],
+                enable_check=args.enable_booking_check,
+            )
+            um.book(
+                [
+                    unit
+                    for d in simulatedProcsDS[ch_] & procS
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [
+                    *tau_es_3prong,
+                    *tau_es_3prong1pizero,
+                    *tau_es_1prong,
+                    *tau_es_1prong1pizero,
+                ],
+                enable_check=args.enable_booking_check,
+            )
+            # um.book(
+            #     um,
+            #     processes=jetFakesDS[channel],
+            #     datasets=nominals[era]["units"][channel],
+            #     variations=[
+            #         jet_to_tau_fake,
+            #     ],
+            #     enable_check=args.enable_booking_check,
+            # )
+            if ch_ in ["emt", "met", "mmt"]:
                 um.book(
                     [
                         unit
-                        for d in simulatedProcsDS[ch_]
+                        for d in simulatedProcsDS[ch_] & procS
                         for unit in nominals[args.era]["units"][ch_][d]
                     ],
                     [
-                        *mu_id_weight,
+                        *tau_id_eff_lt,
                     ],
                     enable_check=args.enable_booking_check,
                 )
+                # um.book(
+                #     um,
+                #     processes=dataS | embS | leptonFakesS | trueTauBkgS,
+                #     datasets=nominals[era]["units"][channel],
+                #     variations=[
+                #         ff_variations_lt,
+                #     ],
+                #     enable_check=args.enable_booking_check,
+                # )
+
+                # um.book(
+                #     um,
+                #     processes=leptonFakesS | trueTauBkgS | embS,
+                #     datasets=nominals[era]["units"][channel],
+                #     variations=[
+                #         ff_variations_tau_es_lt,
+                #     ],
+                #     enable_check=args.enable_booking_check,
+                # )
+            # if channel in ["et", "em"]:
+            # TODO add eleES
+            # um.book(
+            #     um,
+            #     processes=simulatedProcsDS[channel],
+            #     datasets=nominals[era]["units"][channel],
+            #     variations=[
+            #         ele_res,
+            #         ele_es
+            #     ],
+            #     enable_check=args.enable_booking_check,
+            # )
+            # TODO add "mmt" for mu_fake_es_inc
+            # Book channel independent variables.
+            # if channel in ["emt", "mmt"]:
+            #     um.book(
+            #         [
+            #             unit
+            #             for d in {"dy"} & procS
+            #             for unit in nominals[args.era]["units"][ch_][d]
+            #         ],
+            #         [*mu_fake_es_inc],
+            #         enable_check=args.enable_booking_check,
+            #     )
+            if channel in ["emt", "met", "mmt"]:
+                um.book(
+                    [
+                        unit
+                        for d in {"dy"} & procS
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    variations=[*vsMu_fake_rate],
+                    enable_check=args.enable_booking_check,
+                )
+            if channel in ["emt", "mmt", "met", "mtt"]:
+                um.book(
+                    [
+                        unit
+                        for d in simulatedProcsDS[ch_] & procS
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    [*trigger_eff_mu],
+                    enable_check=args.enable_booking_check,
+                )
+            if channel == "met":
+                um.book(
+                    [
+                        unit
+                        for d in {"dy"} & procS
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    [*ele_fake_es, *vsE_fake_rate],
+                    enable_check=args.enable_booking_check,
+                )
+            if channel in ["emt", "met", "mmt"]:
+                um.book(
+                    [
+                        unit
+                        for d in {"dy"} & procS
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    variations=[*vsE_fake_rate],
+                    enable_check=args.enable_booking_check,
+                )
+            if channel in ["emt", "met", "ett"]:
+                um.book(
+                    [
+                        unit
+                        for d in simulatedProcsDS[ch_] & procS
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    variations=[*trigger_eff_e],
+                    enable_check=args.enable_booking_check,
+                )
+            if channel in ["ett", "mtt"]:
+                um.book(
+                    [
+                        unit
+                        for d in simulatedProcsDS[ch_] & procS
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    variations=[*tau_id_eff_tt],
+                    enable_check=args.enable_booking_check,
+                )
+                # TODO add fake factor variations
+                # um.book(
+                #     um,
+                #     processes=dataS | embS | trueTauBkgS,
+                #     datasets=nominals[era]["units"][channel],
+                #     variations=[ff_variations_tt],
+                #     enable_check=args.enable_booking_check,
+                # )
+                # TODO add fake factor variations for lepton fakes
+                # um.book(
+                #     um,
+                #     processes=leptonFakesS,
+                #     datasets=nominals[era]["units"][channel],
+                #     variations=[ff_variations_tt_mcl],
+                #     enable_check=args.enable_booking_check,
+                # )
 
     # Step 2: convert units to graphs and merge them
     g_manager = GraphManager(um.booked_units, True)
@@ -701,5 +1017,5 @@ if __name__ == "__main__":
         log_file = args.output_file.replace(".root", ".log")
     else:
         log_file = "{}.log".format(args.output_file)
-    setup_logging(log_file, logging.DEBUG)
+    setup_logging(log_file, logging.INFO)
     main(args)

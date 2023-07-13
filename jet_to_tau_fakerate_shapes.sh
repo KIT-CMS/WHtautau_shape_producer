@@ -2,11 +2,11 @@
 source utils/setup_root.sh
 
 TAG="27_01_all_ch"
-NTUPLE_PATH="/work/rschmieder/WH_analysis/WHtautau_shape_producer/temp_ntuples_friends/${TAG}/ntuples"
-FRIEND_PATH="/work/rschmieder/WH_analysis/WHtautau_shape_producer/temp_ntuples_friends/${TAG}/friends"
+NTUPLE_PATH="/ceph/rschmieder/WH_analysis/ntuple_sets/${TAG}/ntuples"
+FRIEND_PATH="/ceph/rschmieder/WH_analysis/friend_sets/${TAG}/friends"
 CHANNEL="mmt"
 ERA="2018"
-OUTPUT_DIR="output/shapes/${TAG}/${CHANNEL}/fakerate_measurement_incl_bveto_ortho_det_reg"
+OUTPUT_DIR="output/shapes/${TAG}/${CHANNEL}/fakerate_measurement_incl_bveto_ortho_det_reg_AN_binning"
 mkdir -p ${OUTPUT_DIR}
 for DM in 0 1 10 11
 do

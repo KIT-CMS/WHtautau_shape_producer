@@ -24,6 +24,12 @@ def parse_arguments():
         help="output json",
     )
     parser.add_argument(
+        "--syst_unc",
+        type=float,
+        required=True,
+        help="systematic uncertainty on the yield of subtraced processes in %",
+    )
+    parser.add_argument(
         "--plot_output",
         type=str,
         required=True,
@@ -38,18 +44,18 @@ def plot_rates(rates_dict, plot_output):
     binsize = np.zeros(len(pts) - 1)
     for i in range(len(pts) - 1):
         pt_center[i] = (pts[i + 1] + pts[i]) / 2
-        binsize[i] =(pts[i + 1] - pts[i])/2
+        binsize[i] = (pts[i + 1] - pts[i]) / 2
     plt.errorbar(
         pt_center,
         rates_dict["Tight"]["rate"],
-        rates_dict["Tight"]["unc"],
+        rates_dict["Tight"]["stat_unc"],
         xerr=binsize,
         marker=".",
         linestyle="",
         markersize="7",
     )
     plt.grid()
-    #plt.ylim(0, 0.0224)
+    # plt.ylim(0, 0.0224)
     plt.ylabel(r"jet $\rightarrow \mathrm{e}$ fake rate")
     plt.xlabel(r"$\mathrm{p_{T}} (\mathrm{e})\, (\mathrm{GeV})$")
     plt.savefig(
@@ -66,9 +72,17 @@ def base_file(base_path):
     return base_file
 
 
-def rates(shapes, base_path):
+def rates(shapes, base_path, syst_unc):
     rates_dict = {
-        "Tight": {"pt": [], "rate": [], "unc": []},
+        "Tight": {
+            "pt": [],
+            "rate": [],
+            "rate_stat_up": [],
+            "rate_stat_down": [],
+            "rate_syst_up": [],
+            "rate_syst_down": [],
+            "stat_unc": [],
+        },
     }
     procs_to_subtract = {
         "ggzz": "ggZZ#mme-VV#Nominal#pt_3",
@@ -86,31 +100,93 @@ def rates(shapes, base_path):
             tight_file = R.TFile(shape, "READ")
             tight_data = tight_file.Get("data#mme#Nominal#pt_3")
             tight_diff = tight_data.Clone()
-            base = base_file(base_path)
-            base_data = base.Get("data#mme#Nominal#pt_3")
-            base_diff = base_data.Clone()
-            for proc in procs_to_subtract.values():
-                tight_hist = tight_file.Get(proc)
-                base_hist = base.Get(proc)
-                tight_diff.Add(tight_hist, -1)
-                base_diff.Add(base_hist, -1)
-            ratio_hist = tight_diff.Clone()
-            ratio_hist.Divide(base_diff)
-            for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                rates_dict["Tight"]["rate"].append(ratio_hist.GetBinContent(bin_i))
-                rates_dict["Tight"]["unc"].append(ratio_hist.GetBinError(bin_i))
-                rates_dict["Tight"]["pt"].append(tight_data.GetBinLowEdge(bin_i))
-            rates_dict["Tight"]["pt"].append(
-                tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
-            )
-            base.Close()
-            del base_data
-            del base_diff
-            del ratio_hist
+            for syst_shift, scale in enumerate([-1, -(1 + syst_unc), -(1 - syst_unc)]):
+                base = base_file(base_path)
+                base_data = base.Get("data#mme#Nominal#pt_3")
+                base_diff = base_data.Clone()
+                for proc in procs_to_subtract.values():
+                    tight_hist = tight_file.Get(proc)
+                    base_hist = base.Get(proc)
+                    tight_diff.Add(tight_hist, scale)
+                    base_diff.Add(base_hist, scale)
+                ratio_hist = tight_diff.Clone()
+                ratio_hist.Divide(base_diff)
+                if syst_shift == 0:
+                    for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                        rates_dict["Tight"]["rate"].append(
+                            ratio_hist.GetBinContent(bin_i)
+                        )
+                        rates_dict["Tight"]["stat_unc"].append(
+                            ratio_hist.GetBinError(bin_i)
+                        )
+                        rates_dict["Tight"]["rate_stat_up"].append(
+                            ratio_hist.GetBinContent(bin_i)
+                            + ratio_hist.GetBinError(bin_i)
+                        )
+                        rates_dict["Tight"]["rate_stat_down"].append(
+                            ratio_hist.GetBinContent(bin_i)
+                            - ratio_hist.GetBinError(bin_i)
+                        )
+                        rates_dict["Tight"]["pt"].append(
+                            tight_data.GetBinLowEdge(bin_i)
+                        )
+                    rates_dict["Tight"]["pt"].append(
+                        tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+                    )
+                    base.Close()
+                elif syst_shift == 1:
+                    for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                        rates_dict["Tight"]["rate_syst_up"].append(
+                            ratio_hist.GetBinContent(bin_i)
+                        )
+                    base.Close()
+                elif syst_shift == 2:
+                    for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                        rates_dict["Tight"]["rate_syst_down"].append(
+                            ratio_hist.GetBinContent(bin_i)
+                        )
+                    base.Close()
+                del base_data
+                del base_diff
+                del ratio_hist
             tight_file.Close()
             del tight_data
             del tight_diff
     return rates_dict
+
+
+def values(rates_dict):
+    content = []
+    for bin in range(len(rates_dict["Tight"]["pt"]) - 1):
+        content.append(
+            {
+                "nodetype": "category",
+                "input": "syst",
+                "content": [
+                    {
+                        "key": "syst_up",
+                        "value": rates_dict["Tight"]["rate_syst_up"][bin],
+                    },
+                    {
+                        "key": "syst_down",
+                        "value": rates_dict["Tight"]["rate_syst_down"][bin],
+                    },
+                    {
+                        "key": "stat_up",
+                        "value": rates_dict["Tight"]["rate_stat_up"][bin],
+                    },
+                    {
+                        "key": "stat_down",
+                        "value": rates_dict["Tight"]["rate_stat_down"][bin],
+                    },
+                    {
+                        "key": "nom",
+                        "value": rates_dict["Tight"]["rate"][bin],
+                    },
+                ],
+            }
+        )
+    return content
 
 
 def correction_lib_format(rates_dict):
@@ -132,6 +208,11 @@ def correction_lib_format(rates_dict):
                         "type": "real",
                         "description": "Reconstructed electron pT",
                     },
+                    {
+                        "name": "syst",
+                        "type": "string",
+                        "description": "Systematic variation: 'nom', 'up', 'down'",
+                    },
                 ],
                 "output": {
                     "name": "rate",
@@ -148,7 +229,7 @@ def correction_lib_format(rates_dict):
                                 "nodetype": "binning",
                                 "input": "pt",
                                 "edges": rates_dict["Tight"]["pt"],
-                                "content": rates_dict["Tight"]["rate"],
+                                "content": values(rates_dict),
                                 "flow": "clamp",
                             },
                         },
@@ -160,8 +241,8 @@ def correction_lib_format(rates_dict):
     return corr_lib
 
 
-def main(shapes, base_path, output_file, plot_output):
-    rates_dict = rates(shapes, base_path)
+def main(shapes, base_path, output_file, plot_output, syst_unc):
+    rates_dict = rates(shapes, base_path, syst_unc)
     print(rates_dict)
     plot_rates(rates_dict, plot_output)
     with open("{output}".format(output=output_file), "w") as outfile:
@@ -173,6 +254,7 @@ if __name__ == "__main__":
     base_path = args.base_path
     output_file = args.output_file
     plot_output = args.plot_output
+    syst_unc = args.syst_unc / 100.0
     path = os.path.join(base_path, "*.root")
     shapes = glob.glob(path)
-    main(shapes, base_path, output_file, plot_output)
+    main(shapes, base_path, output_file, plot_output, syst_unc)

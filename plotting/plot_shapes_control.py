@@ -108,7 +108,7 @@ def main(info):
         "met": "#font[42]{#mu#scale[0.85]{e}#tau_{#font[42]{h}}}",
         "mmt": "#font[42]{#mu#mu#tau_{#font[42]{h}}}",
         "mtt": "#font[42]{#mu#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
-        "ett": "#font[42]{#{e}#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
+        "ett": "#font[42]{#scale[0.85]{e}#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
         "mm": "#mu#mu",
         "mt": "#mu#tau_{#font[42]{h}}",
         "tt": "#tau_{#font[42]{h}}#tau_{#font[42]{h}}",
@@ -138,7 +138,8 @@ def main(info):
             "TTV",
             "VVV",
             "ZZ",
-            "WH",
+            "WHplus",
+            "WHminus",
             "WZ",
         ]
     elif args.closure_test:
@@ -156,7 +157,8 @@ def main(info):
             "TTV",
             "VVV",
             "ZZ",
-            "WH",
+            "WHplus",
+            "WHminus",
             "WZ",
         ]
 
@@ -274,20 +276,23 @@ def main(info):
         plot.subplot(0).get_hist("total_bkg").GetMaximum(),
     )
     # set axes limits and labels
-    plot.subplot(0).setYlims(
-        split_dict[channel],
-        max(
-            y_max,
-            split_dict[channel] * 2,
-        ),
-    )
+    if variable == "pt_1":
+        if channel == "mtt":
+            plot.subplot(0).setYlims(0, 70)
+        else:
+            plot.subplot(0).setYlims(0, 50)
+    elif variable == "pt_2":
+        if channel == "mtt":
+            plot.subplot(0).setYlims(0, 140)
+        else:
+            plot.subplot(0).setYlims(0, 120)
     # plot.subplot(0).setYlims(
     #     split_dict[channel],
     #     60,
     # )
     plot.subplot(2).setYlims(
-        0.75,
-        1.4,
+        0.1,
+        2.1,
     )
     # plot.subplot(2).setYlims(
     #     0.8,
@@ -306,7 +311,7 @@ def main(info):
     else:
         plot.subplot(2).setXlabel("NN output")
     if args.normalize_by_bin_width:
-        plot.subplot(0).setYlabel("dN/d(NN output)")
+        plot.subplot(0).setYlabel("N/(bin width) (1/GeV)")
     else:
         plot.subplot(0).setYlabel("N_{events}")
 
@@ -340,7 +345,9 @@ def main(info):
 
         plot.legend(i).add_entry(0, "total_bkg", "Bkg. stat. unc.", "f")
         if args.closure_test:
-            plot.legend(i).add_entry(0, "data_obs", "jet fake estimation method", "PE2L")
+            plot.legend(i).add_entry(
+                0, "data_obs", "jet fake estimation method", "PE2L"
+            )
         else:
             plot.legend(i).add_entry(0, "data_obs", "Observed", "PE2L")
         plot.legend(i).setNColumns(2)

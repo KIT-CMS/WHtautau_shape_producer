@@ -10,35 +10,53 @@ import ROOT
 logger = logging.getLogger("")
 
 _process_map = {
-    "ZTT": "DY-ZTT",
-    "ZL": "DY-ZL",
-    "ZJ": "DY-ZJ",
-    "TTT": "TT-TTT",
-    "TTL": "TT-TTL",
-    "TTJ": "TT-TTJ",
-    "VVT": "VV-VVT",
-    "VVL": "VV-VVL",
-    "VVJ": "VV-VVJ",
-    "EMB": "Embedded",
-    "W": "W",
+    "WHplus": "VH",
+    "WHminus": "VH",
+    "WWW": "WWW",
+    "rem_VV": "VV",
+    "ggZZ": "VV",
+    "WWZ": "WWZ",
+    "ZZZ": "ZZZ",
+    "rem_ttbar": "TT",
+    "WZ": "VV",
+    "WZZ": "WZZ",
+    "Wjets": "W",
+    "ZH": "VH",
     "jetFakes": "jetFakes",
-    "QCD": "QCD"
+    "DY": "DY",
+    "rem_VH": "VH",
+    "ZZ": "ZZ",
+    "TT": "TT",
 }
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--era", help="Experiment era.")
     parser.add_argument("-i", "--input", help="Input root file.")
     parser.add_argument("-o", "--output", help="Output directory.")
-    parser.add_argument("--gof", action="store_true",
-                        help="Convert shapes for GoF or control plots. "
-                             "Use variable as category indicator.")
-    parser.add_argument("--mc", action="store_true",
-                        help="Use jet fake estimation based on mc shapes.")
-    parser.add_argument("--variable-selection", default=None, type=str, nargs=1,
-                        help="Select final discriminator for shape creation.")
-    parser.add_argument("-n", "--num-processes", default=1, type=int,
-                        help="Number of processes used.")
+    parser.add_argument(
+        "--gof",
+        action="store_true",
+        help="Convert shapes for GoF or control plots. "
+        "Use variable as category indicator.",
+    )
+    parser.add_argument(
+        "--mc", action="store_true", help="Use jet fake estimation based on mc shapes."
+    )
+    parser.add_argument(
+        "--special", help="Use for special cases with no-trivial shapes.", default=""
+    )
+    parser.add_argument(
+        "--variable-selection",
+        default=None,
+        type=str,
+        nargs=1,
+        help="Select final discriminator for shape creation.",
+    )
+    parser.add_argument(
+        "-n", "--num-processes", default=1, type=int, help="Number of processes used."
+    )
     return parser.parse_args()
 
 
@@ -56,63 +74,82 @@ def setup_logging(output_file, level=logging.INFO):
     return
 
 
+def correct_nominal_shape(hist, name, integral):
+    if integral >= 0:
+        # if integral is larger than 0, everything is fine
+        sf = 1.0
+    elif integral == 0.0:
+        logger.info("Nominal histogram is empty: {}".format(name))
+        # if integral of nominal is 0, we make sure to scale the histogram with 0.0
+        sf = 0
+    else:
+        logger.info(
+            "Nominal histogram is negative : {} {} --> fixing it now...".format(
+                integral, name
+            )
+        )
+        # if the histogram is negative, the make all negative bins positive,
+        # and scale the histogram to a small positive value
+        for i in range(hist.GetNbinsX()):
+            if hist.GetBinContent(i + 1) < 0.0:
+                logger.info("Negative Bin {} - {}".format(i, hist.GetBinContent(i + 1)))
+                hist.SetBinContent(i + 1, 0.001)
+                logger.info(
+                    "After fixing: {} - {}".format(i, hist.GetBinContent(i + 1))
+                )
+        sf = 0.001 / hist.Integral()
+    hist.Scale(sf)
+    return hist
 
-def write_hists_per_category(cat_hists : tuple):
+
+def write_hists_per_category(cat_hists: tuple):
     category, keys, channel, ofname, ifname = cat_hists
     infile = ROOT.TFile(ifname, "READ")
-    outfile = ROOT.TFile(ofname.replace(".root", category + ".root"), "RECREATE")
+    dir_name = "{CHANNEL}_{CATEGORY}".format(CHANNEL=channel, CATEGORY=category)
+    if "{category}" in ofname:
+        outfile = ROOT.TFile(ofname.format(category=dir_name), "RECREATE")
+    else:
+        outfile = ROOT.TFile(
+            ofname.replace(".root", "-" + category + ".root"), "RECREATE"
+        )
     outfile.cd()
-    dir_name = "{CHANNEL}_{CATEGORY}".format(
-            CHANNEL=channel, CATEGORY=category)
     outfile.mkdir(dir_name)
     outfile.cd(dir_name)
-    name_ttt_nominal_input = ""
-    name_emb_nominal_input = ""
-    name_ttt_nominal_output = ""
-    name_emb_nominal_output = ""
-    for name in sorted(keys):
+    for name, name_output in sorted(keys.items(), key=lambda x: x[1]):
         hist = infile.Get(name)
-        name_output = keys[name]
         # Write shapes with partial correlations across eras.
         if "Era" in name_output:
-            if ("_1ProngPi0Eff_" in name_output
-                    or "_qcd_iso" in name_output
-                    or "_3ProngEff_" in name_output
-                    or "_dyShape_" in name_output):
+            if (
+                "_1ProngPi0Eff_" in name_output
+                or "_qcd_iso" in name_output
+                or "_3ProngEff_" in name_output
+                or "_dyShape_" in name_output
+            ):
                 hist.SetTitle(name_output.replace("_Era", ""))
                 hist.SetName(name_output.replace("_Era", ""))
                 hist.Write()
         if "Era" in name_output:
-            name_output = name_output.replace("Era", args.era)
+            name_output = name_output.replace("Era", f"{args.era}")
         if "Channel" in name_output:
             name_output = name_output.replace("Channel", channel)
+        if f"{channel}__{args.era}" in name_output:
+            name_output = name_output.replace(
+                f"{channel}__{args.era}", f"{channel}_{args.era}_"
+            )
+        if f"Up_{channel}_{args.era}" in name_output:
+            name_output = name_output.replace(
+                f"Up_{channel}_{args.era}", f"{channel}_{args.era}Up"
+            )
+        if f"Down_{channel}_{args.era}" in name_output:
+            name_output = name_output.replace(
+                f"Down_{channel}_{args.era}", f"{channel}_{args.era}Down"
+            )
         hist.SetTitle(name_output)
         hist.SetName(name_output)
         hist.Write()
-        if "TT-TTT" in name and "Nominal" in name:
-            name_ttt_nominal_input = name
-            name_ttt_nominal_output = name_output
-        if "EMB" in name and "Nominal" in name:
-            name_emb_nominal_input = name
-            name_emb_nominal_output = name_output
-    if (name_ttt_nominal_input and name_emb_nominal_input):
-        hist_emb = infile.Get(name_emb_nominal_input)
-        hist_tt = infile.Get(name_ttt_nominal_input)
-        hist_up = hist_emb.Clone("EMB_CMS_htt_emb_ttbar_{era}Up".format(era=args.era))
-        hist_up.SetTitle("EMB_CMS_htt_emb_ttbar_{era}Up".format(era=args.era))
-        hist_down = hist_emb.Clone("EMB_CMS_htt_emb_ttbar_{era}Down".format(era=args.era))
-        hist_down.SetTitle("EMB_CMS_htt_emb_ttbar_{era}Down".format(era=args.era))
-        hist_up.Add(hist_tt,0.1)
-        hist_down.Add(hist_tt,-0.1)
-        hist_up.Write()
-        hist_down.Write()
-    else:
-        print("Could not find EMB and TTT histogram in order to set CMS_htt_emb_ttbar uncertainty!")
-        
     outfile.Close()
     infile.Close()
     return
-
 
 
 def main(args):
@@ -123,18 +160,18 @@ def main(args):
     hist_map = {}
     for key in input_file.GetListOfKeys():
         split_name = key.GetName().split("#")
-
         channel = split_name[1].split("-")[0]
         if args.gof:
             # Use variable as category label for GOF test and control plots.
             category = split_name[3]
-            process = "-".join(split_name[1].split("-")[1:]) if not "data" in split_name[0] else "data_obs"
+            process = split_name[0] if not "data" in split_name[0] else "data_obs"
         else:
             category = split_name[1].split("-")[-1]
-            if "NMSSM" in split_name[0]:
-                process=split_name[0]
-            else:
-                process = "-".join(split_name[1].split("-")[1:-1]) if not "data" in split_name[0] else "data_obs"
+            process = (
+                "-".join(split_name[1].split("-")[1:-1])
+                if not "data" in split_name[0]
+                else "data_obs"
+            )
             # Skip discriminant variables we do not want in the sync file.
             # This is necessary because the sync file only allows for one type of histogram.
             # A combination of the runs for different variables can then be used in separate files.
@@ -174,36 +211,49 @@ def main(args):
                 mass = split_name[0].split("_")[-1]
                 process = "_".join([_rev_process_map[process], mass])
             else:
-                process = _rev_process_map[process]
+                if args.special != "TauES":
+                    process = _rev_process_map[process]
+                else:
+                    if not "emb" in process and not "jetFakes" in process:
+                        process = _rev_process_map[process]
         name_output = "{process}".format(process=process)
         if "Nominal" not in variation:
             name_output += "_" + variation
-        logging.debug("Adding histogram with name %s as %s to category %s.",
-                      key.GetName(), name_output, channel + "_" + category)
+        logging.debug(
+            "Adding histogram with name %s as %s to category %s.",
+            key.GetName(),
+            name_output,
+            channel + "_" + category,
+        )
         hist_map[channel][category][key.GetName()] = name_output
+        print(hist_map)
     # Clean up
     input_file.Close()
-
     # Loop over map and create the output file.
     for channel in hist_map:
-        logging.info("Writing histograms to file %s with %s processes",
-                     os.path.join(
-                            args.output,
-                            "{ERA}-{CHANNELS}-synced-NMSSM.root".format(
-                                                                    CHANNELS=channel,
-                                                                    ERA=args.era)),
-                     args.num_processes)
+        ofname = os.path.join(
+            args.output,
+            "{ERA}-{CHANNELS}-synced.root".format(CHANNELS=channel, ERA=args.era),
+        )
+        logging.info(
+            "Writing histograms to file %s with %s processes",
+            ofname,
+            args.num_processes,
+        )
+
         if not os.path.exists(args.output):
             os.mkdir(args.output)
-        ofname = os.path.join(args.output,
-                              "{ERA}-{CHANNELS}-synced-NMSSM.root".format(
-                                  CHANNELS=channel,
-                                  ERA=args.era))
         with multiprocessing.Pool(args.num_processes) as pool:
-            pool.map(write_hists_per_category,
-                     [(*item, channel, ofname, args.input) for item in sorted(hist_map[channel].items())])
+            pool.map(
+                write_hists_per_category,
+                [
+                    (*item, channel, ofname, args.input)
+                    for item in sorted(hist_map[channel].items())
+                ],
+            )
 
     logging.info("Successfully written all histograms to file.")
+
 
 if __name__ == "__main__":
     args = parse_args()

@@ -185,16 +185,6 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
                 )
             )
         )
-        print(
-            _name_string.format(
-                dataset=_dataset_map[proc],
-                channel=channel,
-                process="-" + _process_map[proc],
-                selection="-" + selection if selection != "" else "",
-                variation=variation,
-                variable=variable,
-            )
-        )
         base_hist.Add(
             rootfile.Get(
                 _name_string.format(
@@ -220,8 +210,18 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
     return base_hist
 
 
-def jet_fakes_nominal(rootfile, channel, category, variable):
+def jet_fakes_nominal(rootfile, channel, category, variable, variation):
     # function that adds all contributions from jetfakes together to a nominal histogram
+    if "Up" in variation or "Down" in variation:
+        unc = "_CMS_ff_{syst}_{shift}".format(
+            syst=variation.split("_")[-2], shift=variation.split("_")[-1]
+        )
+        ff_variation = "CMS_ff_{syst}_{shift}".format(
+            syst=variation.split("_")[-2], shift=variation.split("_")[-1]
+        )
+    else:
+        unc = ""
+        ff_variation = "Nominal"
     if channel == "emt":
         fake_contributions = [
             "mu2tau_anti_isoid",
@@ -248,7 +248,7 @@ def jet_fakes_nominal(rootfile, channel, category, variable):
                 channel=channel,
                 process="-jetFakes",
                 selection=category,
-                variation="tau_anti_iso",
+                variation="tau_anti_iso{unc}".format(unc=unc),
                 variable=variable,
             )
         )
@@ -259,7 +259,7 @@ def jet_fakes_nominal(rootfile, channel, category, variable):
             channel=channel,
             process="-jetFakes",
             selection=category,
-            variation="tau_anti_iso",
+            variation="tau_anti_iso{unc}".format(unc=unc),
             variable=variable,
         )
     ).Clone()
@@ -272,7 +272,7 @@ def jet_fakes_nominal(rootfile, channel, category, variable):
                         channel=channel,
                         process="-jetFakes",
                         selection=category,
-                        variation=var_,
+                        variation="{var_}{unc}".format(var_=var_, unc=unc),
                         variable=variable,
                     )
                 )
@@ -284,14 +284,15 @@ def jet_fakes_nominal(rootfile, channel, category, variable):
                         channel=channel,
                         process="-jetFakes",
                         selection=category,
-                        variation=var_,
+                        variation="{var_}{unc}".format(var_=var_, unc=unc),
                         variable=variable,
                     )
                 ),
                 1,
             )
-    ff_variation = "Nominal"
-    variation_name = base_hist.GetName().replace("tau_anti_iso", ff_variation)
+    variation_name = base_hist.GetName().replace(
+        "tau_anti_iso{unc}".format(unc=unc), ff_variation
+    )
     base_hist.SetName(variation_name)
     base_hist.SetTitle(variation_name)
     return base_hist
@@ -347,7 +348,6 @@ def main(args):
                     ff_inputs[channel][category] = {variable: {variation: [process]}}
             else:
                 ff_inputs[channel] = {category: {variable: {variation: [process]}}}
-
     # Loop over available ff inputs and do the estimations
     logger.info("Starting estimations for fake factors and their variations")
     logger.debug("%s", json.dumps(ff_inputs, sort_keys=True, indent=4))
@@ -364,9 +364,14 @@ def main(args):
     for ch in ff_inputs:
         for cat in ff_inputs[ch]:
             for var in ff_inputs[ch][cat]:
-                estimated_hist = jet_fakes_nominal(input_file, ch, cat, var)
-                estimated_hist.Write()
-                estimated_hist.Write()
+                for variation in ff_inputs[ch][cat][var]:
+                    if variation == "tau_anti_iso" or "tau_anti_iso_CMS" in variation:
+                        print(variation)
+                        estimated_hist = jet_fakes_nominal(
+                            input_file, ch, cat, var, variation
+                        )
+                        estimated_hist.Write()
+                        estimated_hist.Write()
     logger.info("Successfully finished estimations.")
 
     # Clean-up.
@@ -376,5 +381,5 @@ def main(args):
 
 if __name__ == "__main__":
     args = parse_args()
-    setup_logging("do_estimations.log", level=logging.DEBUG)
+    setup_logging("do_estimations.log", level=logging.INFO)
     main(args)

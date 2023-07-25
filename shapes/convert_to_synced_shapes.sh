@@ -15,6 +15,6 @@ logandrun python shapes/convert_to_synced_shapes.py -e $ERA \
                                                     -n 12 \
                                                     --gof
 
-OUTFILE=output/shapes/${NTUPLE_TAG}/${CHANNEL}/${SHAPE_TAG}/synced_shapes/htt_${CHANNEL}.inputs-sm-Run${ERA}.root
+OUTFILE=output/shapes/${NTUPLE_TAG}/${CHANNEL}/${SHAPE_TAG}/synced_shapes/${ERA}_${CHANNEL}_synced.root
 echo "[INFO] Adding written files to single output file $OUTFILE..."
 logandrun hadd -f $OUTFILE output/shapes/${NTUPLE_TAG}/${CHANNEL}/${SHAPE_TAG}/synced_shapes/*.root

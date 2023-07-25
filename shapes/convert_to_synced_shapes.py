@@ -226,7 +226,6 @@ def main(args):
             channel + "_" + category,
         )
         hist_map[channel][category][key.GetName()] = name_output
-        print(hist_map)
     # Clean up
     input_file.Close()
     # Loop over map and create the output file.

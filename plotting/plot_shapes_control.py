@@ -249,17 +249,10 @@ def main(info):
     plot.subplot(0).get_hist("data_obs").GetXaxis().SetMaxDigits(4)
     if args.blinded:
         plot.subplot(0).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
-        plot.subplot(0).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
+        plot.subplot(2).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
     else:
         plot.subplot(0).setGraphStyle("data_obs", "e0")
-        plot.subplot(0).setGraphStyle("data_obs", "e0")
-    if args.linear:
-        pass
-    else:
-        if args.blinded:
-            plot.subplot(2).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
-        else:
-            plot.subplot(2).setGraphStyle("data_obs", "e0")
+        plot.subplot(2).setGraphStyle("data_obs", "e0")
 
     # stack background processess
     print(bkg_processes)

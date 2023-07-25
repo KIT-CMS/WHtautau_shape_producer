@@ -273,7 +273,7 @@ def main(args):
                 if "FakeFactors" in friend or "EMQCDWeights" in friend:
                     return False
             elif re.match("data", dataset.lower()):
-                if "crosssection" in friend:
+                if "xsec" in friend:
                     return False
             return True
 

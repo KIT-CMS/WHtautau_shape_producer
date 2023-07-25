@@ -1,22 +1,13 @@
 source utils/setup_cvmfs_sft.sh
 source utils/setup_python.sh
 ERA="2018"
-CHANNELS="mmt"
-NTUPLE_TAG="shifts_mmt_10_05"
-SHAPE_TAG="ptW_mtt_ff_unc2"
-FILENAME="signal_region2"
+CHANNELS="mmt emt met mtt ett"
+NTUPLE_TAG="11_07_shifts_all_ch"
+SHAPE_TAG="ptW_mtt"
+FILENAME="signal_region"
 for CHANNEL in $CHANNELS
 do
-    if [ "$CHANNEL" = "ett" ] || [ "$CHANNEL" = "mtt" ]
-    then
-        INPUT="output/shapes/${NTUPLE_TAG}/${CHANNEL}/${FILENAME}.root"
-        TAG="${NTUPLE_TAG}/${CHANNEL}/${FILENAME}"
-        for VAR in pt_3 pt_1 pt_2 #m_vis pt_1 pt_2 pt_3 m_vis mjj njets pt_vis phi_2 eta_2 nbtag
-        do
-            python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}
-            python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation
-        done
-    elif [ "$CHANNEL" = "eem" ]
+    if [ "$CHANNEL" = "eem" ]
     then
         for WP in Loose Tight
         do 

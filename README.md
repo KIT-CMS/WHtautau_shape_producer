@@ -1,22 +1,20 @@
 
 
-# NMSSM H->h(tautau)h'(bb) analysis
+# WH(tautau) analysis framework
+In this repository all software necessary for the WH(tautau) charge asymmetry UL analysis starting from flat n-tuple level (see https://github.com/KIT-CMS/WHTauTauAnalysis-CROWN) is stored. The software uses the ntuple_processor code included as submodule of the main repository. The software is written in python3 and uses RDataFrames.
+The repository provides code to produce friendtrees for xsec related quantities and fake factors and shapes for the fit. 
 
-The workflow of the analysis consists of multiple steps: 
+# 1. friendtree production
 
-0. Producing the simulation. This is already done for the case H->h(tautau)h'(bb), however can be extended to also H->h(bb)h'(tautau)
-1. Skimming the official CMS data and our own simulation(miniAOD format) to create our own KIT internal format ("Kappa"). 
-2. Creation of flat ntuples from the skimmed CMS data and simulation. During the creation of ntuple, the data is filtered and the releveant physical variables (e.g. invariant masses of tau-pairs, ...) are calculated.
-3. Production of "friend trees" for the ntuples created in step 1. Friend trees are additional ntuples with a 1:1 correspondence with the ntuples of step 1. Friend trees contain further information about the event, usually things which are often updated, and thus the calculation of friend trees is faster. Three friend trees need to be created here: HHKinFit (kinematic fit of the bb$\tau\tau$ mass), SVFit (likelihood fit of the $\tau\tau$ mass, FakeFactors (event-by-event probability of a tau_h being a misidentified jet)
-4. Training of the machine learning model. 
-5. Application of the model for each event in the ntuples --> Another friend tree "NNScore" needs to be created containing the neural network score for each event. 
-6. "Shape production": Histograms are now calculated from the event lists in the flat ntuples.
-7. Statistical treatment of the histograms and calculation of the results, which are in this case exclusion limits.
+# 1. configuration
+Before you produce control or signal shapes you have to modify the configuration files in `config/shapes` to your needs.  <br>
+In `config/shapes/channel_selection.py` the selection on plotting level takes place and also the difference between signal and control shapes. <br>
+In `config/shapes/process_selection.py` correction factors are applied that correct the difference between data and MC. Those correction factors depend on working points and cuts defined in `config/shapes/channel_selection.py`. Therefore these two files have to be synchronized. <br> 
+In `config/shapes/control_binning.py` the quantities like `pt_1` are defined. <br>
+In `config/shapes/file_names.py` the file names of the corresponding processes are defined. <br>
+In `config/shapes/variations.py` the shape uncertainties (uncertainties that affect the shape of one or more quantities) are defined. Furthermore anti iso regions necessary for the jet fake rate estimation (also see `shapes/do_estimations.py`) are defined here. Anti iso regions are phase spaces in which leptons do not pass the tight ID/iso criterias. 
 
-The different steps usually uses different software, which will be explained below. All software has been tested on `portal1`, and should also work on `bms1` and `bms3`.
-
-
-## 0. Gridpack generation using the NMSSM model in MadGraph5
+# 2. shape production
 
 The code used for the 2018 gridpack generation using the NMSSM model is below. The masses are set in the script `create_gridpack_for_mass_2018.sh` in which also further NMSSM parameters or the decay modes of the Higgs bosons can be changed. 
 

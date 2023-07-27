@@ -9,7 +9,7 @@ The repository provides code to produce friendtrees for xsec related quantities 
 # 1. configuration
 Before you produce control or signal shapes you have to modify the configuration files in `config/shapes` to your needs.  <br>
 In `config/shapes/channel_selection.py` the selection on plotting level takes place and also the difference between signal and control shapes. <br>
-In `config/shapes/process_selection.py` correction factors are applied that correct the difference between data and MC. Those correction factors depend on working points and cuts defined in `config/shapes/channel_selection.py`. Therefore these two files have to be synchronized. <br> 
+In `config/shapes/process_selection.py` correction factors are applied that correct the difference between data and MC. Those correction factors depend on working points and cuts defined in `config/shapes/channel_selection.py`. Therefore these two files have to be synchronized. Also pay attention to the fact, that if you are using extention files (filenames with ext_1 at the end) you have to modfiy the value of numberofgeneratedevents weight <br> 
 In `config/shapes/control_binning.py` the quantities like `pt_1` are defined. <br>
 In `config/shapes/file_names.py` the file names of the corresponding processes are defined. <br>
 In `config/shapes/variations.py` the shape uncertainties (uncertainties that affect the shape of one or more quantities) are defined. Furthermore anti iso regions necessary for the jet fake rate estimation (also see `shapes/do_estimations.py`) are defined here. Anti iso regions are phase spaces in which leptons do not pass the tight ID/iso criterias. 

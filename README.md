@@ -4,7 +4,14 @@
 In this repository all software necessary for the WH(tautau) charge asymmetry UL analysis starting from flat n-tuple level (see https://github.com/KIT-CMS/WHTauTauAnalysis-CROWN) is stored. The software uses the ntuple_processor code included as submodule of the main repository. The software is written in python3 and uses RDataFrames.
 The repository provides code to produce friendtrees for xsec related quantities and fake factors and shapes for the fit. 
 
-# 1. friendtree production
+# 0. friendtree production
+Script for friendtree production for crosssection and fake factors is:
+```
+friendtree_production.sh
+```
+
+
+#0.1 Crosssection friend
 
 # 1. configuration
 Before you produce control or signal shapes you have to modify the configuration files in `config/shapes` to your needs.  <br>

@@ -5,14 +5,21 @@ In this repository all software necessary for the WH(tautau) charge asymmetry UL
 The repository provides code to produce friendtrees for xsec related quantities and fake factors and shapes for the fit. 
 
 # 0. friendtree production
-Script for friendtree production for crosssection and fake factors is:
+Script for friendtree production for crosssection related variables and fake factors is:
 ```
 friendtree_production.sh
 ```
+# 0.1 Crosssection friend
+Based on the information provided in `bash KingMaker/sample_database/datasets.yaml` necessary variables like `crossSectionPerEventWeight` are written in a friend tree. 
 
-
-#0.1 Crosssection friend
-
+# 0.2 Fake factors
+Backgrounds that have at least on jet faking one of the objects in the final state (muon, electron, hadronic tau) are estimated via data driven fake faktors. Fake factors are calculated for each fakeable object. Precise selection criteria are written in https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2020/089 and studies in https://indico.cern.ch/event/1313127/  <br>
+The first step to calculate fake factors is to produce shapes for a tight and a loose phasespace. This is done via the scripts:
+```
+jet_to_tau_fakerate_shapes.sh
+jet_to_lepton_fakerate_shapes.sh
+```
+In case of jet faking hadronic taus, the two regions are `VVVLoosevsJets && !VTightvsJets` and `VTightvsJets`. In case of jets faking leptons, the two regions are `iso<0.15&&mediumID` and `iso>0.15 || !mediumID` (same for electrons). With these shapes the fake rates are calculated via `jet_fakerate_calculation.sh` and stored in a json file. The json file is than picked up by the `friendtree_production.sh` script
 # 1. configuration
 Before you produce control or signal shapes you have to modify the configuration files in `config/shapes` to your needs.  <br>
 In `config/shapes/channel_selection.py` the selection on plotting level takes place and also the difference between signal and control shapes. <br>

@@ -19,7 +19,8 @@ The first step to calculate fake factors is to produce shapes for a tight and a 
 jet_to_tau_fakerate_shapes.sh
 jet_to_lepton_fakerate_shapes.sh
 ```
-In case of jet faking hadronic taus, the two regions are `VVVLoosevsJets && !VTightvsJets` and `VTightvsJets`. In case of jets faking leptons, the two regions are `iso<0.15&&mediumID` and `iso>0.15 || !mediumID` (same for electrons). With these shapes the fake rates are calculated via `jet_fakerate_calculation.sh` and stored in a json file. The json file is than picked up by the `friendtree_production.sh` script
+In case of jet faking hadronic taus, the two regions are `VVVLoosevsJets && !VTightvsJets` and `VTightvsJets`. In case of jets faking leptons, the two regions are `iso<0.15&&mediumID` and `iso>0.15 || !mediumID` (same for electrons). With these shapes the fake rates are calculated via `jet_fakerate_calculation.sh` and stored in a json file. In this script you also have to specify the amount of the systematic uncertainty related to the uncertainty of backgrounds, that are estimated via simulation and subtracted before taking the ratio. 
+The json file is than picked up by the `friendtree_production.sh` script.
 # 1. configuration
 Before you produce control or signal shapes you have to modify the configuration files in `config/shapes` to your needs.  <br>
 In `config/shapes/channel_selection.py` the selection on plotting level takes place and also the difference between signal and control shapes. <br>

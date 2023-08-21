@@ -57,6 +57,12 @@ def parse_args():
     parser.add_argument(
         "-n", "--num-processes", default=1, type=int, help="Number of processes used."
     )
+    parser.add_argument(
+        "--region",
+        default=None,
+        type=str,
+        help="signal region corresponding to the charge of the lepton from the W. Options: plus, minus",
+    )
     return parser.parse_args()
 
 
@@ -103,14 +109,17 @@ def correct_nominal_shape(hist, name, integral):
 
 
 def write_hists_per_category(cat_hists: tuple):
-    category, keys, channel, ofname, ifname = cat_hists
+    category, keys, channel, ofname, ifname, region = cat_hists
     infile = ROOT.TFile(ifname, "READ")
-    dir_name = "{CHANNEL}_{CATEGORY}".format(CHANNEL=channel, CATEGORY=category)
+    print("hi", category, region)
+    dir_name = "{CHANNEL}_{CATEGORY}_{REGION}".format(
+        CHANNEL=channel, CATEGORY=category, REGION=region
+    )
     if "{category}" in ofname:
         outfile = ROOT.TFile(ofname.format(category=dir_name), "RECREATE")
     else:
         outfile = ROOT.TFile(
-            ofname.replace(".root", "-" + category + ".root"), "RECREATE"
+            ofname.replace(".root", "-" + category + "-" + region + ".root"), "RECREATE"
         )
     outfile.cd()
     outfile.mkdir(dir_name)
@@ -242,11 +251,12 @@ def main(args):
 
         if not os.path.exists(args.output):
             os.mkdir(args.output)
+        print(args.region)
         with multiprocessing.Pool(args.num_processes) as pool:
             pool.map(
                 write_hists_per_category,
                 [
-                    (*item, channel, ofname, args.input)
+                    (*item, channel, ofname, args.input, args.region)
                     for item in sorted(hist_map[channel].items())
                 ],
             )

@@ -96,13 +96,13 @@ def rates(shapes, base_path, syst_unc):
         "rem_ttbar": "rem_ttbar#mme-TT#Nominal#pt_3",
     }
     for shape in shapes:
-        if "id_wp_ele_Tight" in shape:
+        if not "Loose" in shape:
             tight_file = R.TFile(shape, "READ")
             tight_data = tight_file.Get("data#mme#Nominal#pt_3")
-            tight_diff = tight_data.Clone()
+            base = base_file(base_path)
+            base_data = base.Get("data#mme#Nominal#pt_3")
             for syst_shift, scale in enumerate([-1, -(1 + syst_unc), -(1 - syst_unc)]):
-                base = base_file(base_path)
-                base_data = base.Get("data#mme#Nominal#pt_3")
+                tight_diff = tight_data.Clone()
                 base_diff = base_data.Clone()
                 for proc in procs_to_subtract.values():
                     tight_hist = tight_file.Get(proc)
@@ -133,25 +133,23 @@ def rates(shapes, base_path, syst_unc):
                     rates_dict["Tight"]["pt"].append(
                         tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
                     )
-                    base.Close()
                 elif syst_shift == 1:
                     for bin_i in range(1, tight_data.GetNbinsX() + 1):
                         rates_dict["Tight"]["rate_syst_up"].append(
                             ratio_hist.GetBinContent(bin_i)
                         )
-                    base.Close()
                 elif syst_shift == 2:
                     for bin_i in range(1, tight_data.GetNbinsX() + 1):
                         rates_dict["Tight"]["rate_syst_down"].append(
                             ratio_hist.GetBinContent(bin_i)
                         )
-                    base.Close()
-                del base_data
+                del tight_diff
                 del base_diff
                 del ratio_hist
+            base.Close()
             tight_file.Close()
             del tight_data
-            del tight_diff
+            del base_data
     return rates_dict
 
 

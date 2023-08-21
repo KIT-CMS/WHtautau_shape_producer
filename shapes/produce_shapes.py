@@ -240,6 +240,12 @@ def parse_arguments():
         action="store_true",
         help="Read input ntuples and friends via xrootd from gridka dCache",
     )
+    parser.add_argument(
+        "--region",
+        default="control",
+        type=str,
+        help="phase space of the shape (see channel_selection.py). Options: control, plus, minus",
+    )
     return parser.parse_args()
 
 
@@ -252,7 +258,7 @@ def main(args):
         "ett": args.ett_friend_directory,
         "mtt": args.mtt_friend_directory,
     }
-
+    region = args.region
     if ".root" in args.output_file:
         output_file = args.output_file
         log_file = args.output_file.replace(".root", ".log")
@@ -273,7 +279,7 @@ def main(args):
                 if "FakeFactors" in friend or "EMQCDWeights" in friend:
                     return False
             elif re.match("data", dataset.lower()):
-                if "xsec" in friend:
+                if "crosssection" in friend:
                     return False
             return True
 
@@ -309,12 +315,12 @@ def main(args):
                 )
         return datasets
 
-    def get_control_units(channel, era, datasets):
+    def get_control_units(channel, era, region, datasets):
         return {
             "data": [
                 Unit(
                     datasets["data"],
-                    [channel_selection(channel, era)],
+                    [channel_selection(channel, era, region)],
                     [
                         control_binning[channel][v]
                         for v in set(control_binning[channel].keys())
@@ -326,7 +332,7 @@ def main(args):
                 Unit(
                     datasets["ggZZ"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VV_process_selection(channel, era),
                         # VV_process_selection(channel, era),
                     ],
@@ -341,7 +347,7 @@ def main(args):
                 Unit(
                     datasets["WZ"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VV_process_selection(channel, era),
                     ],
                     [
@@ -355,7 +361,7 @@ def main(args):
                 Unit(
                     datasets["ZZ"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VV_process_selection(channel, era),
                     ],
                     [
@@ -369,7 +375,7 @@ def main(args):
                 Unit(
                     datasets["rem_VH"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VH_process_selection(channel, era),
                     ],
                     [
@@ -383,7 +389,7 @@ def main(args):
                 Unit(
                     datasets["TT"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         TT_process_selection(channel, era),
                     ],
                     [
@@ -397,7 +403,7 @@ def main(args):
                 Unit(
                     datasets["rem_ttbar"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         TT_process_selection(channel, era),
                     ],
                     [
@@ -411,7 +417,7 @@ def main(args):
                 Unit(
                     datasets["WWW"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         WWW_process_selection(channel, era),
                     ],
                     [
@@ -425,7 +431,7 @@ def main(args):
                 Unit(
                     datasets["WWZ"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         WWZ_process_selection(channel, era),
                     ],
                     [
@@ -439,7 +445,7 @@ def main(args):
                 Unit(
                     datasets["WZZ"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         WZZ_process_selection(channel, era),
                     ],
                     [
@@ -453,7 +459,7 @@ def main(args):
                 Unit(
                     datasets["ZZZ"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         ZZZ_process_selection(channel, era),
                     ],
                     [
@@ -467,7 +473,7 @@ def main(args):
                 Unit(
                     datasets["WHminus"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VH_process_selection(channel, era),
                     ],
                     [
@@ -481,7 +487,7 @@ def main(args):
                 Unit(
                     datasets["WHplus"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VH_process_selection(channel, era),
                     ],
                     [
@@ -495,7 +501,7 @@ def main(args):
                 Unit(
                     datasets["ZH"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VH_process_selection(channel, era),
                     ],
                     [
@@ -509,7 +515,7 @@ def main(args):
                 Unit(
                     datasets["Wjets"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         W_process_selection(channel, era),
                     ],
                     [
@@ -523,7 +529,7 @@ def main(args):
                 Unit(
                     datasets["DY"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         DY_process_selection(channel, era),
                     ],
                     [
@@ -537,7 +543,7 @@ def main(args):
                 Unit(
                     datasets["rem_VV"],
                     [
-                        channel_selection(channel, era),
+                        channel_selection(channel, era, region),
                         VV_process_selection(channel, era),
                     ],
                     [
@@ -557,7 +563,7 @@ def main(args):
         )
         if args.control_plots:
             nominals[args.era]["units"][channel] = get_control_units(
-                channel, args.era, nominals[args.era]["datasets"][channel]
+                channel, args.era, region, nominals[args.era]["datasets"][channel]
             )
     um = UnitManager()
 
@@ -758,20 +764,6 @@ def main(args):
         if args.skip_systematic_variations:
             pass
         else:
-            # book_histograms(
-            #     um,
-            #     processes={"ggh"} & procS,
-            #     datasets=nominals[era]["units"][channel],
-            #     variations=[ggh_acceptance],
-            #     enable_check=do_check,
-            # )
-            # book_histograms(
-            #     um,
-            #     processes={"qqh"} & procS,
-            #     datasets=nominals[era]["units"][channel],
-            #     variations=[qqh_acceptance],
-            #     enable_check=do_check,
-            # )
             um.book(
                 [
                     unit
@@ -979,6 +971,16 @@ def main(args):
                 #     variations=[ff_variations_tt_mcl],
                 #     enable_check=args.enable_booking_check,
                 # )
+            if "2016" in args.era or "2017" in args.era:
+                um.book(
+                    [
+                        unit
+                        for d in simulatedProcsDS[ch_] & procS
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    [*prefiring],
+                    enable_check=args.enable_booking_check,
+                )
 
     # Step 2: convert units to graphs and merge them
     g_manager = GraphManager(um.booked_units, True)

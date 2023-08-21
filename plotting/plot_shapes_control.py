@@ -138,8 +138,6 @@ def main(info):
             "TTV",
             "VVV",
             "ZZ",
-            "WHplus",
-            "WHminus",
             "WZ",
         ]
     elif args.closure_test:
@@ -157,11 +155,12 @@ def main(info):
             "TTV",
             "VVV",
             "ZZ",
-            "WHplus",
-            "WHminus",
             "WZ",
         ]
-
+    signal_processes = [
+        "WHplus",
+        "WHminus",
+    ]
     if "2016" in args.era:
         era = "Run2016"
     elif "2017" in args.era:
@@ -175,7 +174,7 @@ def main(info):
     rootfile = rootfile_parser.Rootfile_parser(args.input, variable)
     legend_bkg_processes = copy.deepcopy(bkg_processes)
     legend_bkg_processes.reverse()
-
+    legend_sig_processes = copy.deepcopy(signal_processes)
     # create plot
     width = 600
     if args.linear == True:
@@ -233,7 +232,22 @@ def main(info):
     plot.setGraphStyle(
         "total_bkg", "e2", markersize=0, fillcolor=styles.color_dict["unc"], linecolor=0
     )
-
+    sig_dict = {}
+    for signal in signal_processes:
+        sig_dict[signal] = rootfile.get(
+            channel, signal, args.category_postfix, shape_type=stype
+        ).Clone()
+    signal_scale = 10
+    for signal in sig_dict:
+        sig_dict[signal].Scale(signal_scale)
+        plot.subplot(0).add_hist(sig_dict[signal], signal)
+        plot.subplot(2).add_hist(sig_dict[signal], signal)
+        plot.subplot(0).setGraphStyle(
+            signal, "hist", linecolor=styles.color_dict[signal], linewidth=2
+        )
+        plot.subplot(2).setGraphStyle(
+            signal, "hist", linecolor=styles.color_dict[signal], linewidth=2
+        )
     # add data hist
     if args.closure_test:
         plot.add_hist(
@@ -255,7 +269,6 @@ def main(info):
         plot.subplot(2).setGraphStyle("data_obs", "e0")
 
     # stack background processess
-    print(bkg_processes)
     plot.create_stack(bkg_processes, "stack")
     plot.subplot(2).normalize(["total_bkg", "data_obs"], "total_bkg")
     # normalize stacks by bin-width
@@ -264,33 +277,19 @@ def main(info):
         plot.subplot(1).normalizeByBinWidth()
 
     # set the size of the y axis
-    y_max = 1.5 * max(
+    y_max = 1.6 * max(
         plot.subplot(0).get_hist("data_obs").GetMaximum(),
         plot.subplot(0).get_hist("total_bkg").GetMaximum(),
     )
     # set axes limits and labels
-    if variable == "pt_1":
-        if channel == "mtt":
-            plot.subplot(0).setYlims(0, 70)
-        else:
-            plot.subplot(0).setYlims(0, 50)
-    elif variable == "pt_2":
-        if channel == "mtt":
-            plot.subplot(0).setYlims(0, 140)
-        else:
-            plot.subplot(0).setYlims(0, 120)
-    # plot.subplot(0).setYlims(
-    #     split_dict[channel],
-    #     60,
-    # )
+    plot.subplot(0).setYlims(
+        0,
+        y_max,
+    )
     plot.subplot(2).setYlims(
         0.1,
         2.1,
     )
-    # plot.subplot(2).setYlims(
-    #     0.8,
-    #     5,
-    # )
     if args.linear != True:
         plot.subplot(1).setYlims(0.1, split_dict[channel])
         plot.subplot(1).setYlabel("")  # otherwise number labels are not drawn on axis
@@ -315,17 +314,10 @@ def main(info):
 
     # draw subplots. Argument contains names of objects to be drawn in corresponding order.
 
-    procs_to_draw = (
-        ["stack", "total_bkg", "data_obs"]
-        if args.linear
-        else ["stack", "total_bkg", "data_obs"]
-    )
+    procs_to_draw = ["stack", "total_bkg", "data_obs", "WHplus", "WHminus"]
     plot.subplot(0).Draw(procs_to_draw)
-    if args.linear != True:
-        plot.subplot(1).Draw(["stack", "total_bkg", "data_obs"])
     plot.subplot(2).Draw(["total_bkg", "data_obs"])
     # create legends
-    suffix = ["", "_top"]
     for i in range(2):
         plot.add_legend(width=0.625, height=0.15)
         for process in legend_bkg_processes:
@@ -335,7 +327,13 @@ def main(info):
                 styles.legend_label_dict[process],
                 "f",
             )
-
+        for signal in legend_sig_processes:
+            plot.legend(i).add_entry(
+                0,
+                signal,
+                styles.legend_label_dict[signal],
+                "f",
+            )
         plot.legend(i).add_entry(0, "total_bkg", "Bkg. stat. unc.", "f")
         if args.closure_test:
             plot.legend(i).add_entry(
@@ -383,8 +381,9 @@ def main(info):
         postfix = "emb_ff"
     if args.draw_jet_fake_variation is not None:
         postfix = args.draw_jet_fake_variation
-
-    if not os.path.exists("plots/%s" % (args.tag)):
+    if not os.path.exists(
+        "plots/%s/%s_plots_%s/%s" % (args.tag, args.era, postfix, channel)
+    ):
         os.makedirs("plots/%s/%s_plots_%s/%s" % (args.tag, args.era, postfix, channel))
     if args.closure_test:
         plot.save(

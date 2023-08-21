@@ -241,11 +241,11 @@ def rates(shapes, base_path, syst_unc):
             wp = working_points(shape)
             tight_file = R.TFile(shape, "READ")
             tight_data = tight_file.Get("data#mmt#Nominal#pt_3")
-            tight_diff = tight_data.Clone()
             if "DM0." in shape:
                 for syst_shift, scale in enumerate(
                     [-1, -(1 + syst_unc), -(1 - syst_unc)]
                 ):
+                    tight_diff = tight_data.Clone()
                     base_DM0 = base_file(base_path, wp, "DM0")
                     base_data = base_DM0.Get("data#mmt#Nominal#pt_3")
                     base_diff = base_data.Clone()
@@ -295,6 +295,7 @@ def rates(shapes, base_path, syst_unc):
                                 "rate_syst_up"
                             ].append(ratio_hist.GetBinContent(bin_i))
                         base_DM0.Close()
+                    del tight_diff
                     del base_data
                     del base_diff
                     del ratio_hist
@@ -302,6 +303,7 @@ def rates(shapes, base_path, syst_unc):
                 for syst_shift, scale in enumerate(
                     [-1, -(1 + syst_unc), -(1 - syst_unc)]
                 ):
+                    tight_diff = tight_data.Clone()
                     base_DM1 = base_file(base_path, wp, "DM1")
                     base_data = base_DM1.Get("data#mmt#Nominal#pt_3")
                     base_diff = base_data.Clone()
@@ -351,6 +353,7 @@ def rates(shapes, base_path, syst_unc):
                                 "rate_syst_up"
                             ].append(ratio_hist.GetBinContent(bin_i))
                         base_DM1.Close()
+                    del tight_diff
                     del base_data
                     del base_diff
                     del ratio_hist
@@ -358,6 +361,7 @@ def rates(shapes, base_path, syst_unc):
                 for syst_shift, scale in enumerate(
                     [-1, -(1 + syst_unc), -(1 - syst_unc)]
                 ):
+                    tight_diff = tight_data.Clone()
                     base_DM10 = base_file(base_path, wp, "DM10")
                     base_data = base_DM10.Get("data#mmt#Nominal#pt_3")
                     base_diff = base_data.Clone()
@@ -407,6 +411,7 @@ def rates(shapes, base_path, syst_unc):
                                 "rate_syst_up"
                             ].append(ratio_hist.GetBinContent(bin_i))
                         base_DM10.Close()
+                    del tight_diff
                     del base_data
                     del base_diff
                     del ratio_hist
@@ -414,6 +419,7 @@ def rates(shapes, base_path, syst_unc):
                 for syst_shift, scale in enumerate(
                     [-1, -(1 + syst_unc), -(1 - syst_unc)]
                 ):
+                    tight_diff = tight_data.Clone()
                     base_DM11 = base_file(base_path, wp, "DM11")
                     base_data = base_DM11.Get("data#mmt#Nominal#pt_3")
                     base_diff = base_data.Clone()
@@ -463,6 +469,7 @@ def rates(shapes, base_path, syst_unc):
                                 "rate_syst_up"
                             ].append(ratio_hist.GetBinContent(bin_i))
                         base_DM11.Close()
+                    del tight_diff
                     del base_data
                     del base_diff
                     del ratio_hist
@@ -677,6 +684,7 @@ if __name__ == "__main__":
     output_file = args.output_file
     plot_output = args.plot_output
     syst_unc = args.syst_unc / 100.0
+    print("hi", syst_unc)
     path = os.path.join(base_path, "*.root")
     shapes = glob.glob(path)
     main(shapes, base_path, output_file, plot_output, syst_unc)

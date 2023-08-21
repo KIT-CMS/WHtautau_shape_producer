@@ -179,6 +179,11 @@ def parse_arguments():
         type=str,
         help="tight id and iso requirements for the muon: loose or tight",
     )
+    parser.add_argument(
+        "--xrootd",
+        action="store_true",
+        help="Read input ntuples and friends via xrootd from gridka dCache",
+    )
     return parser.parse_args()
 
 
@@ -248,10 +253,21 @@ def main(args):
                         if filter_friends(key, fdir)
                     ],
                     validate_samples=True,
+                    xrootd=args.xrootd,
                 )
         return datasets
 
     def get_control_units(channel, era, datasets):
+        print(
+            channel,
+            era,
+            wp_vs_jet,
+            wp_vs_mu,
+            wp_vs_ele,
+            decay_mode,
+            id_wp_ele,
+            id_wp_mu,
+        )
         return {
             "data": [
                 Unit(
@@ -585,9 +601,40 @@ def main(args):
                     ],
                 )
             ],
-            "wh": [
+            "whminus": [
                 Unit(
-                    datasets["WH"],
+                    datasets["WHminus"],
+                    [
+                        channel_selection(
+                            channel,
+                            era,
+                            wp_vs_jet,
+                            wp_vs_mu,
+                            wp_vs_ele,
+                            decay_mode,
+                            id_wp_ele,
+                            id_wp_mu,
+                        ),
+                        VH_process_selection(
+                            channel,
+                            era,
+                            wp_vs_jet,
+                            wp_vs_mu,
+                            wp_vs_ele,
+                            id_wp_ele,
+                            id_wp_mu,
+                        ),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "whplus": [
+                Unit(
+                    datasets["WHplus"],
                     [
                         channel_selection(
                             channel,
@@ -766,7 +813,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -790,7 +838,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -807,7 +856,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",
@@ -824,7 +874,8 @@ def main(args):
             "wwz",
             "wzz",
             "zzz",
-            "wh",
+            "whminus",
+            "whplus",
             "zh",
             "wz",
             "zz",

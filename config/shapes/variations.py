@@ -351,12 +351,14 @@ trigger_eff_e = [
 ]
 prefiring = [
     ReplaceWeight(
-        "CMS_prefiringUp", "prefireWeight", Weight("prefiringweightup", "prefireWeight")
+        "CMS_prefiringUp",
+        "prefiring_wgt",
+        Weight("prefiring_wgt__prefiringUp", "prefiring_wgt"),
     ),
     ReplaceWeight(
         "CMS_prefiringDown",
-        "prefireWeight",
-        Weight("prefiringweightdown", "prefireWeight"),
+        "prefiring_wgt",
+        Weight("prefiring_wgt__prefiringDown", "prefiring_wgt"),
     ),
 ]
 

@@ -54,21 +54,63 @@ def args_parser():
         help="if set, debug mode will be enabled",
     )
     parser.add_argument(
-        "--corr_file_tau",
+        "--eras",
+        default=[],
+        type=lambda eralist: [era for era in eralist.split(",")],
+        help="eras to be considered, seperated by a comma without space",
+    )
+    parser.add_argument(
+        "--corr_file_tau_16",
+        default=None,
         type=str,
-        required=True,
         help="Path to jet to tau fakerates",
     )
     parser.add_argument(
-        "--corr_file_mu",
+        "--corr_file_mu_16",
+        default=None,
         type=str,
-        required=True,
         help="Path to jet to mu fakerates",
     )
     parser.add_argument(
-        "--corr_file_ele",
+        "--corr_file_ele_16",
+        default=None,
         type=str,
-        required=True,
+        help="Path to jet to ele fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_tau_17",
+        default=None,
+        type=str,
+        help="Path to jet to tau fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_mu_17",
+        default=None,
+        type=str,
+        help="Path to jet to mu fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_ele_17",
+        default=None,
+        type=str,
+        help="Path to jet to ele fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_tau_18",
+        default=None,
+        type=str,
+        help="Path to jet to tau fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_mu_18",
+        default=None,
+        type=str,
+        help="Path to jet to mu fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_ele_18",
+        default=None,
+        type=str,
         help="Path to jet to ele fakerates",
     )
     parser.add_argument(
@@ -223,9 +265,9 @@ def friend_producer(
     dataset_proc,
     era,
     channel,
-    corr_file_tau,
-    corr_file_ele,
-    corr_file_mu,
+    corr_file_dict_tau,
+    corr_file_dict_ele,
+    corr_file_dict_mu,
     debug=True,
 ):
     temp_output_file = os.path.join(
@@ -234,10 +276,24 @@ def friend_producer(
     final_output_file = os.path.join(
         output_path, era, dataset_proc["nick"], channel, os.path.basename(inputfile)
     )
+    if era == "2016":
+        corr_file_tau = corr_file_dict_tau["2016"]
+        corr_file_ele = corr_file_dict_ele["2016"]
+        corr_file_mu = corr_file_dict_mu["2016"]
+    elif era == "2017":
+        corr_file_tau = corr_file_dict_tau["2017"]
+        corr_file_ele = corr_file_dict_ele["2017"]
+        corr_file_mu = corr_file_dict_mu["2017"]
+    elif era == "2018":
+        corr_file_tau = corr_file_dict_tau["2018"]
+        corr_file_ele = corr_file_dict_ele["2018"]
+        corr_file_mu = corr_file_dict_mu["2018"]
     if debug:
         print(f"Processing {inputfile}")
         print(f"Outputting to {temp_output_file}")
     os.makedirs(os.path.dirname(temp_output_file), exist_ok=True)
+    if channel in ["eem", "mme", "et", "mt"]:
+        return
     if not is_file_empty(inputfile, debug):
         if not check_file_exists_remote(output_path, final_output_file):
             rdf = build_rdf(
@@ -255,18 +311,12 @@ def friend_producer(
             generate_empty_friend_tree(temp_output_file)
             upload_file(output_path, temp_output_file, final_output_file)
 
-    if channel in ["eem", "mme", "et", "mt"]:
-        return
-
 
 def build_rdf(
     inputfile, channel, output_file, corr_file_tau, corr_file_ele, corr_file_mu
 ):
     rootfile = ROOT.TFile.Open(inputfile, "READ")
     rdf = ROOT.RDataFrame("ntuple", rootfile)
-    print(
-        rootfile,
-    )
     wp_vs_jets = working_points(channel)[0]
     wp_vs_mu = working_points(channel)[1]
     wp_vs_ele = working_points(channel)[2]
@@ -613,9 +663,9 @@ def generate_friend_trees(
     nthreads,
     workdir,
     output_path,
-    corr_file_tau,
-    corr_file_ele,
-    corr_file_mu,
+    corr_file_dict_tau,
+    corr_file_dict_ele,
+    corr_file_dict_mu,
     debug,
 ):
     print("Using {} threads".format(nthreads))
@@ -627,9 +677,9 @@ def generate_friend_trees(
             dataset[parse_filepath(ntuple)["nick"]],
             parse_filepath(ntuple)["era"],
             parse_filepath(ntuple)["channel"],
-            corr_file_tau,
-            corr_file_ele,
-            corr_file_mu,
+            corr_file_dict_tau,
+            corr_file_dict_ele,
+            corr_file_dict_mu,
             debug,
         )
         for ntuple in ntuples
@@ -655,6 +705,21 @@ if __name__ == "__main__":
     workdir = os.path.join(args.tempdir)
     dataset = yaml.safe_load(open(args.dataset_config))
     ntuples = glob.glob(base_path)
+    corr_file_dict_tau = {}
+    corr_file_dict_ele = {}
+    corr_file_dict_mu = {}
+    if "2016" in args.eras:
+        corr_file_dict_tau["2016"] = args.corr_file_tau_16
+        corr_file_dict_ele["2016"] = args.corr_file_ele_16
+        corr_file_dict_mu["2016"] = args.corr_file_mu_16
+    elif "2017" in args.eras:
+        corr_file_dict_tau["2017"] = args.corr_file_tau_17
+        corr_file_dict_ele["2017"] = args.corr_file_ele_17
+        corr_file_dict_mu["2017"] = args.corr_file_mu_17
+    elif "2018" in args.eras:
+        corr_file_dict_tau["2018"] = args.corr_file_tau_18
+        corr_file_dict_ele["2018"] = args.corr_file_ele_18
+        corr_file_dict_mu["2018"] = args.corr_file_mu_18
     if base_path.startswith("root://"):
         ntuples = xrdglob.glob(base_path)
     else:
@@ -667,9 +732,9 @@ if __name__ == "__main__":
         nthreads,
         workdir,
         output_path,
-        args.corr_file_tau,
-        args.corr_file_ele,
-        args.corr_file_mu,
+        corr_file_dict_tau,
+        corr_file_dict_ele,
+        corr_file_dict_mu,
         args.debug,
     )
     if os.path.exists(workdir):

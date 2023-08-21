@@ -34,6 +34,14 @@ def lumi_weight(era):
     return ("{} * 1000.0".format(lumi), "lumi")
 
 
+def prefiring_weight(era):
+    if era in ["2016", "2017"]:
+        weight = ("prefiring_wgt", "prefiring_wgt")
+    else:
+        weight = ("1.0", "prefiring_wgt")
+    return weight
+
+
 def MC_base_process_selection(
     channel,
     era,
@@ -68,6 +76,7 @@ def MC_base_process_selection(
         MC_base_process_weights = [
             ("puweight", "puweight"),
             lumi_weight(era),
+            prefiring_weight(era),
             isoweight,
             idweight,
             tauidweight,

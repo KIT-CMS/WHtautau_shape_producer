@@ -126,6 +126,8 @@ def friend_producer(
             print(f"{inputfile} is empty, generating empty friend tree")
             generate_empty_friend_tree(temp_output_file)
             upload_file(output_path, temp_output_file, final_output_file)
+    if channel in ["eem", "mme", "et", "mt"]:
+        return
 
 
 def is_file_empty(inputfile, debug=False):

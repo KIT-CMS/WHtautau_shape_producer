@@ -34,6 +34,14 @@ def lumi_weight(era):
     return ("{} * 1000.0".format(lumi), "lumi")
 
 
+def prefiring_weight(era):
+    if era in ["2016", "2017"]:
+        weight = ("prefiring_wgt", "prefiring_wgt")
+    else:
+        weight = ("1.0", "prefiring_wgt")
+    return weight
+
+
 # for the tauid weights its necessary to define the weight also in the anti iso region for the fake rate application
 def MC_base_process_selection(channel, era):
     if channel in ["emt", "met"]:
@@ -123,6 +131,7 @@ def MC_base_process_selection(channel, era):
     MC_base_process_weights = [
         ("puweight", "puweight"),
         lumi_weight(era),
+        prefiring_weight(era),
         isoweight,
         idweight,
         tauidweight,
@@ -184,7 +193,6 @@ def WWW_process_selection(channel, era):
     WWW_process_weights = MC_base_process_selection(channel, era).weights
     WWW_process_weights.extend(
         [
-            ("1./(240000+9894000)", "numberGeneratedEventsWeight"),
             ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
             (
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -192,6 +200,18 @@ def WWW_process_selection(channel, era):
             ),
         ]
     )
+    if era == "2018":
+        WWW_process_weights.extend(
+            [
+                ("1./(240000+9894000)", "numberGeneratedEventsWeight"),
+            ]
+        )
+    elif era == "2017":
+        WWW_process_weights.extend(
+            [
+                ("1./(171000+9854000)", "numberGeneratedEventsWeight"),
+            ]
+        )
     return Selection(name="WWW", weights=WWW_process_weights)
 
 
@@ -199,7 +219,6 @@ def WWZ_process_selection(channel, era):
     WWZ_process_weights = MC_base_process_selection(channel, era).weights
     WWZ_process_weights.extend(
         [
-            ("1./(248000+9961999)", "numberGeneratedEventsWeight"),
             ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
             (
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -207,6 +226,18 @@ def WWZ_process_selection(channel, era):
             ),
         ]
     )
+    if era == "2018":
+        WWZ_process_weights.extend(
+            [
+                ("1./(248000+9961999)", "numberGeneratedEventsWeight"),
+            ]
+        )
+    elif era == "2017":
+        WWZ_process_weights.extend(
+            [
+                ("1./(178000+9938400)", "numberGeneratedEventsWeight"),
+            ]
+        )
     return Selection(name="WWZ", weights=WWZ_process_weights)
 
 
@@ -214,7 +245,6 @@ def WZZ_process_selection(channel, era):
     WZZ_process_weights = MC_base_process_selection(channel, era).weights
     WZZ_process_weights.extend(
         [
-            ("1./(300000+9994000)", "numberGeneratedEventsWeight"),
             ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
             (
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -222,6 +252,18 @@ def WZZ_process_selection(channel, era):
             ),
         ]
     )
+    if era == "2018":
+        WZZ_process_weights.extend(
+            [
+                ("1./(300000+9994000)", "numberGeneratedEventsWeight"),
+            ]
+        )
+    elif era == "2017":
+        WZZ_process_weights.extend(
+            [
+                ("1./(298000+9898000)", "numberGeneratedEventsWeight"),
+            ]
+        )
     return Selection(name="WZZ", weights=WZZ_process_weights)
 
 
@@ -229,7 +271,6 @@ def ZZZ_process_selection(channel, era):
     ZZZ_process_weights = MC_base_process_selection(channel, era).weights
     ZZZ_process_weights.extend(
         [
-            ("1./(250000+9889000)", "numberGeneratedEventsWeight"),
             ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
             (
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -237,6 +278,18 @@ def ZZZ_process_selection(channel, era):
             ),
         ]
     )
+    if era == "2018":
+        ZZZ_process_weights.extend(
+            [
+                ("1./(250000+9889000)", "numberGeneratedEventsWeight"),
+            ]
+        )
+    elif era == "2017":
+        ZZZ_process_weights.extend(
+            [
+                ("1./(178000+9524000)", "numberGeneratedEventsWeight"),
+            ]
+        )
     return Selection(name="ZZZ", weights=ZZZ_process_weights)
 
 

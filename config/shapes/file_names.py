@@ -80,7 +80,76 @@ common_files_2018 = {
         "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8_RunIISummer20UL18NanoAODv9-106X",
     ],
 }
-
+common_files_2017 = {
+    "ggZZ": [
+        "GluGluToContinToZZTo2e2mu_TuneCP5_13TeV-mcfm701-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "GluGluToContinToZZTo2e2tau_TuneCP5_13TeV-mcfm701-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "GluGluToContinToZZTo2mu2tau_TuneCP5_13TeV-mcfm701-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "GluGluToContinToZZTo4e_TuneCP5_13TeV-mcfm701-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "GluGluToContinToZZTo4mu_TuneCP5_13TeV-mcfm701-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "GluGluToContinToZZTo4tau_TuneCP5_13TeV-mcfm701-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "rem_VH": [
+        "GluGluZH_HToWWTo2L2Nu_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "HWminusJ_HToWW_M-125_TuneCP5_13TeV-powheg-jhugen727-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "HWplusJ_HToWW_M-125_TuneCP5_13TeV-powheg-jhugen727-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "HZJ_HToWW_M-125_TuneCP5_13TeV-powheg-jhugen727-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "rem_ttbar": [
+        "ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "WWW": [
+        "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X_ext1",
+    ],
+    "WWZ": [
+        "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X_ext1",
+    ],
+    "WZZ": [
+        "WZZ_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "WZZ_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X_ext1",
+    ],
+    "ZZZ": [
+        "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "ZZZ_TuneCP5_13TeV-amcatnlo-pythia8_RunIISummer20UL17NanoAODv9-106X_ext1",
+    ],
+    "WZ": [
+        "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "rem_VV": [
+        "WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        # "ZZTo2Q2L_mllmin4p0_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL18NanoAODv9-106X",
+        "WZTo2Q2L_mllmin4p0_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        # "ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL18NanoAODv9-106X",
+        # "ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL18NanoAODv9-106X",
+        # "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
+        # "ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
+    ],
+    "ZZ": [
+        "ZZTo4L_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "WHplus": [
+        "WplusHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "WHminus": [
+        "WminusHToTauTau_M125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "ZH": ["ZHToTauTau_M125_CP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X"],
+    "DY": [
+        "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "DYJetsToLL_M-10to50_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "TT": [
+        "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "TTToHadronic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X",
+        "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+    "Wjets": [
+        "WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL17NanoAODv9-106X",
+    ],
+}
 files = {
     "2018": {
         "emt": dict(
@@ -179,6 +248,102 @@ files = {
                 ]
             },
             **common_files_2018
+        ),
+    },
+    "2017": {
+        "emt": dict(
+            {
+                "data": [
+                    "SingleElectron_Run2017B-UL2017",
+                    "SingleElectron_Run2017C-UL2017",
+                    "SingleElectron_Run2017D-UL2017",
+                    "SingleElectron_Run2017E-UL2017",
+                    "SingleElectron_Run2017F-UL2017",
+                    "SingleMuon_Run2017B-UL2017",
+                    "SingleMuon_Run2017C-UL2017",
+                    "SingleMuon_Run2017D-UL2017",
+                    "SingleMuon_Run2017E-UL2017",
+                    "SingleMuon_Run2017F-UL2017",
+                ]
+            },
+            **common_files_2017
+        ),
+        "met": dict(
+            {
+                "data": [
+                    "SingleElectron_Run2017B-UL2017",
+                    "SingleElectron_Run2017C-UL2017",
+                    "SingleElectron_Run2017D-UL2017",
+                    "SingleElectron_Run2017E-UL2017",
+                    "SingleElectron_Run2017F-UL2017",
+                    "SingleMuon_Run2017B-UL2017",
+                    "SingleMuon_Run2017C-UL2017",
+                    "SingleMuon_Run2017D-UL2017",
+                    "SingleMuon_Run2017E-UL2017",
+                    "SingleMuon_Run2017F-UL2017",
+                ]
+            },
+            **common_files_2017
+        ),
+        "mmt": dict(
+            {
+                "data": [
+                    "SingleMuon_Run2017B-UL2017",
+                    "SingleMuon_Run2017C-UL2017",
+                    "SingleMuon_Run2017D-UL2017",
+                    "SingleMuon_Run2017E-UL2017",
+                    "SingleMuon_Run2017F-UL2017",
+                ]
+            },
+            **common_files_2017
+        ),
+        "mtt": dict(
+            {
+                "data": [
+                    "SingleMuon_Run2017B-UL2017",
+                    "SingleMuon_Run2017C-UL2017",
+                    "SingleMuon_Run2017D-UL2017",
+                    "SingleMuon_Run2017E-UL2017",
+                    "SingleMuon_Run2017F-UL2017",
+                ]
+            },
+            **common_files_2017
+        ),
+        "ett": dict(
+            {
+                "data": [
+                    "SingleElectron_Run2017B-UL2017",
+                    "SingleElectron_Run2017C-UL2017",
+                    "SingleElectron_Run2017D-UL2017",
+                    "SingleElectron_Run2017E-UL2017",
+                    "SingleElectron_Run2017F-UL2017",
+                ]
+            },
+            **common_files_2017
+        ),
+        "eem": dict(
+            {
+                "data": [
+                    "SingleElectron_Run2017B-UL2017",
+                    "SingleElectron_Run2017C-UL2017",
+                    "SingleElectron_Run2017D-UL2017",
+                    "SingleElectron_Run2017E-UL2017",
+                    "SingleElectron_Run2017F-UL2017",
+                ]
+            },
+            **common_files_2017
+        ),
+        "mme": dict(
+            {
+                "data": [
+                    "SingleMuon_Run2017B-UL2017",
+                    "SingleMuon_Run2017C-UL2017",
+                    "SingleMuon_Run2017D-UL2017",
+                    "SingleMuon_Run2017E-UL2017",
+                    "SingleMuon_Run2017F-UL2017",
+                ]
+            },
+            **common_files_2017
         ),
     },
 }

@@ -3,7 +3,7 @@ from ntuple_processor.utils import Selection
 import ROOT as R
 
 ##### wh analysis selction
-def channel_selection(channel, era):
+def channel_selection(channel, era, region):
     # Specify general channel and era independent cuts.
     if channel in ["emt", "met"]:
         cuts = [
@@ -15,37 +15,82 @@ def channel_selection(channel, era):
             ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
             ("id_tau_vsEle_Tight_3>0.5", "againstElectronDiscriminator"),
             ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
-            # (
-            #     "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
-            #     "ctrl_region",
-            # ),
-            (
-                "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
-                "signal_region",
-            ),
         ]
+        if region == "control":
+            cuts.append(
+                (
+                    "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
+                    "ctrl_region",
+                )
+            )
+        elif region == "plus":
+            cuts.append(
+                (
+                    "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
+                    "signal_region",
+                )
+            )
+            cuts.append(("q_1>0.0", "signal_plus"))
+        elif region == "minus":
+            cuts.append(
+                (
+                    "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
+                    "signal_region",
+                )
+            )
+            cuts.append(("q_1<0.0", "signal_minus"))
         if channel == "emt":
             # triggermatching for single ele and single mu trigger and corresponding pt requirements
             # id and iso cuts have to be in one cut, cause of the variations
             # cuts.append(("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"))
             cuts.append(("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"))
             cuts.append(("electron_is_nonisowp90_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
-            cuts.append(
-                (
-                    "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_2 > 25) || (pt_2 < 25 && pt_1 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
-                    "trg_selection",
+            if era == "2018":
+                cuts.append(
+                    (
+                        "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_2 > 25 && (abs(eta_2)<2.4)) || (pt_2 < 25 && pt_1 > 33 && (abs(eta_1)<2.1) && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
+                        "trg_selection",
+                    )
                 )
-            )
+            elif era == "2017":
+                cuts.append(
+                    (
+                        "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_2 > 25 && (abs(eta_2)<2.4)) || (pt_2 < 25 && pt_1 > 28 && (abs(eta_1)<2.1) && ((trg_single_ele27 == 1) || (trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
+                        "trg_selection",
+                    )
+                )
+            elif era == "2016":
+                cuts.append(
+                    (
+                        "((trg_single_mu22 == 1) && pt_2 > 23 && (abs(eta_2)<2.1)) || (pt_2 < 23 && pt_1 > 26 && (abs(eta_1)<2.1) && (trg_single_ele25 == 1))",
+                        "trg_selection",
+                    )
+                )
         elif channel == "met":
             cuts.append(("muon_is_mediumid_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
             cuts.append(("electron_is_nonisowp90_2>0.5 && iso_2<0.15", "id_iso_cut_2"))
             # triggermatching for single ele and single mu trigger and corresponding pt requirements
-            cuts.append(
-                (
-                    "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25) || (pt_1 < 25 && pt_2 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
-                    "trg_selection",
+            if era == "2018":
+                cuts.append(
+                    (
+                        "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25 && (abs(eta_1)<2.4)) || (pt_1 < 25 && pt_2 > 33 && (abs(eta_2)<2.1) && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
+                        "trg_selection",
+                    )
                 )
-            )
+            elif era == "2017":
+                cuts.append(
+                    (
+                        "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25 && (abs(eta_1)<2.4)) || (pt_1 < 25 && pt_2 > 28 && (abs(eta_2)<2.1) && ((trg_single_ele27 == 1) || (trg_single_ele32 == 1) || (trg_single_ele35 == 1)))",
+                        "trg_selection",
+                    )
+                )
+            elif era == "2016":
+                cuts.append(
+                    (
+                        "((trg_single_mu22 == 1) && pt_1 > 23 && (abs(eta_1)<2.1)) || (pt_1 < 23 && pt_2 > 26 && (abs(eta_2)<2.1) && (trg_single_ele25 == 1))",
+                        "trg_selection",
+                    )
+                )
     elif channel == "mmt":
         cuts = [
             ("q_1*q_2>0.0", "ss"),
@@ -58,23 +103,46 @@ def channel_selection(channel, era):
             ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
             ("iso_1<0.15", "iso_cut_1"),
             ("deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
-            # (
-            #     "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
-            #     "ctrl_region",
-            # ),
-            (
-                "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
-                "signal_region",
-            ),
             ("muon_is_mediumid_1 > 0.5", "id_cut_1"),
             ("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"),
         ]
-        cuts.append(
-            (
-                "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25)",
-                "trg_selection",
+        if era in ["2018", "2017"]:
+            cuts.append(
+                (
+                    "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25 && (abs(eta_1)<2.4))",
+                    "trg_selection",
+                )
             )
-        )
+        else:
+            cuts.append(
+                (
+                    "((trg_single_mu22 == 1) && pt_1 > 23 && (abs(eta_1)<2.1))",
+                    "trg_selection",
+                )
+            )
+        if region == "control":
+            cuts.append(
+                (
+                    "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
+                    "ctrl_region",
+                )
+            )
+        elif region == "plus":
+            cuts.append(
+                (
+                    "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
+                    "signal_region",
+                )
+            )
+            cuts.append(("q_1>0.0", "signal_plus"))
+        elif region == "minus":
+            cuts.append(
+                (
+                    "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
+                    "signal_region",
+                )
+            )
+            cuts.append(("q_1<0.0", "signal_minus"))
     elif channel == "ett":
         cuts = [
             ("electron_is_nonisowp90_1>0.5", "id_cut"),
@@ -94,22 +162,51 @@ def channel_selection(channel, era):
             ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
             ("extramuon_veto<0.5", "extramuon_veto"),
             ("((q_1*q_2>0.5) && pt_2>30) || ((q_1*q_3>0.5) && pt_3>30)", "ss_pt_cut"),
-            # trigger selection
-            (
-                "pt_1 > 33 && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1))",
-                "trg_selection",
-            ),
-            # control region cut
-            # (
-            #     "Lt<130 || pt_123>70 || met>70",
-            #     "ctrl_region",
-            # ),
-            # signal region cut
-            (
-                "Lt>130 && pt_123<70 && met<70",
-                "signal_region",
-            ),
         ]
+        if era == "2018":
+            cuts.append(
+                (
+                    "pt_1 > 33 && (abs(eta_1)<2.1) && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1))",
+                    "trg_selection",
+                )
+            )
+        elif era == "2017":
+            cuts.append(
+                (
+                    "pt_1 > 28 && (abs(eta_1)<2.1) && ((trg_single_ele27 == 1) || (trg_single_ele32 == 1) || (trg_single_ele35 == 1))",
+                    "trg_selection",
+                )
+            )
+        elif era == "2016":
+            cuts.append(
+                (
+                    "pt_1 > 26 && (abs(eta_1)<2.1) && (trg_single_ele25 == 1)",
+                    "trg_selection",
+                )
+            )
+        if region == "control":
+            cuts.append(
+                (
+                    "Lt<130 || pt_123>70 || met>70",
+                    "ctrl_region",
+                ),
+            )
+        elif region == "plus":
+            cuts.append(
+                (
+                    "Lt>130 && pt_123<70 && met<70",
+                    "signal_region",
+                ),
+            )
+            cuts.append(("q_1>0.0", "signal_plus"))
+        elif region == "minus":
+            cuts.append(
+                (
+                    "Lt>130 && pt_123<70 && met<70",
+                    "signal_region",
+                ),
+            )
+            cuts.append(("q_1<0.0", "signal_minus"))
     elif channel == "mtt":
         cuts = [
             ("muon_is_mediumid_1 > 0.5", "muon_id_cut"),
@@ -129,22 +226,44 @@ def channel_selection(channel, era):
             ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
             ("extraelec_veto<0.5", "extraelectron_veto"),
             ("((q_1*q_2>0.5) && pt_2>30) || ((q_1*q_3>0.5) && pt_3>30)", "ss_pt_cut"),
-            # trigger selection
-            (
-                "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25)",
-                "trg_selection",
-            ),
-            # control region cut
-            # (
-            #     "Lt<130 || pt_123>70 || met>70",
-            #     "ctrl_region",
-            # ),
-            # signal region cut
-            (
-                "Lt>130 && pt_123<70 && met<70",
-                "signal_region",
-            ),
         ]
+        if era in ["2018", "2017"]:
+            cuts.append(
+                (
+                    "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25 && (abs(eta_1)<2.4))",
+                    "trg_selection",
+                ),
+            )
+        elif era == "2016":
+            cuts.append(
+                (
+                    "((trg_single_mu22 == 1) && pt_1 > 23 && (abs(eta_1)<2.1))",
+                    "trg_selection",
+                ),
+            )
+        if region == "control":
+            cuts.append(
+                (
+                    "Lt<130 || pt_123>70 || met>70",
+                    "ctrl_region",
+                ),
+            )
+        elif region == "plus":
+            cuts.append(
+                (
+                    "Lt>130 && pt_123<70 && met<70",
+                    "signal_region",
+                ),
+            )
+            cuts.append(("q_1>0.0", "signal_plus"))
+        elif region == "minus":
+            cuts.append(
+                (
+                    "Lt>130 && pt_123<70 && met<70",
+                    "signal_region",
+                ),
+            )
+            cuts.append(("q_1<0.0", "signal_minus"))
     return Selection(name="{ch}".format(ch=channel), cuts=cuts)
 
 

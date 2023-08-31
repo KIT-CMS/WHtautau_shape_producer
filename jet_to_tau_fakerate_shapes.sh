@@ -1,7 +1,7 @@
 #WH fake rate shapes
 source utils/setup_root.sh
 
-NTUPLE_TAG="11_08_emb_sf_17_18"
+NTUPLE_TAG="21_08_23_all_ch_17_18_shifts"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 FRIEND_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/"
 CHANNEL="mmt"

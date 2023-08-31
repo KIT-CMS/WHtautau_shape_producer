@@ -1,16 +1,16 @@
-# MODE options are: PRINT (print fit results), FIT, POSTFIT (produces postfit and prefit shapes), PLOT
+# MODE options are: PRINT (print fit results), FIT, POSTFIT (produces postfit and prefit shapes), PLOT, IMPACTS
 MODE="$1"
-CHANNELS="all"
-ERA="2018"
+CHANNELS="met ett mtt all"
+ERA="2017"
 #NTUPLE_TAG="11_07_shifts_all_ch"
-NTUPLE_TAG="11_07_shifts_all_ch"
-SHAPE_TAG="ptW_mtt_AN_ptW_binning"
+NTUPLE_TAG="21_08_23_all_ch_17_18_shifts"
+SHAPE_TAG="six_ortho_regions"
 SYNCED_DIR_EMT=output/shapes/${NTUPLE_TAG}/${ERA}/emt/${SHAPE_TAG}/synced_shapes
 SYNCED_DIR_MMT=output/shapes/${NTUPLE_TAG}/${ERA}/mmt/${SHAPE_TAG}/synced_shapes
 SYNCED_DIR_MET=output/shapes/${NTUPLE_TAG}/${ERA}/met/${SHAPE_TAG}/synced_shapes
 SYNCED_DIR_ETT=output/shapes/${NTUPLE_TAG}/${ERA}/ett/${SHAPE_TAG}/synced_shapes
 SYNCED_DIR_MTT=output/shapes/${NTUPLE_TAG}/${ERA}/mtt/${SHAPE_TAG}/synced_shapes
-BASE_PATH="output/datacard_output/${NTUPLE_TAG}/${SHAPE_TAG}_incl_mtt_control"
+BASE_PATH="output/datacard_output/${NTUPLE_TAG}/${SHAPE_TAG}"
 if [[ $MODE == "PRINT" ]]; then
     source utils/setup_cmssw.sh 
     for CHANNEL in $CHANNELS
@@ -134,7 +134,10 @@ if [[ $MODE == "PLOT" ]]; then
         INPUT="output/datacard_output/${NTUPLE_TAG}/${SHAPE_TAG}/${ERA}_all/cmb/postfitshape.root"
         for CHANNEL in $CHANNELS
         do
-            for CAT in pt_W_plus m_tt_plus pt_W_minus m_tt_minus
+            if [[ $CHANNEL == "all" ]]; then
+            exit 0
+            fi
+            for CAT in pt_W_plus m_tt_plus pt_W_minus m_tt_minus m_tt_control
             do
                 OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}
                 python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} --prefit 
@@ -145,9 +148,9 @@ if [[ $MODE == "PLOT" ]]; then
         for CHANNEL in $CHANNELS
         do
             INPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb/postfitshape.root"
-            for CAT in pt_W_plus m_tt_plus pt_W_minus m_tt_minus
+            for CAT in pt_W_plus m_tt_plus pt_W_minus m_tt_minus m_tt_control
             do
-                OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}
+                OUTPUT=plots/${NTUPLE_TAG}/${SHAPE_TAG}_incl_mtt_control/${ERA}/${CHANNEL}
                 python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} --prefit 
                 python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} 
             done
@@ -156,6 +159,7 @@ if [[ $MODE == "PLOT" ]]; then
 fi
 if [[ $MODE == "IMPACTS" ]]; then
     source utils/setup_cmssw.sh
+    CHANNELS="all"
     for CHANNEL in $CHANNELS
     do
         DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb"
@@ -176,5 +180,63 @@ if [[ $MODE == "IMPACTS" ]]; then
         mv sm_mc_${ERA}_${CHANNEL}_impacts.pdf $DATACARD_OUTPUT/.
         mv sm_mc_${ERA}_${CHANNEL}_impacts.json $DATACARD_OUTPUT/.
         ls $DATACARD_OUTPUT/sm_mc_${ERA}_${CHANNEL}_impacts.pdf 
+    done
+fi
+if [[ $MODE == "UNC_SPLIT" ]]; then
+    source utils/setup_cmssw.sh
+    DATACARD_OUTPUT="${BASE_PATH}/${ERA}_all/cmb"
+    DATACARD=${DATACARD_OUTPUT}/combined.txt.cmb
+    # this can be check by checking if "theory group" can be found in the card. If not, add the groups
+    if ! grep -q "theory group" $DATACARD; then
+        echo "Adding MC unc groups to datacard"
+        cat uncertainty_groups_2018.txt >> $DATACARD
+    fi
+    combineTool.py -M T2W -o workspace.root -i $DATACARD -m 125 \
+                -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
+                --PO verbose \
+                --PO 'map=.*/WHplus.?$:r[1,-10,10]' \
+                --PO 'map=.*/WHminus.?$:r'
+    POIS=("r")
+    RESULTFOLDER=$DATACARD_OUTPUT/unc_split/
+
+    mkdir -p $RESULTFOLDER
+    echo "Will run fit for POIs: ${POIS[@]}"
+    # # loop though the POIs and run the fit
+    for POI in ${POIS[@]}; do
+        combine -M MultiDimFit $DATACARD_OUTPUT/workspace.root -n .snapshot -m 125 --saveWorkspace --redefineSignalPOIs $POI -t -1 --setParameters r=1.0 
+        # combineTool.py \
+        # -M MultiDimFit \
+        # -m 125 \
+        # -d $DATACARD_OUTPUT/cmb/workspace.root \
+        # --algo singles \
+        # --robustFit 1 \
+        # --X-rtd MINIMIZER_analytic \
+        # --cminDefaultMinimizerStrategy 0 \
+        # --setParameters r=1.0 \
+        # --setParameterRanges r=-10,10 \
+        # --redefineSignalPOIs r \
+        # -n $ERA -v1 \
+        # -t -1 \
+        # --parallel 1 --there 
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .nominal -m 125 --algo grid --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezebbb -m 125 --algo grid --freezeNuisanceGroups autoMCStats --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezesyst -m 125 --algo grid --freezeNuisanceGroups autoMCStats,syst --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezetheory -m 125 --algo grid --freezeNuisanceGroups syst,theory,autoMCStats --snapshotName MultiDimFit --redefineSignalPOIs $POI  --points 20 --setParameters r=1.0 -t -1
+
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezeall -m 125 --algo grid --freezeParameters allConstrainedNuisances --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+
+        outputname=freeze_${POI}_mc
+        plot1DScan.py higgsCombine.nominal.MultiDimFit.mH125.root --POI $POI --others higgsCombine.freezebbb.MultiDimFit.mH125.root:"freeze bbb":4 higgsCombine.freezesyst.MultiDimFit.mH125.root:"freeze bbb + syst":6 higgsCombine.freezetheory.MultiDimFit.mH125.root:"freeze bbb + syst + theo":7 higgsCombine.freezeall.MultiDimFit.mH125.root:"Stat. only":2 -o ${outputname} --breakdown bbb,syst,theory,rest,stat --y-max 4  #--x-range 0,2
+        #--json $outputname.json
+
+        # move all output files to the result folder
+        echo "Moving output files to $RESULTFOLDER"
+        mv higgsCombine* $RESULTFOLDER
+        mv ${outputname}.pdf $RESULTFOLDER
+        mv ${outputname}.png $RESULTFOLDER
+        mv ${outputname}.root $RESULTFOLDER
     done
 fi

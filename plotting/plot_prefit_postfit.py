@@ -93,6 +93,7 @@ def main(info):
         "m_tt_plus": "2",
         "pt_W_minus": "3",
         "m_tt_minus": "4",
+        "m_tt_control": "5",
     }
     VVV_processes = ["WWW", "WWZ", "WZZ", "ZZZ"]
 
@@ -110,7 +111,12 @@ def main(info):
         "WHplus",
         "WHminus",
     ]
-    rootfile = rootfile_parser.Rootfile_parser(args.input, prefit=args.prefit)
+    if args.prefit:
+        fittype = "prefit"
+    else:
+        fittype = "postfit"
+    print(cat)
+    rootfile = rootfile_parser.Rootfile_parser(args.input, fittype)
     print(rootfile)
     legend_bkg_processes = copy.deepcopy(bkg_processes)
     legend_bkg_processes.reverse()
@@ -261,7 +267,7 @@ def main(info):
     plot.legend(3).setAlpha(0.0)
     plot.legend(3).Draw()
     # draw additional labels
-    plot.DrawCMS()
+    plot.DrawCMS(thesisstyle=True, preliminary=False)
     if "2016" in args.era:
         plot.DrawLumi("35.9 fb^{-1} (2016, 13 TeV)")
     elif "2017" in args.era:

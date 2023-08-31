@@ -712,11 +712,11 @@ if __name__ == "__main__":
         corr_file_dict_tau["2016"] = args.corr_file_tau_16
         corr_file_dict_ele["2016"] = args.corr_file_ele_16
         corr_file_dict_mu["2016"] = args.corr_file_mu_16
-    elif "2017" in args.eras:
+    if "2017" in args.eras:
         corr_file_dict_tau["2017"] = args.corr_file_tau_17
         corr_file_dict_ele["2017"] = args.corr_file_ele_17
         corr_file_dict_mu["2017"] = args.corr_file_mu_17
-    elif "2018" in args.eras:
+    if "2018" in args.eras:
         corr_file_dict_tau["2018"] = args.corr_file_tau_18
         corr_file_dict_ele["2018"] = args.corr_file_ele_18
         corr_file_dict_mu["2018"] = args.corr_file_mu_18

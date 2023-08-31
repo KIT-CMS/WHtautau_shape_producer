@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import Dumbledraw.dumbledraw as dd
-import Dumbledraw.rootfile_parser_inputshapes as rootfile_parser
+import Dumbledraw.rootfile_parser_inputshapes_wh as rootfile_parser
 import Dumbledraw.styles as styles
 import ROOT
 import argparse
@@ -354,7 +354,7 @@ def main(info):
     plot.legend(3).setAlpha(0.0)
     plot.legend(3).Draw()
     # draw additional labels
-    plot.DrawCMS()
+    plot.DrawCMS(thesisstyle=True, preliminary=False)
     if "2016" in args.era:
         plot.DrawLumi("35.9 fb^{-1} (2016, 13 TeV)")
     elif "2017" in args.era:
@@ -449,7 +449,7 @@ if __name__ == "__main__":
     for ch in channels:
         for v in variables:
             infolist.append({"args": args, "channel": ch, "variable": v})
-    pool = Pool(6)
+    pool = Pool(1)
     pool.map(main, infolist)
     # for info in infolist:
     #     main(info)

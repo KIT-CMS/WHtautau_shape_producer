@@ -4,41 +4,126 @@ import ROOT as R
 
 ##### wh analysis selction
 def channel_selection(channel, era, region):
-    # Specify general channel and era independent cuts.
-    if channel in ["emt", "met"]:
-        cuts = [
-            ("q_1*q_2>0.0", "ss"),
-            ("q_2*q_3<0.0", "os"),
-            ("pt_1>15.", "pt_1_cut"),
-            ("pt_2>15.", "pt_2_cut"),
-            ("nbtag<0.5", "b_veto"),
-            ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
-            ("id_tau_vsEle_Tight_3>0.5", "againstElectronDiscriminator"),
-            ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
-        ]
-        if region == "control":
-            cuts.append(
+    if channel in ["emt", "met", "mmt"]:
+        if region == "control_plus_high_ptw":
+            cuts = [
                 (
                     "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
                     "ctrl_region",
-                )
-            )
-        elif region == "plus":
-            cuts.append(
+                ),
+                ("q_1>0.0", "signal_plus"),
+                ("pt_W>100", "high_ptw"),
+            ]
+        elif region == "control_plus_low_ptw":
+            cuts = [
+                (
+                    "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
+                    "ctrl_region",
+                ),
+                ("q_1>0.0", "signal_plus"),
+                ("pt_W<100", "low_ptw"),
+            ]
+        elif region == "control_minus_high_ptw":
+            cuts = [
+                (
+                    "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
+                    "ctrl_region",
+                ),
+                ("q_1<0.0", "signal_minus"),
+                ("pt_W>100", "high_ptw"),
+            ]
+        elif region == "control_minus_low_ptw":
+            cuts = [
+                (
+                    "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
+                    "ctrl_region",
+                ),
+                ("q_1<0.0", "signal_minus"),
+                ("pt_W<100", "low_ptw"),
+            ]
+        elif region == "sig_plus":
+            cuts = [
                 (
                     "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
                     "signal_region",
-                )
-            )
-            cuts.append(("q_1>0.0", "signal_plus"))
-        elif region == "minus":
-            cuts.append(
+                ),
+                ("q_1>0.0", "signal_plus"),
+            ]
+        elif region == "sig_minus":
+            cuts = [
                 (
                     "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
                     "signal_region",
-                )
-            )
-            cuts.append(("q_1<0.0", "signal_minus"))
+                ),
+                ("q_1<0.0", "signal_minus"),
+            ]
+    elif channel in ["ett", "mtt"]:
+        if region == "control_plus_high_ptw":
+            cuts = [
+                (
+                    "Lt<130 || pt_123>70 || met>70",
+                    "ctrl_region",
+                ),
+                ("q_1>0.0", "signal_plus"),
+                ("pt_W>100", "high_ptw"),
+            ]
+        elif region == "control_plus_low_ptw":
+            cuts = [
+                (
+                    "Lt<130 || pt_123>70 || met>70",
+                    "ctrl_region",
+                ),
+                ("q_1>0.0", "signal_plus"),
+                ("pt_W<100", "low_ptw"),
+            ]
+        elif region == "control_minus_high_ptw":
+            cuts = [
+                (
+                    "Lt<130 || pt_123>70 || met>70",
+                    "ctrl_region",
+                ),
+                ("q_1<0.0", "signal_plus"),
+                ("pt_W>100", "high_ptw"),
+            ]
+        elif region == "control_minus_low_ptw":
+            cuts = [
+                (
+                    "Lt<130 || pt_123>70 || met>70",
+                    "ctrl_region",
+                ),
+                ("q_1<0.0", "signal_plus"),
+                ("pt_W<100", "low_ptw"),
+            ]
+        elif region == "sig_plus":
+            cuts = [
+                (
+                    "Lt>130 && pt_123<70 && met<70",
+                    "signal_region",
+                ),
+                ("q_1>0.0", "signal_plus"),
+            ]
+        elif region == "sig_minus":
+            cuts = [
+                (
+                    "Lt>130 && pt_123<70 && met<70",
+                    "signal_region",
+                ),
+                ("q_1<0.0", "signal_minus"),
+            ]
+    # Specify general channel and era independent cuts.
+    if channel in ["emt", "met"]:
+        cuts.extend(
+            [
+                ("q_1*q_2>0.0", "ss"),
+                ("q_2*q_3<0.0", "os"),
+                ("pt_1>15.", "pt_1_cut"),
+                ("pt_2>15.", "pt_2_cut"),
+                ("nbtag<0.5", "b_veto"),
+                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsEle_Tight_3>0.5", "againstElectronDiscriminator"),
+                ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
+            ]
+        )
         if channel == "emt":
             # triggermatching for single ele and single mu trigger and corresponding pt requirements
             # id and iso cuts have to be in one cut, cause of the variations
@@ -92,20 +177,22 @@ def channel_selection(channel, era, region):
                     )
                 )
     elif channel == "mmt":
-        cuts = [
-            ("q_1*q_2>0.0", "ss"),
-            ("q_2*q_3<0.0", "os"),
-            ("pt_1>15.", "pt_1_cut"),
-            ("pt_2>15.", "pt_2_cut"),
-            ("nbtag<0.5", "b_veto"),
-            ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
-            ("id_tau_vsEle_VLoose_3>0.5", "againstElectronDiscriminator"),
-            ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
-            ("iso_1<0.15", "iso_cut_1"),
-            ("deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
-            ("muon_is_mediumid_1 > 0.5", "id_cut_1"),
-            ("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"),
-        ]
+        cuts.extend(
+            [
+                ("q_1*q_2>0.0", "ss"),
+                ("q_2*q_3<0.0", "os"),
+                ("pt_1>15.", "pt_1_cut"),
+                ("pt_2>15.", "pt_2_cut"),
+                ("nbtag<0.5", "b_veto"),
+                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsEle_VLoose_3>0.5", "againstElectronDiscriminator"),
+                ("id_tau_vsJet_VTight_3>0.5", "tau_iso"),
+                ("iso_1<0.15", "iso_cut_1"),
+                ("deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
+                ("muon_is_mediumid_1 > 0.5", "id_cut_1"),
+                ("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"),
+            ]
+        )
         if era in ["2018", "2017"]:
             cuts.append(
                 (
@@ -120,49 +207,31 @@ def channel_selection(channel, era, region):
                     "trg_selection",
                 )
             )
-        if region == "control":
-            cuts.append(
-                (
-                    "Lt<100 || (abs(eta_1-eta_vis)>2.0) || (abs(deltaPhi_WH)<2.0)",
-                    "ctrl_region",
-                )
-            )
-        elif region == "plus":
-            cuts.append(
-                (
-                    "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
-                    "signal_region",
-                )
-            )
-            cuts.append(("q_1>0.0", "signal_plus"))
-        elif region == "minus":
-            cuts.append(
-                (
-                    "Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0)",
-                    "signal_region",
-                )
-            )
-            cuts.append(("q_1<0.0", "signal_minus"))
     elif channel == "ett":
-        cuts = [
-            ("electron_is_nonisowp90_1>0.5", "id_cut"),
-            ("pt_1>33.", "pt_1_cut"),
-            ("iso_1<0.15", "iso_cut_1"),
-            ("nbtag<0.5", "b_veto"),
-            ("q_2*q_3<0.0", "os"),
-            (
-                "id_tau_vsEle_Tight_3>0.5&&id_tau_vsEle_Tight_2>0.5",
-                "againstElectronDiscriminator",
-            ),
-            (
-                "id_tau_vsMu_VLoose_3>0.5&&id_tau_vsMu_VLoose_2>0.5",
-                "againstMuonDiscriminator",
-            ),
-            ("id_tau_vsJet_VTight_3>0.5&&id_tau_vsJet_VTight_2>0.5", "tau_iso"),
-            ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
-            ("extramuon_veto<0.5", "extramuon_veto"),
-            ("((q_1*q_2>0.5) && pt_2>30) || ((q_1*q_3>0.5) && pt_3>30)", "ss_pt_cut"),
-        ]
+        cuts.extend(
+            [
+                ("electron_is_nonisowp90_1>0.5", "id_cut"),
+                ("pt_1>33.", "pt_1_cut"),
+                ("iso_1<0.15", "iso_cut_1"),
+                ("nbtag<0.5", "b_veto"),
+                ("q_2*q_3<0.0", "os"),
+                (
+                    "id_tau_vsEle_Tight_3>0.5&&id_tau_vsEle_Tight_2>0.5",
+                    "againstElectronDiscriminator",
+                ),
+                (
+                    "id_tau_vsMu_VLoose_3>0.5&&id_tau_vsMu_VLoose_2>0.5",
+                    "againstMuonDiscriminator",
+                ),
+                ("id_tau_vsJet_VTight_3>0.5&&id_tau_vsJet_VTight_2>0.5", "tau_iso"),
+                ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
+                ("extramuon_veto<0.5", "extramuon_veto"),
+                (
+                    "((q_1*q_2>0.5) && pt_2>30) || ((q_1*q_3>0.5) && pt_3>30)",
+                    "ss_pt_cut",
+                ),
+            ]
+        )
         if era == "2018":
             cuts.append(
                 (
@@ -184,49 +253,32 @@ def channel_selection(channel, era, region):
                     "trg_selection",
                 )
             )
-        if region == "control":
-            cuts.append(
-                (
-                    "Lt<130 || pt_123>70 || met>70",
-                    "ctrl_region",
-                ),
-            )
-        elif region == "plus":
-            cuts.append(
-                (
-                    "Lt>130 && pt_123<70 && met<70",
-                    "signal_region",
-                ),
-            )
-            cuts.append(("q_1>0.0", "signal_plus"))
-        elif region == "minus":
-            cuts.append(
-                (
-                    "Lt>130 && pt_123<70 && met<70",
-                    "signal_region",
-                ),
-            )
-            cuts.append(("q_1<0.0", "signal_minus"))
+
     elif channel == "mtt":
-        cuts = [
-            ("muon_is_mediumid_1 > 0.5", "muon_id_cut"),
-            ("pt_1>10.", "pt_1_cut"),
-            ("iso_1<0.15", "iso_cut_1"),
-            ("nbtag<0.5", "b_veto"),
-            ("q_2*q_3<0.0", "os"),
-            (
-                "id_tau_vsEle_VLoose_3>0.5&&id_tau_vsEle_VLoose_2>0.5",
-                "againstElectronDiscriminator",
-            ),
-            (
-                "id_tau_vsMu_Tight_3>0.5&&id_tau_vsMu_Tight_2>0.5",
-                "againstMuonDiscriminator",
-            ),
-            ("id_tau_vsJet_VTight_3>0.5&&id_tau_vsJet_VTight_2>0.5", "tau_iso"),
-            ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
-            ("extraelec_veto<0.5", "extraelectron_veto"),
-            ("((q_1*q_2>0.5) && pt_2>30) || ((q_1*q_3>0.5) && pt_3>30)", "ss_pt_cut"),
-        ]
+        cuts.extend(
+            [
+                ("muon_is_mediumid_1 > 0.5", "muon_id_cut"),
+                ("pt_1>10.", "pt_1_cut"),
+                ("iso_1<0.15", "iso_cut_1"),
+                ("nbtag<0.5", "b_veto"),
+                ("q_2*q_3<0.0", "os"),
+                (
+                    "id_tau_vsEle_VLoose_3>0.5&&id_tau_vsEle_VLoose_2>0.5",
+                    "againstElectronDiscriminator",
+                ),
+                (
+                    "id_tau_vsMu_Tight_3>0.5&&id_tau_vsMu_Tight_2>0.5",
+                    "againstMuonDiscriminator",
+                ),
+                ("id_tau_vsJet_VTight_3>0.5&&id_tau_vsJet_VTight_2>0.5", "tau_iso"),
+                ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
+                ("extraelec_veto<0.5", "extraelectron_veto"),
+                (
+                    "((q_1*q_2>0.5) && pt_2>30) || ((q_1*q_3>0.5) && pt_3>30)",
+                    "ss_pt_cut",
+                ),
+            ]
+        )
         if era in ["2018", "2017"]:
             cuts.append(
                 (
@@ -241,29 +293,6 @@ def channel_selection(channel, era, region):
                     "trg_selection",
                 ),
             )
-        if region == "control":
-            cuts.append(
-                (
-                    "Lt<130 || pt_123>70 || met>70",
-                    "ctrl_region",
-                ),
-            )
-        elif region == "plus":
-            cuts.append(
-                (
-                    "Lt>130 && pt_123<70 && met<70",
-                    "signal_region",
-                ),
-            )
-            cuts.append(("q_1>0.0", "signal_plus"))
-        elif region == "minus":
-            cuts.append(
-                (
-                    "Lt>130 && pt_123<70 && met<70",
-                    "signal_region",
-                ),
-            )
-            cuts.append(("q_1<0.0", "signal_minus"))
     return Selection(name="{ch}".format(ch=channel), cuts=cuts)
 
 

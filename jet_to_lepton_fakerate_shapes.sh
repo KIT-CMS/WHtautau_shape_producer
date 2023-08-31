@@ -2,10 +2,10 @@
 #the arguments --wp_vs_jet --wp_vs_mu --wp_vs_ele --decay_mode and --id_wp_ele/mu are not relevant for the shapes for jet to mu/ele 
 source utils/setup_root.sh
 
-NTUPLE_TAG="11_08_emb_sf_17_18"
+NTUPLE_TAG="21_08_23_all_ch_17_18_shifts"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 FRIEND_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/"
-ERA="2018"
+ERA="2017"
 
 #jet to electron fakerate shapes
 CHANNEL="mme"

@@ -26,6 +26,7 @@ _dataset_map = {
     "ZZ": "ZZ",
     "TT": "TT",
     "rem_ttbar": "rem_ttbar",
+    "rem_VH": "rem_VH",
     "triboson": "triboson",
     "Wjets": "Wjets",
     "DY": "DY",
@@ -60,6 +61,7 @@ _process_map = {
     "Wjets": "W",
     "DY": "DY",
     "rem_VV": "VV",
+    "rem_VH": "VH",
 }
 
 _name_string = "{dataset}#{channel}{process}{selection}#{variation}#{variable}"
@@ -157,7 +159,7 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
         "ZZ",
         "rem_ttbar",
         "WZ",
-        "rem_vh",
+        "rem_VH",
     ]
     logger.debug(
         "Trying to get object {}".format(
@@ -220,7 +222,6 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
 
 
 def jet_fakes_nominal(rootfile, channel, category, variable, variation):
-    print("hi", variation)
     # function that adds all contributions from jetfakes together to a nominal histogram
     if "Up" in variation or "Down" in variation:
         unc = "_CMS_ff_{syst}_{shift}".format(
@@ -273,28 +274,8 @@ def jet_fakes_nominal(rootfile, channel, category, variable, variation):
             variable=variable,
         )
     ).Clone()
-    print(
-        _name_string.format(
-            dataset="jetFakes",
-            channel=channel,
-            process="-jetFakes",
-            selection=category,
-            variation="tau_anti_iso{unc}".format(unc=unc),
-            variable=variable,
-        )
-    )
     if channel not in ["ett", "mtt"]:
         for var_ in fake_contributions:
-            print(
-                _name_string.format(
-                    dataset="jetFakes",
-                    channel=channel,
-                    process="-jetFakes",
-                    selection=category,
-                    variation="{var_}{unc}".format(var_=var_, unc=unc),
-                    variable=variable,
-                )
-            )
             logger.debug(
                 "Nominal jetfakes histogram -- Trying to fetch root histogram {}".format(
                     _name_string.format(
@@ -325,7 +306,6 @@ def jet_fakes_nominal(rootfile, channel, category, variable, variation):
     )
     base_hist.SetName(variation_name)
     base_hist.SetTitle(variation_name)
-    print(variation_name)
     return base_hist
 
 

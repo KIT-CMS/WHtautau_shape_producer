@@ -1,8 +1,11 @@
-source utils/setup_cvmfs_sft.sh
-source utils/setup_python.sh
+# source utils/setup_cvmfs_sft.sh
+source utils/setup_root.sh
+export PYTHONPATH=$PYTHONPATH:$PWD/Dumbledraw
+
+
 ERA="2018"
-CHANNELS="ett emt met mtt mmt"
-NTUPLE_TAG="11_08_emb_sf_17_18"
+CHANNELS="ett"
+NTUPLE_TAG="21_08_23_all_ch_17_18_shifts"
 SHAPE_TAG="ptW_AN_binning"
 REGIONS="control"
 for CHANNEL in $CHANNELS
@@ -37,13 +40,13 @@ do
             INPUT="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}.root"
             TAG="${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}"
             if [ "$REGION" = "control" ]; then
-                for VAR in pt_W m_tt m_vis pt_1 pt_2 pt_3 met  #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
+                for VAR in m_tt #m_tt m_vis pt_1 pt_2 pt_3 met  #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
                 do
                     python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
                     python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
                 done
             else
-                for VAR in pt_W m_tt #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
+                for VAR in m_tt #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
                 do
                     python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} --blinded #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
                     python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --blinded #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width

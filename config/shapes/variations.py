@@ -21,7 +21,7 @@ from ntuple_processor.variations import ChangeDatasetReplaceMultipleCutsAndAddWe
 anti_iso_llt_tau = ReplaceCutAndAddWeight(
     "tau_anti_iso",
     "tau_iso",
-    Cut("id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
+    Cut("id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
     Weight("tau_fakerate_Era", "fake_factor"),
 )
 anti_isoid_mu_1 = ReplaceMultipleCutsAndAddWeight(
@@ -87,7 +87,7 @@ anti_isoid_mu_1_tau = ReplaceMultipleCutsAndAddWeight(
             "(iso_1>0.15 || muon_is_mediumid_1<0.5) && pt_1<25",
             "mu_1_anti_iso",
         ),
-        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_1_fakerate_Era",
@@ -102,7 +102,7 @@ anti_isoid_mu_2_tau = ReplaceMultipleCutsAndAddWeight(
             "(iso_2>0.15 || muon_is_mediumid_2<0.5) && pt_2<25",
             "mu_2_anti_iso",
         ),
-        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_2_fakerate_Era",
@@ -117,7 +117,7 @@ mmt_anti_isoid_mu_2_tau = ReplaceMultipleCutsAndAddWeight(
             "(iso_2>0.15|| muon_is_mediumid_2<0.5)",
             "mu_2_anti_iso",
         ),
-        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_2_fakerate_Era",
@@ -132,7 +132,7 @@ anti_isoid_ele_1_tau = ReplaceMultipleCutsAndAddWeight(
             "(iso_1>0.15 || electron_is_nonisowp90_1<0.5) && pt_2>25",
             "ele_1_tau_anti_isoid",
         ),
-        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_1_fakerate_Era",
@@ -147,7 +147,7 @@ anti_isoid_ele_2_tau = ReplaceMultipleCutsAndAddWeight(
             "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && pt_1>25",
             "ele_2_anti_iso",
         ),
-        Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_2_fakerate_Era",
@@ -158,11 +158,28 @@ anti_iso_ltt = ReplaceCutAndAddWeight(
     "tau_anti_iso",
     "tau_iso",
     Cut(
-        "((q_1*q_2>0) && id_tau_vsJet_VTight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_VTight_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_VTight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_VTight_2>0.5)",
+        "(((q_1*q_2>0) && id_tau_vsJet_Tight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_Tight_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_Tight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_Tight_2>0.5))",
         "tau_anti_iso",
     ),
     Weight("tau_fakerate_Era", "fake_factor"),
 )
+
+anti_iso_ltt_var = [
+    ReplaceCutAndAddWeight(
+        "tau_anti_iso_{unc}_Era{shift}".format(unc=unc, shift=shift),
+        "tau_iso",
+        Cut(
+            "(((q_1*q_2>0) && id_tau_vsJet_Tight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_Tight_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_Tight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_Tight_2>0.5))",
+            "tau_anti_iso",
+        ),
+        Weight(
+            "tau_fakerate_{unc}_Era{shift}".format(unc=unc, shift=shift), "fake_factor"
+        ),
+    )
+    for shift in ["Up", "Down"]
+    for unc in ["CMS_ff_syst", "CMS_ff_stat"]
+]
+
 # Pileup reweighting
 pileup_reweighting = [
     ReplaceVariable("CMS_PileUpUp", "PileUpUp"),
@@ -378,7 +395,7 @@ anti_iso_llt_tau_var = [
     ReplaceCutAndAddWeight(
         "tau_anti_iso_{unc}_Era{shift}".format(unc=unc, shift=shift),
         "tau_iso",
-        Cut("id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
+        Cut("id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
         Weight(
             "tau_fakerate_{unc}_Era{shift}".format(unc=unc, shift=shift), "fake_factor"
         ),
@@ -487,7 +504,7 @@ anti_isoid_mu_1_tau_var = [
                 "mu_1_anti_iso",
             ),
             Cut(
-                "(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
+                "(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
                 "tau_anti_iso",
             ),
         ],
@@ -511,7 +528,7 @@ anti_isoid_mu_2_tau_var = [
                 "mu_2_anti_iso",
             ),
             Cut(
-                "(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
+                "(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
                 "tau_anti_iso",
             ),
         ],
@@ -535,7 +552,7 @@ mmt_anti_isoid_mu_2_tau_var = [
                 "mu_2_anti_iso",
             ),
             Cut(
-                "(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
+                "(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
                 "tau_anti_iso",
             ),
         ],
@@ -559,7 +576,7 @@ anti_isoid_ele_1_tau_var = [
                 "ele_1_tau_anti_isoid",
             ),
             Cut(
-                "(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
+                "(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
                 "tau_anti_iso",
             ),
         ],
@@ -583,7 +600,7 @@ anti_isoid_ele_2_tau_var = [
                 "ele_2_anti_iso",
             ),
             Cut(
-                "(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
+                "(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)",
                 "tau_anti_iso",
             ),
         ],
@@ -597,26 +614,12 @@ anti_isoid_ele_2_tau_var = [
     for shift in ["Up", "Down"]
     for unc in ["CMS_ff_syst", "CMS_ff_stat"]
 ]
-anti_iso_ltt_var = [
-    ReplaceCutAndAddWeight(
-        "tau_anti_iso_{unc}_Era{shift}".format(unc=unc, shift=shift),
-        "tau_iso",
-        Cut(
-            "((q_1*q_2>0) && id_tau_vsJet_VTight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_VTight_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_VTight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_VTight_2>0.5)",
-            "tau_anti_iso",
-        ),
-        Weight(
-            "tau_fakerate_{unc}_Era{shift}".format(unc=unc, shift=shift), "fake_factor"
-        ),
-    )
-    for shift in ["Up", "Down"]
-    for unc in ["CMS_ff_syst", "CMS_ff_stat"]
-]
+
 ## v_3
 # anti_iso_llt_tau = ReplaceCutAndAddWeight(
 #     "tau_anti_iso",
 #     "tau_iso",
-#     Cut("id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
+#     Cut("id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
 #     Weight("tau_fakerate", "fake_factor"),
 # )
 # anti_isoid_mu_1 = ReplaceMultipleCutsAndAddWeight(
@@ -682,7 +685,7 @@ anti_iso_ltt_var = [
 #             "(iso_1>0.15 && muon_is_mediumid_1>0.5) && pt_1<25",
 #             "mu_1_anti_iso",
 #         ),
-#         Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+#         Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
 #     ],
 #     Weight(
 #         "-tau_fakerate*lep_1_fakerate",
@@ -697,7 +700,7 @@ anti_iso_ltt_var = [
 #             "(iso_2>0.15 && muon_is_mediumid_2>0.5) && pt_2<25",
 #             "mu_2_anti_iso",
 #         ),
-#         Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+#         Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
 #     ],
 #     Weight(
 #         "-tau_fakerate*lep_2_fakerate",
@@ -712,7 +715,7 @@ anti_iso_ltt_var = [
 #             "(iso_2>0.15 && muon_is_mediumid_2>0.5)",
 #             "mu_2_anti_iso",
 #         ),
-#         Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+#         Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
 #     ],
 #     Weight(
 #         "-tau_fakerate*lep_2_fakerate",
@@ -727,7 +730,7 @@ anti_iso_ltt_var = [
 #             "(iso_1>0.15 && electron_is_nonisowp90_1>0.5) && pt_2>25",
 #             "ele_1_tau_anti_isoid",
 #         ),
-#         Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+#         Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
 #     ],
 #     Weight(
 #         "-tau_fakerate*lep_1_fakerate",
@@ -742,7 +745,7 @@ anti_iso_ltt_var = [
 #             "(iso_2>0.15 && electron_is_nonisowp90_2>0.5) && pt_1>25",
 #             "ele_2_anti_iso",
 #         ),
-#         Cut("(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+#         Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
 #     ],
 #     Weight(
 #         "-tau_fakerate*lep_2_fakerate",
@@ -753,7 +756,7 @@ anti_iso_ltt_var = [
 #     "tau_anti_iso",
 #     "tau_iso",
 #     Cut(
-#         "((q_1*q_2>0) && id_tau_vsJet_VTight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_VTight_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_VTight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_VTight_2>0.5)",
+#         "((q_1*q_2>0) && id_tau_vsJet_Tight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_Tight_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_Tight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_Tight_2>0.5)",
 #         "tau_anti_iso",
 #     ),
 #     Weight("tau_fakerate", "fake_factor"),

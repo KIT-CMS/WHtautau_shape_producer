@@ -25,17 +25,19 @@ def channel_selection(
             # ("id_tau_vsJet_{wp_vs_jet}_3>0.5".format(wp_vs_jet=wp_vs_jet), "tau_iso"),
             ("nbtag<0.5", "b_veto"),
         ]
-        if wp_vs_jet == "VTight":
+        if wp_vs_jet == "VVVLoose":
             cuts.append(
                 (
-                    "id_tau_vsJet_{wp_vs_jet}_3>0.5".format(wp_vs_jet=wp_vs_jet),
+                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_Tight_3<0.5".format(
+                        wp_vs_jet=wp_vs_jet
+                    ),
                     "tau_iso",
                 )
             )
         else:
             cuts.append(
                 (
-                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_VTight_3<0.5".format(
+                    "id_tau_vsJet_{wp_vs_jet}_3>0.5".format(
                         wp_vs_jet=wp_vs_jet
                     ),
                     "tau_iso",
@@ -48,7 +50,7 @@ def channel_selection(
                     "trg_selection",
                 ),
             )
-        elif era == "2016":
+        else:
             cuts.append(
                 (
                     "((trg_single_mu22 == 1) && pt_1 > 23 && (abs(eta_1)<2.1))",
@@ -83,7 +85,7 @@ def channel_selection(
                     "trg_selection",
                 ),
             )
-        elif era == "2016":
+        else:
             cuts.append(
                 (
                     "((trg_single_mu22 == 1) && pt_1 > 23 && (abs(eta_1)<2.1))",
@@ -126,7 +128,7 @@ def channel_selection(
                     "trg_selection",
                 )
             )
-        elif era == "2016":
+        else:
             cuts.append(
                 (
                     "pt_1 > 26 && (abs(eta_1)<2.1) && (trg_single_ele25 == 1)",

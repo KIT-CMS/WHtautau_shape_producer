@@ -35,6 +35,24 @@ def parse_arguments():
         required=True,
         help="plot of rates",
     )
+    parser.add_argument(
+        "--wp_vs_jets",
+        default=[],
+        type=lambda wp_jets: [wp for wp in wp_jets.split(",")],
+        help="working points vs jets",
+    )
+    parser.add_argument(
+        "--wp_vs_mu",
+        default=[],
+        type=lambda wp_mu: [wp for wp in wp_mu.split(",")],
+        help="working points vs mu",
+    )
+    parser.add_argument(
+        "--wp_vs_ele",
+        default=[],
+        type=lambda wp_ele: [wp for wp in wp_ele.split(",")],
+        help="working points vs ele",
+    )
     return parser.parse_args()
 
 
@@ -48,45 +66,41 @@ def working_points(shape):
     return [jet_wp, mu_wp, ele_wp]
 
 
-def plot_rates(rates_dict, plot_output):
-    for dm in ["DM0", "DM1", "DM10", "DM11"]:
-        pts = rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["VLoose_vs_ele"][dm]["pt"]
-        pt_center = np.zeros(len(pts) - 1)
-        for i in range(len(pts) - 1):
-            pt_center[i] = (pts[i + 1] + pts[i]) / 2
-        plt.errorbar(
-            pt_center,
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["rate"],
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["stat_unc"],
-            marker=".",
-            linestyle="",
-            markersize="7",
-            label="TightvsMu+TightvsEle",
-        )
-        plt.errorbar(
-            pt_center,
-            rates_dict["VTight_vs_jets"]["VLoose_vs_mu"]["Tight_vs_ele"][dm]["rate"],
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["stat_unc"],
-            marker=".",
-            linestyle="",
-            markersize="7",
-            label="VLoosevsMu+TightvsEle",
-        )
-        plt.errorbar(
-            pt_center,
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["VLoose_vs_ele"][dm]["rate"],
-            rates_dict["VTight_vs_jets"]["Tight_vs_mu"]["Tight_vs_ele"][dm]["stat_unc"],
-            marker=".",
-            linestyle="",
-            markersize="7",
-            label="TightvsMu+VLoosevsEle",
-        )
-        plt.legend()
-        # plt.ylim(0, 0.15)
-        plt.ylabel(r"jet $\rightarrow\tau_{\mathrm{h}}$ fake rate")
-        plt.xlabel(r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$")
-        plt.savefig("{plot_output}/{dm}.png".format(plot_output=plot_output, dm=dm))
-        plt.close()
+def plot_rates(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele, DM, plot_output):
+    for wp_jets in wp_vs_jets:
+        for dm in DM:
+            for wp_mu in wp_vs_mu:
+                for wp_ele in wp_vs_ele:
+                    if wp_mu == "VLoose" and wp_ele == "VLoose":
+                        continue
+                    else:
+                        pts = rates_dict[wp_jets][wp_mu][wp_ele][dm]["pt"]
+                        pt_center = np.zeros(len(pts) - 1)
+                        for i in range(len(pts) - 1):
+                            pt_center[i] = (pts[i + 1] + pts[i]) / 2
+                        plt.errorbar(
+                            pt_center,
+                            rates_dict[wp_jets][wp_mu][wp_ele][dm]["rate"],
+                            rates_dict[wp_jets][wp_mu][wp_ele][dm]["stat_unc"],
+                            marker=".",
+                            linestyle="",
+                            markersize="7",
+                            label=r"vs$\mu$({wp_mu})+vsEle({wp_ele})".format(wp_mu=wp_mu, wp_ele=wp_ele),
+                        )
+            plt.legend()
+            # plt.ylim(0, 0.15)
+            plt.ylabel(r"jet $\rightarrow\tau_{\mathrm{h}}$ fake rate")
+            plt.xlabel(
+                r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$"
+                        )
+            plt.savefig(
+                "{plot_output}/{wps_jets}__{dm}.png".format(
+                    plot_output=plot_output,
+                    wps_jets=wp_jets,
+                    dm=dm,
+                )
+            )
+            plt.close()
 
 
 def base_file(base_path, working_points, decay_mode):
@@ -102,377 +116,117 @@ def base_file(base_path, working_points, decay_mode):
     return base_file
 
 
-def rates(shapes, base_path, syst_unc):
-    rates_dict = {
-        "VTight_vs_jets": {
-            "Tight_vs_mu": {
-                "Tight_vs_ele": {
-                    "DM0": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM1": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM10": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM11": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                },
-                "VLoose_vs_ele": {
-                    "DM0": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM1": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM10": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM11": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                },
-            },
-            "VLoose_vs_mu": {
-                "Tight_vs_ele": {
-                    "DM0": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM1": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM10": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                    "DM11": {
-                        "pt": [],
-                        "rate": [],
-                        "rate_stat_up": [],
-                        "rate_stat_down": [],
-                        "rate_syst_up": [],
-                        "rate_syst_down": [],
-                        "stat_unc": [],
-                    },
-                },
-            },
-        }
-    }
+def rates(wps_vs_jets, wps_vs_mu, wps_vs_ele, DMs, base_path, syst_unc):
+    rates_dict = {}
+    for wps_jets in wps_vs_jets:
+        rates_dict[wps_jets] = {}
+        for wps_mu in wps_vs_mu:
+            rates_dict[wps_jets][wps_mu] = {}
+            for wps_ele in wps_vs_ele:
+                if wps_mu == "VLoose" and wps_ele == "VLoose":
+                    continue
+                else:
+                    rates_dict[wps_jets][wps_mu][wps_ele] = {}
+                    for dm in DMs:
+                        rates_dict[wps_jets][wps_mu][wps_ele][dm] = {
+                            "pt": [],
+                            "rate": [],
+                            "rate_stat_up": [],
+                            "rate_stat_down": [],
+                            "rate_syst_up": [],
+                            "rate_syst_down": [],
+                            "stat_unc": [],
+                        }
     procs_to_subtract = {
         "ggzz": "ggZZ#mmt-VV#Nominal#pt_3",
         "zz": "ZZ#mmt-VV#Nominal#pt_3",
         "wz": "WZ#mmt-VV#Nominal#pt_3",
-        "zzz": "ZZZ#mmt-ZZZ#Nominal#pt_3",
-        "www": "WWW#mmt-WWW#Nominal#pt_3",
-        "wwz": "WWZ#mmt-WWZ#Nominal#pt_3",
-        "wzz": "WZZ#mmt-WZZ#Nominal#pt_3",
-        "rem_vh": "rem_VH#mmt-VH#Nominal#pt_3",
+        "vvv": "VVV#mmt-VVV#Nominal#pt_3",
+        # "zzz": "ZZZ#mmt-ZZZ#Nominal#pt_3",
+        # "www": "WWW#mmt-WWW#Nominal#pt_3",
+        # "wwz": "WWZ#mmt-WWZ#Nominal#pt_3",
+        # "wzz": "WZZ#mmt-WZZ#Nominal#pt_3",
+        "rem_h": "rem_H#mmt-H#Nominal#pt_3",
         "rem_ttbar": "rem_ttbar#mmt-TT#Nominal#pt_3",
     }
-    for shape in shapes:
-        if not "VVVLoose_vs_jets" in shape:
-            wp = working_points(shape)
-            tight_file = R.TFile(shape, "READ")
-            tight_data = tight_file.Get("data#mmt#Nominal#pt_3")
-            if "DM0." in shape:
-                for syst_shift, scale in enumerate(
-                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
-                ):
-                    tight_diff = tight_data.Clone()
-                    base_DM0 = base_file(base_path, wp, "DM0")
-                    base_data = base_DM0.Get("data#mmt#Nominal#pt_3")
-                    base_diff = base_data.Clone()
-                    for proc in procs_to_subtract.values():
-                        tight_hist = tight_file.Get(proc)
-                        base_hist = base_DM0.Get(proc)
-                        tight_diff.Add(tight_hist, scale)
-                        base_diff.Add(base_hist, scale)
-                    ratio_hist = tight_diff.Clone()
-                    ratio_hist.Divide(base_diff)
-                    if syst_shift == 0:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["rate"].append(
-                                ratio_hist.GetBinContent(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["stat_unc"].append(
-                                ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
-                                "rate_stat_up"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                + ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
-                                "rate_stat_down"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                - ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["pt"].append(
-                                tight_data.GetBinLowEdge(bin_i)
-                            )
-                        rates_dict[wp[0]][wp[1]][wp[2]]["DM0"]["pt"].append(
-                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+    for wps_jets in wps_vs_jets:
+        for wps_mu in wps_vs_mu:
+            for wps_ele in wps_vs_ele:
+                for dm in DMs:
+                    if wps_mu == "VLoose" and wps_ele == "VLoose":
+                        continue
+                    else:
+                        tight_file = R.TFile(
+                            base_path
+                            + "/{wps_jets}_vs_jets__{wps_mu}_vs_mu__{wps_ele}_vs_ele__{dm}.root".format(
+                                wps_jets=wps_jets, wps_mu=wps_mu, wps_ele=wps_ele, dm=dm
+                            ),
+                            "READ",
                         )
-                        base_DM0.Close()
-                    elif syst_shift == 1:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
-                                "rate_syst_down"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM0.Close()
-                    elif syst_shift == 2:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM0"][
-                                "rate_syst_up"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM0.Close()
-                    del tight_diff
-                    del base_data
-                    del base_diff
-                    del ratio_hist
-            elif "DM1." in shape:
-                for syst_shift, scale in enumerate(
-                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
-                ):
-                    tight_diff = tight_data.Clone()
-                    base_DM1 = base_file(base_path, wp, "DM1")
-                    base_data = base_DM1.Get("data#mmt#Nominal#pt_3")
-                    base_diff = base_data.Clone()
-                    for proc in procs_to_subtract.values():
-                        tight_hist = tight_file.Get(proc)
-                        base_hist = base_DM1.Get(proc)
-                        tight_diff.Add(tight_hist, scale)
-                        base_diff.Add(base_hist, scale)
-                    ratio_hist = tight_diff.Clone()
-                    ratio_hist.Divide(base_diff)
-                    if syst_shift == 0:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["rate"].append(
-                                ratio_hist.GetBinContent(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["stat_unc"].append(
-                                ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
-                                "rate_stat_up"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                + ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
-                                "rate_stat_down"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                - ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["pt"].append(
-                                tight_data.GetBinLowEdge(bin_i)
-                            )
-                        rates_dict[wp[0]][wp[1]][wp[2]]["DM1"]["pt"].append(
-                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+                        tight_data = tight_file.Get("data#mmt#Nominal#pt_3")
+                        base_file = R.TFile(
+                            base_path
+                            + "/VVVLoose_vs_jets__{wps_mu}_vs_mu__{wps_ele}_vs_ele__{dm}.root".format(
+                                wps_jets=wps_jets, wps_mu=wps_mu, wps_ele=wps_ele, dm=dm
+                            ),
+                            "READ",
                         )
-                        base_DM1.Close()
-                    elif syst_shift == 1:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
-                                "rate_syst_down"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM1.Close()
-                    elif syst_shift == 2:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM1"][
-                                "rate_syst_up"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM1.Close()
-                    del tight_diff
-                    del base_data
-                    del base_diff
-                    del ratio_hist
-            elif "DM10" in shape:
-                for syst_shift, scale in enumerate(
-                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
-                ):
-                    tight_diff = tight_data.Clone()
-                    base_DM10 = base_file(base_path, wp, "DM10")
-                    base_data = base_DM10.Get("data#mmt#Nominal#pt_3")
-                    base_diff = base_data.Clone()
-                    for proc in procs_to_subtract.values():
-                        tight_hist = tight_file.Get(proc)
-                        base_hist = base_DM10.Get(proc)
-                        tight_diff.Add(tight_hist, scale)
-                        base_diff.Add(base_hist, scale)
-                    ratio_hist = tight_diff.Clone()
-                    ratio_hist.Divide(base_diff)
-                    if syst_shift == 0:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["rate"].append(
-                                ratio_hist.GetBinContent(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["stat_unc"].append(
-                                ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
-                                "rate_stat_up"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                + ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
-                                "rate_stat_down"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                - ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["pt"].append(
-                                tight_data.GetBinLowEdge(bin_i)
-                            )
-                        rates_dict[wp[0]][wp[1]][wp[2]]["DM10"]["pt"].append(
-                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
-                        )
-                        base_DM10.Close()
-                    elif syst_shift == 1:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
-                                "rate_syst_down"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM10.Close()
-                    elif syst_shift == 2:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM10"][
-                                "rate_syst_up"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM10.Close()
-                    del tight_diff
-                    del base_data
-                    del base_diff
-                    del ratio_hist
-            elif "DM11" in shape:
-                for syst_shift, scale in enumerate(
-                    [-1, -(1 + syst_unc), -(1 - syst_unc)]
-                ):
-                    tight_diff = tight_data.Clone()
-                    base_DM11 = base_file(base_path, wp, "DM11")
-                    base_data = base_DM11.Get("data#mmt#Nominal#pt_3")
-                    base_diff = base_data.Clone()
-                    for proc in procs_to_subtract.values():
-                        tight_hist = tight_file.Get(proc)
-                        base_hist = base_DM11.Get(proc)
-                        tight_diff.Add(tight_hist, scale)
-                        base_diff.Add(base_hist, scale)
-                    ratio_hist = tight_diff.Clone()
-                    ratio_hist.Divide(base_diff)
-                    if syst_shift == 0:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["rate"].append(
-                                ratio_hist.GetBinContent(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["stat_unc"].append(
-                                ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
-                                "rate_stat_up"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                + ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
-                                "rate_stat_down"
-                            ].append(
-                                ratio_hist.GetBinContent(bin_i)
-                                - ratio_hist.GetBinError(bin_i)
-                            )
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["pt"].append(
-                                tight_data.GetBinLowEdge(bin_i)
-                            )
-                        rates_dict[wp[0]][wp[1]][wp[2]]["DM11"]["pt"].append(
-                            tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
-                        )
-                        base_DM11.Close()
-                    elif syst_shift == 1:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
-                                "rate_syst_down"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM11.Close()
-                    elif syst_shift == 2:
-                        for bin_i in range(1, tight_data.GetNbinsX() + 1):
-                            rates_dict[wp[0]][wp[1]][wp[2]]["DM11"][
-                                "rate_syst_up"
-                            ].append(ratio_hist.GetBinContent(bin_i))
-                        base_DM11.Close()
-                    del tight_diff
-                    del base_data
-                    del base_diff
-                    del ratio_hist
+                        base_data = base_file.Get("data#mmt#Nominal#pt_3")
+                        for syst_shift, scale in enumerate(
+                            [-1, -(1 + syst_unc), -(1 - syst_unc)]
+                        ):
+                            tight_diff = tight_data.Clone()
+                            base_diff = base_data.Clone()
+                            for proc in procs_to_subtract.values():
+                                tight_hist = tight_file.Get(proc)
+                                base_hist = base_file.Get(proc)
+                                tight_diff.Add(tight_hist, scale)
+                                base_diff.Add(base_hist, scale)
+                            ratio_hist = tight_diff.Clone()
+                            ratio_hist.Divide(base_diff)
+                            if syst_shift == 0:
+                                for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                                    rates_dict[wps_jets][wps_mu][wps_ele][dm][
+                                        "rate"
+                                    ].append(ratio_hist.GetBinContent(bin_i))
+                                    rates_dict[wps_jets][wps_mu][wps_ele][dm][
+                                        "stat_unc"
+                                    ].append(ratio_hist.GetBinError(bin_i))
+                                    rates_dict[wps_jets][wps_mu][wps_ele][dm][
+                                        "rate_stat_up"
+                                    ].append(
+                                        ratio_hist.GetBinContent(bin_i)
+                                        + ratio_hist.GetBinError(bin_i)
+                                    )
+                                    rates_dict[wps_jets][wps_mu][wps_ele][dm][
+                                        "rate_stat_down"
+                                    ].append(
+                                        ratio_hist.GetBinContent(bin_i)
+                                        - ratio_hist.GetBinError(bin_i)
+                                    )
+                                    rates_dict[wps_jets][wps_mu][wps_ele][dm][
+                                        "pt"
+                                    ].append(tight_data.GetBinLowEdge(bin_i))
+                                rates_dict[wps_jets][wps_mu][wps_ele][dm]["pt"].append(
+                                    tight_data.GetBinLowEdge(tight_data.GetNbinsX() + 1)
+                                )
+                            elif syst_shift == 1:
+                                for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                                    rates_dict[wps_jets][wps_mu][wps_ele][dm][
+                                        "rate_syst_down"
+                                    ].append(ratio_hist.GetBinContent(bin_i))
+                            elif syst_shift == 2:
+                                for bin_i in range(1, tight_data.GetNbinsX() + 1):
+                                    rates_dict[wps_jets][wps_mu][wps_ele][dm][
+                                        "rate_syst_up"
+                                    ].append(ratio_hist.GetBinContent(bin_i))
+                            del tight_diff
+                            del base_diff
+                            del ratio_hist
+                        base_file.Close()
+                        tight_file.Close()
+                        del base_data
+                        del tight_data
     return rates_dict
 
 
@@ -519,6 +273,7 @@ def values(rates_dict, wp_jets, wp_mu, wp_ele, dm):
 
 
 def decay_modes(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele):
+    print(wp_vs_jets, wp_vs_mu, wp_vs_ele)
     content = []
     for dm in [(0, "DM0"), (1, "DM1"), (10, "DM10"), (11, "DM11")]:
         content.append(
@@ -542,7 +297,67 @@ def decay_modes(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele):
     return content
 
 
-def correction_lib_format(rates_dict):
+def cont_wp_jets(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele):
+    content = []
+    for wp_jets in wp_vs_jets:
+        content.append(
+            {
+                "key": "{wp_jets}".format(wp_jets=wp_jets),
+                "value": {
+                    "nodetype": "category",
+                    "input": "wp_vs_mu",
+                    "content": cont_wp_mu(rates_dict, wp_jets, wp_vs_mu, wp_vs_ele),
+                },
+            }
+        )
+    return content
+
+
+def cont_wp_mu(rates_dict, wp_jets, wp_vs_mu, wp_vs_ele):
+    content = []
+    for wp_mu in wp_vs_mu:
+        content.append(
+            {
+                "key": "{wp_mu}".format(wp_mu=wp_mu),
+                "value": {
+                    "nodetype": "category",
+                    "input": "wp_vs_ele",
+                    "content": cont_wp_ele(rates_dict, wp_jets, wp_mu, wp_vs_ele),
+                },
+            }
+        )
+    return content
+
+
+def cont_wp_ele(rates_dict, wp_jets, wp_mu, wp_vs_ele):
+    content = []
+    for wp_ele in wp_vs_ele:
+        if wp_mu == "VLoose" and wp_ele == "VLoose":
+            continue
+        else:
+            content.append(
+                {
+                    "key": "{wp_ele}".format(wp_ele=wp_ele),
+                    "value": {
+                        "nodetype": "category",
+                        "input": "dm",
+                        "content": decay_modes(rates_dict, wp_jets, wp_mu, wp_ele),
+                    },
+                }
+            )
+    return content
+
+
+def data(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele):
+    data = {
+        "nodetype": "category",
+        "input": "wp_vs_jets",
+        "content": cont_wp_jets(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele),
+    }
+    return data
+
+
+def correction_lib_format(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele):
     corr_lib = {
         "schema_version": 2,
         "corrections": [
@@ -587,95 +402,23 @@ def correction_lib_format(rates_dict):
                     "type": "real",
                     "description": "DM-pT-dependent rate",
                 },
-                "data": {
-                    "nodetype": "category",
-                    "input": "wp_vs_jets",
-                    "content": [
-                        {
-                            "key": "VTight",
-                            "value": {
-                                "nodetype": "category",
-                                "input": "wp_vs_mu",
-                                "content": [
-                                    {
-                                        "key": "Tight",
-                                        "value": {
-                                            "nodetype": "category",
-                                            "input": "wp_vs_ele",
-                                            "content": [
-                                                {
-                                                    "key": "Tight",
-                                                    "value": {
-                                                        "nodetype": "category",
-                                                        "input": "dm",
-                                                        "content": decay_modes(
-                                                            rates_dict,
-                                                            "VTight_vs_jets",
-                                                            "Tight_vs_mu",
-                                                            "Tight_vs_ele",
-                                                        ),
-                                                    },
-                                                },
-                                                {
-                                                    "key": "VLoose",
-                                                    "value": {
-                                                        "nodetype": "category",
-                                                        "input": "dm",
-                                                        "content": decay_modes(
-                                                            rates_dict,
-                                                            "VTight_vs_jets",
-                                                            "Tight_vs_mu",
-                                                            "VLoose_vs_ele",
-                                                        ),
-                                                    },
-                                                },
-                                            ],
-                                        },
-                                    },
-                                    {
-                                        "key": "VLoose",
-                                        "value": {
-                                            "nodetype": "category",
-                                            "input": "wp_vs_ele",
-                                            "content": [
-                                                {
-                                                    "key": "Tight",
-                                                    "value": {
-                                                        "nodetype": "category",
-                                                        "input": "dm",
-                                                        "content": decay_modes(
-                                                            rates_dict,
-                                                            "VTight_vs_jets",
-                                                            "VLoose_vs_mu",
-                                                            "Tight_vs_ele",
-                                                        ),
-                                                    },
-                                                },
-                                            ],
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    ],
-                },
-            },
+                "data": data(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele),
+            }
         ],
     }
-    # print(
-    #     corr_lib["fake_rates"]["data"]["content"]["content"]["value"]["content"][
-    #         "value"
-    #     ]
-    # )
     return corr_lib
 
 
-def main(shapes, base_path, output_file, plot_output, syst_unc):
-    rates_dict = rates(shapes, base_path, syst_unc)
-    print(rates_dict)
-    plot_rates(rates_dict, plot_output)
+def main(
+    wp_vs_jets, wp_vs_mu, wp_vs_ele, base_path, output_file, plot_output, syst_unc
+):
+    DMs = ["DM0", "DM1", "DM10", "DM11"]
+    rates_dict = rates(wp_vs_jets, wp_vs_mu, wp_vs_ele, DMs, base_path, syst_unc)
+    plot_rates(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele, DMs, plot_output)
     with open("{output}".format(output=output_file), "w") as outfile:
-        json.dump(correction_lib_format(rates_dict), outfile)
+        json.dump(
+            correction_lib_format(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele), outfile
+        )
 
 
 if __name__ == "__main__":
@@ -684,7 +427,8 @@ if __name__ == "__main__":
     output_file = args.output_file
     plot_output = args.plot_output
     syst_unc = args.syst_unc / 100.0
-    print("hi", syst_unc)
     path = os.path.join(base_path, "*.root")
-    shapes = glob.glob(path)
-    main(shapes, base_path, output_file, plot_output, syst_unc)
+    wp_vs_jets = args.wp_vs_jets
+    wp_vs_mu = args.wp_vs_mu
+    wp_vs_ele = args.wp_vs_ele
+    main(wp_vs_jets, wp_vs_mu, wp_vs_ele, base_path, output_file, plot_output, syst_unc)

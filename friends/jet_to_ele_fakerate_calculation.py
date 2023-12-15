@@ -88,11 +88,12 @@ def rates(shapes, base_path, syst_unc):
         "ggzz": "ggZZ#mme-VV#Nominal#pt_3",
         "zz": "ZZ#mme-VV#Nominal#pt_3",
         "wz": "WZ#mme-VV#Nominal#pt_3",
-        "zzz": "ZZZ#mme-ZZZ#Nominal#pt_3",
-        "www": "WWW#mme-WWW#Nominal#pt_3",
-        "wwz": "WWZ#mme-WWZ#Nominal#pt_3",
-        "wzz": "WZZ#mme-WZZ#Nominal#pt_3",
-        "rem_vh": "rem_VH#mme-VH#Nominal#pt_3",
+        "vvv": "VVV#mme-VVV#Nominal#pt_3",
+        # "zzz": "ZZZ#mme-ZZZ#Nominal#pt_3",
+        # "www": "WWW#mme-WWW#Nominal#pt_3",
+        # "wwz": "WWZ#mme-WWZ#Nominal#pt_3",
+        # "wzz": "WZZ#mme-WZZ#Nominal#pt_3",
+        "rem_h": "rem_H#mme-H#Nominal#pt_3",
         "rem_ttbar": "rem_ttbar#mme-TT#Nominal#pt_3",
     }
     for shape in shapes:

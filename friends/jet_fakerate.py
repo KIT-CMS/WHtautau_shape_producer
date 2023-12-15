@@ -60,19 +60,37 @@ def args_parser():
         help="eras to be considered, seperated by a comma without space",
     )
     parser.add_argument(
-        "--corr_file_tau_16",
+        "--corr_file_tau_16preVFP",
         default=None,
         type=str,
         help="Path to jet to tau fakerates",
     )
     parser.add_argument(
-        "--corr_file_mu_16",
+        "--corr_file_mu_16preVFP",
         default=None,
         type=str,
         help="Path to jet to mu fakerates",
     )
     parser.add_argument(
-        "--corr_file_ele_16",
+        "--corr_file_ele_16preVFP",
+        default=None,
+        type=str,
+        help="Path to jet to ele fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_tau_16postVFP",
+        default=None,
+        type=str,
+        help="Path to jet to tau fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_mu_16postVFP",
+        default=None,
+        type=str,
+        help="Path to jet to mu fakerates",
+    )
+    parser.add_argument(
+        "--corr_file_ele_16postVFP",
         default=None,
         type=str,
         help="Path to jet to ele fakerates",
@@ -118,6 +136,12 @@ def args_parser():
         type=str,
         default="tmp_dir",
         help="Temporary directory to store intermediate files",
+    )
+    parser.add_argument(
+        "--wp_vs_jets",
+        type=str,
+        default="VTight",
+        help="working point vs. jets",
     )
     return parser.parse_args()
 
@@ -201,21 +225,21 @@ def convert_to_xrootd(path):
         return path
 
 
-def working_points(channel):
+def working_points(channel, wp_vs_jets):
     if channel == "emt" or channel == "met":
-        wp_vs_jets = "VTight"
+        wp_vs_jets = wp_vs_jets
         wp_vs_mu = "Tight"
         wp_vs_ele = "Tight"
     elif channel == "mmt":
-        wp_vs_jets = "VTight"
+        wp_vs_jets = wp_vs_jets
         wp_vs_mu = "Tight"
         wp_vs_ele = "VLoose"
     elif channel == "mtt":
-        wp_vs_jets = "VTight"
+        wp_vs_jets = wp_vs_jets
         wp_vs_mu = "Tight"
         wp_vs_ele = "VLoose"
     elif channel == "ett":
-        wp_vs_jets = "VTight"
+        wp_vs_jets = wp_vs_jets
         wp_vs_mu = "VLoose"
         wp_vs_ele = "Tight"
     return [wp_vs_jets, wp_vs_mu, wp_vs_ele]
@@ -268,6 +292,7 @@ def friend_producer(
     corr_file_dict_tau,
     corr_file_dict_ele,
     corr_file_dict_mu,
+    wp_vs_jets,
     debug=True,
 ):
     temp_output_file = os.path.join(
@@ -276,10 +301,14 @@ def friend_producer(
     final_output_file = os.path.join(
         output_path, era, dataset_proc["nick"], channel, os.path.basename(inputfile)
     )
-    if era == "2016":
-        corr_file_tau = corr_file_dict_tau["2016"]
-        corr_file_ele = corr_file_dict_ele["2016"]
-        corr_file_mu = corr_file_dict_mu["2016"]
+    if era == "2016preVFP":
+        corr_file_tau = corr_file_dict_tau["2016preVFP"]
+        corr_file_ele = corr_file_dict_ele["2016preVFP"]
+        corr_file_mu = corr_file_dict_mu["2016preVFP"]
+    elif era == "2016postVFP":
+        corr_file_tau = corr_file_dict_tau["2016postVFP"]
+        corr_file_ele = corr_file_dict_ele["2016postVFP"]
+        corr_file_mu = corr_file_dict_mu["2016postVFP"]    
     elif era == "2017":
         corr_file_tau = corr_file_dict_tau["2017"]
         corr_file_ele = corr_file_dict_ele["2017"]
@@ -303,6 +332,7 @@ def friend_producer(
                 corr_file_tau,
                 corr_file_ele,
                 corr_file_mu,
+                wp_vs_jets,
             )
             upload_file(output_path, temp_output_file, final_output_file)
     else:
@@ -313,13 +343,19 @@ def friend_producer(
 
 
 def build_rdf(
-    inputfile, channel, output_file, corr_file_tau, corr_file_ele, corr_file_mu
+    inputfile,
+    channel,
+    output_file,
+    corr_file_tau,
+    corr_file_ele,
+    corr_file_mu,
+    wp_vs_jets,
 ):
     rootfile = ROOT.TFile.Open(inputfile, "READ")
     rdf = ROOT.RDataFrame("ntuple", rootfile)
-    wp_vs_jets = working_points(channel)[0]
-    wp_vs_mu = working_points(channel)[1]
-    wp_vs_ele = working_points(channel)[2]
+    wp_vs_jets = working_points(channel, wp_vs_jets)[0]
+    wp_vs_mu = working_points(channel, wp_vs_jets)[1]
+    wp_vs_ele = working_points(channel, wp_vs_jets)[2]
     if channel in ["emt", "met", "mmt"]:
         rdf = rdf.Define(
             "tau_fakerate_Era",
@@ -631,7 +667,7 @@ def build_rdf(
     return
 
 
-def upload_file(redirector, input_file, output_file, max_retries=5):
+def upload_file(redirector, input_file, output_file, max_retries=10):
     success = False
     n = 0
     while not success and n < max_retries:
@@ -666,6 +702,7 @@ def generate_friend_trees(
     corr_file_dict_tau,
     corr_file_dict_ele,
     corr_file_dict_mu,
+    wp_vs_jets,
     debug,
 ):
     print("Using {} threads".format(nthreads))
@@ -680,6 +717,7 @@ def generate_friend_trees(
             corr_file_dict_tau,
             corr_file_dict_ele,
             corr_file_dict_mu,
+            wp_vs_jets,
             debug,
         )
         for ntuple in ntuples
@@ -704,14 +742,20 @@ if __name__ == "__main__":
     output_path = os.path.join(args.outputpath)
     workdir = os.path.join(args.tempdir)
     dataset = yaml.safe_load(open(args.dataset_config))
+    wp_vs_jets = args.wp_vs_jets
     ntuples = glob.glob(base_path)
+    print(args.eras)
     corr_file_dict_tau = {}
     corr_file_dict_ele = {}
     corr_file_dict_mu = {}
-    if "2016" in args.eras:
-        corr_file_dict_tau["2016"] = args.corr_file_tau_16
-        corr_file_dict_ele["2016"] = args.corr_file_ele_16
-        corr_file_dict_mu["2016"] = args.corr_file_mu_16
+    if "2016preVFP" in args.eras:
+        corr_file_dict_tau["2016preVFP"] = args.corr_file_tau_16preVFP
+        corr_file_dict_ele["2016preVFP"] = args.corr_file_ele_16preVFP
+        corr_file_dict_mu["2016preVFP"] = args.corr_file_mu_16preVFP
+    if "2016postVFP" in args.eras:
+        corr_file_dict_tau["2016postVFP"] = args.corr_file_tau_16postVFP
+        corr_file_dict_ele["2016postVFP"] = args.corr_file_ele_16postVFP
+        corr_file_dict_mu["2016postVFP"] = args.corr_file_mu_16postVFP
     if "2017" in args.eras:
         corr_file_dict_tau["2017"] = args.corr_file_tau_17
         corr_file_dict_ele["2017"] = args.corr_file_ele_17
@@ -735,6 +779,7 @@ if __name__ == "__main__":
         corr_file_dict_tau,
         corr_file_dict_ele,
         corr_file_dict_mu,
+        wp_vs_jets,
         args.debug,
     )
     if os.path.exists(workdir):

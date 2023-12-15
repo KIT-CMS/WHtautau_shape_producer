@@ -21,12 +21,9 @@ from config.shapes.file_names import files
 
 from config.shapes.process_selection_fakerate import (
     VV_process_selection,
-    VH_process_selection,
+    H_process_selection,
     TT_process_selection,
-    WWW_process_selection,
-    WWZ_process_selection,
-    WZZ_process_selection,
-    ZZZ_process_selection,
+    VVV_process_selection,
     W_process_selection,
     DY_process_selection,
 )
@@ -384,9 +381,9 @@ def main(args):
                     ],
                 )
             ],
-            "rem_vh": [
+            "rem_h": [
                 Unit(
-                    datasets["rem_VH"],
+                    datasets["rem_H"],
                     [
                         channel_selection(
                             channel,
@@ -398,7 +395,7 @@ def main(args):
                             id_wp_ele,
                             id_wp_mu,
                         ),
-                        VH_process_selection(
+                        H_process_selection(
                             channel,
                             era,
                             wp_vs_jet,
@@ -477,9 +474,9 @@ def main(args):
                     ],
                 )
             ],
-            "www": [
+            "vvv": [
                 Unit(
-                    datasets["WWW"],
+                    datasets["VVV"],
                     [
                         channel_selection(
                             channel,
@@ -491,7 +488,7 @@ def main(args):
                             id_wp_ele,
                             id_wp_mu,
                         ),
-                        WWW_process_selection(
+                        VVV_process_selection(
                             channel,
                             era,
                             wp_vs_jet,
@@ -508,9 +505,9 @@ def main(args):
                     ],
                 )
             ],
-            "wwz": [
+            "whtautau_minus": [
                 Unit(
-                    datasets["WWZ"],
+                    datasets["WHtautau_minus"],
                     [
                         channel_selection(
                             channel,
@@ -522,7 +519,7 @@ def main(args):
                             id_wp_ele,
                             id_wp_mu,
                         ),
-                        WWZ_process_selection(
+                        H_process_selection(
                             channel,
                             era,
                             wp_vs_jet,
@@ -539,9 +536,9 @@ def main(args):
                     ],
                 )
             ],
-            "wzz": [
+            "whtautau_plus": [
                 Unit(
-                    datasets["WZZ"],
+                    datasets["WHtautau_plus"],
                     [
                         channel_selection(
                             channel,
@@ -553,7 +550,7 @@ def main(args):
                             id_wp_ele,
                             id_wp_mu,
                         ),
-                        WZZ_process_selection(
+                        H_process_selection(
                             channel,
                             era,
                             wp_vs_jet,
@@ -570,9 +567,9 @@ def main(args):
                     ],
                 )
             ],
-            "zzz": [
+            "whww_minus": [
                 Unit(
-                    datasets["ZZZ"],
+                    datasets["WHWW_minus"],
                     [
                         channel_selection(
                             channel,
@@ -584,7 +581,7 @@ def main(args):
                             id_wp_ele,
                             id_wp_mu,
                         ),
-                        ZZZ_process_selection(
+                        H_process_selection(
                             channel,
                             era,
                             wp_vs_jet,
@@ -601,9 +598,9 @@ def main(args):
                     ],
                 )
             ],
-            "whminus": [
+            "whww_plus": [
                 Unit(
-                    datasets["WHminus"],
+                    datasets["WHWW_plus"],
                     [
                         channel_selection(
                             channel,
@@ -615,69 +612,7 @@ def main(args):
                             id_wp_ele,
                             id_wp_mu,
                         ),
-                        VH_process_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
-            "whplus": [
-                Unit(
-                    datasets["WHplus"],
-                    [
-                        channel_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            decay_mode,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                        VH_process_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
-            "zh": [
-                Unit(
-                    datasets["ZH"],
-                    [
-                        channel_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            decay_mode,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                        VH_process_selection(
+                        H_process_selection(
                             channel,
                             era,
                             wp_vs_jet,
@@ -756,37 +691,6 @@ def main(args):
                     ],
                 )
             ],
-            "rem_vv": [
-                Unit(
-                    datasets["rem_VV"],
-                    [
-                        channel_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            decay_mode,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                        VV_process_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
         }
 
     # Step 1: create units and book actions
@@ -805,24 +709,21 @@ def main(args):
     # necessary processes for analysis with emb and ff method are: {"data", "emb", "zl", "ttl","ttt", "vvl","ttt" "ggh", "qqh","vh","tth"}
     if args.process_selection is None:
         procS = {
-            "data",
+       "data",
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
             # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         }
     else:
         procS = args.process_selection
@@ -832,57 +733,51 @@ def main(args):
     simulatedProcsDS = {
         "eem": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
         "mme": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
         "mmt": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
     }
     for ch_ in args.channels:

@@ -26,11 +26,12 @@ _dataset_map = {
     "ZZ": "ZZ",
     "TT": "TT",
     "rem_ttbar": "rem_ttbar",
-    "rem_VH": "rem_VH",
+    "rem_H": "rem_H",
     "triboson": "triboson",
     "Wjets": "Wjets",
     "DY": "DY",
     "rem_VV": "rem_VV",
+    "VVV": "VVV",
     "WWZ": "WWZ",
     "WZZ": "WZZ",
     "WWW": "WWW",
@@ -50,6 +51,7 @@ _process_map = {
     "EMB": "Embedded",
     "W": "W",
     "ggZZ": "VV",
+    "VVV": "VVV",
     "WWZ": "WWZ",
     "WZZ": "WZZ",
     "WWW": "WWW",
@@ -61,7 +63,7 @@ _process_map = {
     "Wjets": "W",
     "DY": "DY",
     "rem_VV": "VV",
-    "rem_VH": "VH",
+    "rem_H": "H",
 }
 
 _name_string = "{dataset}#{channel}{process}{selection}#{variation}#{variable}"
@@ -151,15 +153,12 @@ def replace_negative_entries_and_renormalize(histogram, tolerance):
 def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nominal"):
 
     procs_to_subtract = [
-        "WWW",
-        "ZZZ",
-        "WWZ",
-        "WZZ",
+        "VVV",
         "ggZZ",
         "ZZ",
         "rem_ttbar",
         "WZ",
-        "rem_VH",
+        "rem_H",
     ]
     logger.debug(
         "Trying to get object {}".format(
@@ -173,7 +172,6 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
             )
         )
     )
-
     base_hist = rootfile.Get(
         _name_string.format(
             dataset="data",
@@ -185,6 +183,14 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
         )
     ).Clone()
     for proc in procs_to_subtract:
+        print(_name_string.format(
+                    dataset=_dataset_map[proc],
+                    channel=channel,
+                    process="-" + _process_map[proc],
+                    selection="-" + selection if selection != "" else "",
+                    variation=variation,
+                    variable=variable,
+                ))
         logger.debug(
             "Trying to get object {}".format(
                 _name_string.format(

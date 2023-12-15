@@ -21,12 +21,9 @@ from config.shapes.file_names import files
 
 from config.shapes.process_selection import (
     VV_process_selection,
-    VH_process_selection,
+    H_process_selection,
     TT_process_selection,
-    WWW_process_selection,
-    WWZ_process_selection,
-    WZZ_process_selection,
-    ZZZ_process_selection,
+    VVV_process_selection,
     W_process_selection,
     DY_process_selection,
 )
@@ -310,7 +307,7 @@ def main(args):
                         for fdir in friend_directories[channel]
                         if filter_friends(key, fdir)
                     ],
-                    validate_samples=True,
+                    validate_samples=False,
                     xrootd=args.xrootd,
                 )
         return datasets
@@ -371,12 +368,12 @@ def main(args):
                     ],
                 )
             ],
-            "rem_vh": [
+            "rem_h": [
                 Unit(
-                    datasets["rem_VH"],
+                    datasets["rem_H"],
                     [
                         channel_selection(channel, era, region),
-                        VH_process_selection(channel, era),
+                        H_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -413,12 +410,12 @@ def main(args):
                     ],
                 )
             ],
-            "www": [
+            "vvv": [
                 Unit(
-                    datasets["WWW"],
+                    datasets["vvv"],
                     [
                         channel_selection(channel, era, region),
-                        WWW_process_selection(channel, era),
+                        VVV_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -427,12 +424,12 @@ def main(args):
                     ],
                 )
             ],
-            "wwz": [
+            "whtautau_minus": [
                 Unit(
-                    datasets["WWZ"],
+                    datasets["WHtautau_minus"],
                     [
                         channel_selection(channel, era, region),
-                        WWZ_process_selection(channel, era),
+                        H_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -441,12 +438,12 @@ def main(args):
                     ],
                 )
             ],
-            "wzz": [
+            "whtautau_plus": [
                 Unit(
-                    datasets["WZZ"],
+                    datasets["WHtautau_plus"],
                     [
                         channel_selection(channel, era, region),
-                        WZZ_process_selection(channel, era),
+                        H_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -455,12 +452,12 @@ def main(args):
                     ],
                 )
             ],
-            "zzz": [
+            "whww_minus": [
                 Unit(
-                    datasets["ZZZ"],
+                    datasets["WHWW_minus"],
                     [
                         channel_selection(channel, era, region),
-                        ZZZ_process_selection(channel, era),
+                        H_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -469,40 +466,12 @@ def main(args):
                     ],
                 )
             ],
-            "whminus": [
+            "whww_plus": [
                 Unit(
-                    datasets["WHminus"],
+                    datasets["WHWW_plus"],
                     [
                         channel_selection(channel, era, region),
-                        VH_process_selection(channel, era),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
-            "whplus": [
-                Unit(
-                    datasets["WHplus"],
-                    [
-                        channel_selection(channel, era, region),
-                        VH_process_selection(channel, era),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
-            "zh": [
-                Unit(
-                    datasets["ZH"],
-                    [
-                        channel_selection(channel, era, region),
-                        VH_process_selection(channel, era),
+                        H_process_selection(channel, era),
                     ],
                     [
                         control_binning[channel][v]
@@ -539,20 +508,6 @@ def main(args):
                     ],
                 )
             ],
-            "rem_vv": [
-                Unit(
-                    datasets["rem_VV"],
-                    [
-                        channel_selection(channel, era, region),
-                        VV_process_selection(channel, era),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
         }
 
     # Step 1: create units and book actions
@@ -573,22 +528,19 @@ def main(args):
         procS = {
             "data",
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
             # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         }
     else:
         procS = args.process_selection
@@ -598,93 +550,83 @@ def main(args):
     simulatedProcsDS = {
         "emt": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
         "met": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
         "mmt": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
         "mtt": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
         "ett": {
             "ggzz",
-            "rem_vh",
+            "rem_h",
             "rem_ttbar",
-            "www",
-            "wwz",
-            "wzz",
-            "zzz",
-            "whminus",
-            "whplus",
-            "zh",
+            "vvv",
+            "whtautau_minus",
+            "whtautau_plus",
+            "whww_minus",
+            "whww_plus",
             "wz",
             "zz",
+            # simulated fake estimation
             "dy",
             "tt",
             "wjets",
-            "rem_vv",
         },
     }
     for ch_ in args.channels:
@@ -990,12 +932,12 @@ def main(args):
         print("%s" % graph)
     if args.only_create_graphs:
         if args.control_plots:
-            graph_file_name = "control_unit_graphs-{}-{}-{}.pkl".format(
-                args.era, ",".join(args.channels), ",".join(sorted(procS))
+            graph_file_name = "control_unit_graphs-{}-{}-{}-{}.pkl".format(
+                args.era, ",".join(args.channels), args.region, ",".join(sorted(procS))
             )
         else:
             graph_file_name = "analysis_unit_graphs-{}-{}-{}-{}.pkl".format(
-                args.tag, args.era, ",".join(args.channels), args.proc_arr
+                args.tag, args.era, ",".join(args.channels), args.region, args.proc_arr
             )
         if args.graph_dir is not None:
             graph_file = os.path.join(args.graph_dir, graph_file_name)
@@ -1019,5 +961,5 @@ if __name__ == "__main__":
         log_file = args.output_file.replace(".root", ".log")
     else:
         log_file = "{}.log".format(args.output_file)
-    setup_logging(log_file, logging.INFO)
+    setup_logging(log_file, logging.DEBUG)
     main(args)

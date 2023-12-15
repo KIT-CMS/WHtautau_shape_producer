@@ -13,7 +13,7 @@ else
     EMB_ARG=""
 fi
 
-source utils/setup_root.sh
+#source utils/setup_root.sh
 
 python shapes/do_estimations.py -e $ERA -i $INPUT $EMB_ARG
 

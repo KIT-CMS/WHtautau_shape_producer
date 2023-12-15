@@ -125,16 +125,14 @@ def main(info):
         c: split_value
         for c in ["met", "emt", "mmt", "ett", "mtt", "et", "mt", "tt", "em", "mm"]
     }
-    VVV_processes = ["WWW", "WWZ", "WZZ", "ZZZ"]
-
     if args.simulation:
         bkg_processes = [
             "TT",
             "DY",
             "Wjets",
-            "rem_VV",
+            # "rem_VV",
             "ggZZ",
-            "VHWW",
+            "rem_H",
             "TTV",
             "VVV",
             "ZZ",
@@ -151,15 +149,17 @@ def main(info):
         bkg_processes = [
             "jetFakes",
             "ggZZ",
-            "VHWW",
+            "rem_H",
             "TTV",
             "VVV",
             "ZZ",
             "WZ",
         ]
     signal_processes = [
-        "WHplus",
-        "WHminus",
+        "WHtautau_plus",
+        "WHtautau_minus",
+        "WHWW_plus",
+        "WHWW_minus",
     ]
     if "2016" in args.era:
         era = "Run2016"
@@ -195,24 +195,6 @@ def main(info):
             ).Clone()
             plot.add_hist(
                 rootfile.get(channel, process, args.category_postfix, shape_type=stype),
-                process,
-                "bkg",
-            )
-        elif "VVV" in process:
-            for v, vvv in enumerate(VVV_processes):
-                if v == 0:
-                    triboson = rootfile.get(
-                        channel, vvv, args.category_postfix, shape_type=stype
-                    ).Clone()
-                else:
-                    triboson.Add(
-                        rootfile.get(
-                            channel, vvv, args.category_postfix, shape_type=stype
-                        )
-                    )
-            total_bkg.Add(triboson)
-            plot.add_hist(
-                triboson,
                 process,
                 "bkg",
             )
@@ -355,12 +337,14 @@ def main(info):
     plot.legend(3).Draw()
     # draw additional labels
     plot.DrawCMS(thesisstyle=True, preliminary=False)
-    if "2016" in args.era:
-        plot.DrawLumi("35.9 fb^{-1} (2016, 13 TeV)")
+    if "2016preVFP" in args.era:
+        plot.DrawLumi("19.5 fb^{-1} (2016preVFP, 13 TeV)")
+    elif "2016postVFP" in args.era:
+        plot.DrawLumi("16.8 fb^{-1} (2016postVFP, 13 TeV)")
     elif "2017" in args.era:
         plot.DrawLumi("41.5 fb^{-1} (2017, 13 TeV)")
     elif "2018" in args.era:
-        plot.DrawLumi("59.7 fb^{-1} (2018, 13 TeV)")
+        plot.DrawLumi("59.8 fb^{-1} (2018, 13 TeV)")
     else:
         logger.critical("Era {} is not implemented.".format(args.era))
         raise Exception

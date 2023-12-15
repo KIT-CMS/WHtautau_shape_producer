@@ -88,13 +88,18 @@ def main(info):
         "mt": "#mu#tau_{#font[42]{h}}",
         "tt": "#tau_{#font[42]{h}}#tau_{#font[42]{h}}",
     }
-    category_dict = {
-        "pt_W_plus": "1",
-        "m_tt_plus": "2",
-        "pt_W_minus": "3",
-        "m_tt_minus": "4",
-        "m_tt_control": "5",
-    }
+    if "2016" in era:
+        category_dict = {
+            "all_cats_plus": "1",
+            "all_cats_minus": "2",
+        }
+    else:
+        category_dict = {
+            "sig_plus": "1",
+            "sig_minus": "2",
+            "control_plus": "3",
+            "control_minus": "4",
+        }
     VVV_processes = ["WWW", "WWZ", "WZZ", "ZZZ"]
 
     bkg_processes = [
@@ -217,12 +222,12 @@ def main(info):
         0.1,
         2.1,
     )
-    if "m_tt" in cat:
-        plot.subplot(2).setXlabel("m(#tau#tau) / GeV")
-    elif "pt_W" in cat:
-        plot.subplot(2).setXlabel("p_{T}(W) / GeV")
-    else:
-        plot.subplot(2).setXlabel(cat)
+    #if "m_tt" in cat:
+    plot.subplot(2).setXlabel("m(#tau#tau) / GeV")
+    # elif "pt_W" in cat:
+    #     plot.subplot(2).setXlabel("p_{T}(W) / GeV")
+    # else:
+    #     plot.subplot(2).setXlabel(cat)
     plot.subplot(0).setYlabel("N_{events}")
 
     plot.subplot(2).setYlabel("")
@@ -268,8 +273,10 @@ def main(info):
     plot.legend(3).Draw()
     # draw additional labels
     plot.DrawCMS(thesisstyle=True, preliminary=False)
-    if "2016" in args.era:
-        plot.DrawLumi("35.9 fb^{-1} (2016, 13 TeV)")
+    if "2016preVFP" in args.era:
+        plot.DrawLumi("19.5 fb^{-1} (2016preVFP, 13 TeV)")
+    elif "2016postVFP" in args.era:
+        plot.DrawLumi("16.8 fb^{-1} (2016postVFP, 13 TeV)")
     elif "2017" in args.era:
         plot.DrawLumi("41.5 fb^{-1} (2017, 13 TeV)")
     elif "2018" in args.era:

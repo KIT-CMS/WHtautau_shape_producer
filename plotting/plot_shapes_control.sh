@@ -3,11 +3,13 @@ source utils/setup_root.sh
 export PYTHONPATH=$PYTHONPATH:$PWD/Dumbledraw
 
 
-ERA="2018"
-CHANNELS="ett"
-NTUPLE_TAG="21_08_23_all_ch_17_18_shifts"
-SHAPE_TAG="ptW_AN_binning"
+ERAS="2016preVFP 2016postVFP 2017 2018"
+CHANNELS="emt"
+NTUPLE_TAG="03_11_23_allch_alleras_shifts"
+SHAPE_TAG="fit_shapes_ssTight_osTight_emt_met_comb_2016combcats"
 REGIONS="control"
+for ERA in $ERAS
+do
 for CHANNEL in $CHANNELS
 do
     if [ "$CHANNEL" = "eem" ]
@@ -40,7 +42,7 @@ do
             INPUT="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}.root"
             TAG="${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}"
             if [ "$REGION" = "control" ]; then
-                for VAR in m_tt #m_tt m_vis pt_1 pt_2 pt_3 met  #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
+                for VAR in m_tt #m_vis pt_W pt_1 pt_2 pt_3
                 do
                     python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
                     python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
@@ -48,12 +50,13 @@ do
             else
                 for VAR in m_tt #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
                 do
-                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} --blinded #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
-                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --blinded #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
+                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} #--blinded #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
+                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation #--blinded #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
                 done
             fi
         done
     fi
+done
 done
 # CHANNEL="mmt"
 # VAR="pt_3"

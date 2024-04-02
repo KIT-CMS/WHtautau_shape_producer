@@ -100,21 +100,20 @@ def main(info):
             "control_plus": "3",
             "control_minus": "4",
         }
-    VVV_processes = ["WWW", "WWZ", "WZZ", "ZZZ"]
-
+    rare = ["ggZZ", "TTV", "VVV"]
+    rem_H = ["ggZH", "ZH"]
     bkg_processes = [
         "jetFakes",
-        "ggZZ",
-        "rem_VH",
-        "rem_ttbar",
-        "VVV",
+        "rem_H",
+        "rare",
         "ZZ",
         "WZ",
-        "ZH",
     ]
     signal_processes = [
-        "WHplus",
-        "WHminus",
+        "WH_htt_plus",
+        "WH_htt_minus",
+        "WH_hww_plus",
+        "WH_hww_minus",
     ]
     if args.prefit:
         fittype = "prefit"
@@ -139,17 +138,39 @@ def main(info):
                 process,
                 "bkg",
             )
-        elif "VVV" in process:
-            for v, vvv in enumerate(VVV_processes):
-                if v == 0:
-                    triboson = rootfile.get(
-                        era, channel, category_dict[cat], vvv
+        elif "rare" in process:
+            for r, rare_bkg in enumerate(rare):
+                if r == 0:
+                    rare_proc = rootfile.get(
+                        era,
+                        channel,
+                        category_dict[cat],
+                        rare_bkg,
                     ).Clone()
                 else:
-                    triboson.Add(rootfile.get(era, channel, category_dict[cat], vvv))
-            total_bkg.Add(triboson)
+                    rare_proc.Add(
+                        rootfile.get(era, channel, category_dict[cat], rare_bkg)
+                    )
+            total_bkg.Add(rare_proc)
             plot.add_hist(
-                triboson,
+                rare_proc,
+                process,
+                "bkg",
+            )
+        elif "rem_H" in process:
+            for h, higgs in enumerate(rem_H):
+                if h == 0:
+                    higgs_proc = rootfile.get(
+                        era, channel, category_dict[cat], higgs
+                    ).Clone()
+                else:
+                    higgs_proc.Add(
+                        rootfile.get(era, channel, category_dict[cat], higgs)
+                    )
+            print(h, higgs_proc)
+            total_bkg.Add(higgs_proc)
+            plot.add_hist(
+                higgs_proc,
                 process,
                 "bkg",
             )
@@ -206,7 +227,15 @@ def main(info):
         )
     # normalize ratio plot
     plot.subplot(2).normalize(
-        ["total_bkg", "data_obs", "WHplus", "WHminus"], "total_bkg"
+        [
+            "total_bkg",
+            "data_obs",
+            "WH_htt_plus",
+            "WH_htt_minus",
+            "WH_hww_plus",
+            "WH_hww_minus",
+        ],
+        "total_bkg",
     )
     # set the size of the y axis
     y_max = 1.6 * max(
@@ -222,7 +251,7 @@ def main(info):
         0.1,
         2.1,
     )
-    #if "m_tt" in cat:
+    # if "m_tt" in cat:
     plot.subplot(2).setXlabel("m(#tau#tau) / GeV")
     # elif "pt_W" in cat:
     #     plot.subplot(2).setXlabel("p_{T}(W) / GeV")
@@ -237,12 +266,12 @@ def main(info):
 
     # draw subplots. Argument contains names of objects to be drawn in corresponding order.
 
-    procs_to_draw = ["stack", "total_bkg", "data_obs", "WHplus", "WHminus"]
+    procs_to_draw = ["stack", "total_bkg", "data_obs"] + signal_processes
     plot.subplot(0).Draw(procs_to_draw)
-    plot.subplot(2).Draw(["total_bkg", "WHplus", "WHminus", "data_obs"])
+    plot.subplot(2).Draw(["total_bkg", "data_obs"] + signal_processes)
     # create legends
     for i in range(2):
-        plot.add_legend(width=0.625, height=0.15)
+        plot.add_legend(width=0.525, height=0.15)
         for process in legend_bkg_processes:
             plot.legend(i).add_entry(
                 0,
@@ -258,7 +287,7 @@ def main(info):
                 "f",
             )
         plot.legend(i).add_entry(0, "total_bkg", "Bkg. stat. unc.", "f")
-        plot.legend(i).add_entry(0, "data_obs", "Observed", "PE2L")
+        plot.legend(i).add_entry(0, "data_obs", "Asimov", "PE2L")
         plot.legend(i).setNColumns(2)
     plot.legend(0).Draw()
     plot.legend(1).setAlpha(0.0)
@@ -272,7 +301,7 @@ def main(info):
     plot.legend(3).setAlpha(0.0)
     plot.legend(3).Draw()
     # draw additional labels
-    plot.DrawCMS(thesisstyle=True, preliminary=False)
+    plot.DrawCMS(thesisstyle=True, preliminary=True)
     if "2016preVFP" in args.era:
         plot.DrawLumi("19.5 fb^{-1} (2016preVFP, 13 TeV)")
     elif "2016postVFP" in args.era:

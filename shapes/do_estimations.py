@@ -27,6 +27,11 @@ _dataset_map = {
     "TT": "TT",
     "rem_ttbar": "rem_ttbar",
     "rem_H": "rem_H",
+    "ggH": "ggH",
+    "qqH": "qqH",
+    "ggZH": "ggZH",
+    "ZH": "ZH",
+    "ttH": "ttH",
     "triboson": "triboson",
     "Wjets": "Wjets",
     "DY": "DY",
@@ -64,6 +69,11 @@ _process_map = {
     "DY": "DY",
     "rem_VV": "VV",
     "rem_H": "H",
+    "ggH": "H",
+    "qqH": "H",
+    "ggZH": "H",
+    "ZH": "H",
+    "ttH": "H",
 }
 
 _name_string = "{dataset}#{channel}{process}{selection}#{variation}#{variable}"
@@ -151,14 +161,17 @@ def replace_negative_entries_and_renormalize(histogram, tolerance):
 
 
 def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nominal"):
-
     procs_to_subtract = [
         "VVV",
         "ggZZ",
         "ZZ",
         "rem_ttbar",
         "WZ",
-        "rem_H",
+        # "ggH",
+        "ZH",
+        # "qqH",
+        # "ttH",
+        "ggZH",
     ]
     logger.debug(
         "Trying to get object {}".format(
@@ -172,6 +185,16 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
             )
         )
     )
+    print(
+        _name_string.format(
+            dataset="data",
+            channel=channel,
+            process="",
+            selection="-" + selection if selection != "" else "",
+            variation=variation,
+            variable=variable,
+        )
+    )
     base_hist = rootfile.Get(
         _name_string.format(
             dataset="data",
@@ -183,14 +206,16 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
         )
     ).Clone()
     for proc in procs_to_subtract:
-        print(_name_string.format(
-                    dataset=_dataset_map[proc],
-                    channel=channel,
-                    process="-" + _process_map[proc],
-                    selection="-" + selection if selection != "" else "",
-                    variation=variation,
-                    variable=variable,
-                ))
+        print(
+            _name_string.format(
+                dataset=_dataset_map[proc],
+                channel=channel,
+                process="-" + _process_map[proc],
+                selection="-" + selection if selection != "" else "",
+                variation=variation,
+                variable=variable,
+            )
+        )
         logger.debug(
             "Trying to get object {}".format(
                 _name_string.format(

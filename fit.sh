@@ -1,43 +1,21 @@
 # MODE options are: PRINT (print fit results), FIT, POSTFIT (produces postfit and prefit shapes), PLOT, IMPACTS
 MODE="$1"
-CHANNELS="all" #"ett mtt emt mmt all"
-ERAS="all_eras" #"2016preVFP 2016postVFP 2017 2018"
+CHANNELS="ett mtt emt mmt all"
+#ERAS="2016preVFP 2016postVFP 2017 2018"
+ERAS="all_eras"
+#ERAS="2016preVFP 2016postVFP 2017 2018"
 #NTUPLE_TAG="11_07_shifts_all_ch"
-NTUPLE_TAG="03_11_23_allch_alleras_shifts"
-SHAPE_TAG="fit_shapes_ssTight_osTight_emt_met_comb_2016combcats"
+NTUPLE_TAG="15_03_24_triggermatchDR05_alleras_allch"
+SHAPE_TAG="fit_shapes_ssTight_osTight_18_03_24"
 BASE_PATH="output/datacard_output/${NTUPLE_TAG}/${SHAPE_TAG}"
 ulimit -s unlimited
-if [[ $MODE == "COMBINE_ERAS" ]]; then
-    for CHANNEL in $CHANNELS
-    do
-        if [[ $CHANNEL == "all" ]]; then
-            OUTDIR=${BASE_PATH}/all_eras_${CHANNEL}_autorebin/cmb
-            for ERA in ${ERAS}
-            do
-                DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin/cmb"
-                mkdir -p $OUTDIR/common
-                cp ${DATACARD_OUTPUT}/htt_*.txt $OUTDIR
-                cp ${DATACARD_OUTPUT}/common/htt_input_${ERA}.root $OUTDIR/common
-            done
-        else
-            OUTDIR=${BASE_PATH}/all_eras_${CHANNEL}_autorebin/cmb
-            for ERA in ${ERAS}
-            do
-                DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin/cmb"
-                mkdir -p $OUTDIR/common
-                cp ${DATACARD_OUTPUT}/htt_*.txt $OUTDIR
-                cp ${DATACARD_OUTPUT}/common/htt_input_${ERA}.root $OUTDIR/common
-            done
-        fi
-    done 
-fi
 if [[ $MODE == "PRINT" ]]; then
     source utils/setup_cmssw.sh 
     for ERA in $ERAS
     do
     for CHANNEL in $CHANNELS
     do
-        DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin"
+        DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}"
         echo $MODE
         for RESDIR in $DATACARD_OUTPUT/cmb; do
                 echo "[INFO] Printing fit result for category $(basename $RESDIR)"
@@ -53,15 +31,18 @@ if [[ $MODE == "FIT" ]]; then
         if [[ $ERA == "all_eras" ]]; then
             for CHANNEL in $CHANNELS
             do
-                DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin"
+                mkdir -p ${BASE_PATH}/all_eras_${CHANNEL}
+                DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}"
                 echo $MODE    
                 source utils/setup_cmssw.sh 
                 echo $DATACARD_OUTPUT/$CHANNEL
                 combineTool.py -M T2W -o workspace.root -i $DATACARD_OUTPUT/cmb -m 125 \
                     -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
                     --PO verbose \
-                    --PO 'map=.*/WHplus.?$:r[1,-10,10]' \
-                    --PO 'map=.*/WHminus.?$:r'
+                    --PO '"map=^.*/ZH.?$:r_ZH[1,0.99,1.01]"' \
+                    --PO '"map=^.*/WH_h.*_plus.?$:r_WHplus=expr;;r_WHplus(\"@0*(1+@1)/(2*0.8380)\",r_S[1.3693,0.01,5],r_A[0.224,-1,1])"' \
+                    --PO '"map=^.*/WH_h.*_minus.?$:r_WHminus=expr;;r_WHminus(\"@0*(1-@1)/(2*0.5313)\",r_S,r_A)"' 
+
                 combineTool.py \
                 -M MultiDimFit \
                 -m 125 \
@@ -70,9 +51,9 @@ if [[ $MODE == "FIT" ]]; then
                 --robustFit 1 \
                 --X-rtd MINIMIZER_analytic \
                 --cminDefaultMinimizerStrategy 0 \
-                --setParameters r=1.0 \
-                --setParameterRanges r=-10,10 \
-                --redefineSignalPOIs r \
+                --setParameters r_S=1.3693,r_A=0.224 \
+                --setParameterRanges r_S=0.01,50:r_A=-1,1 \
+                --redefineSignalPOIs r_S,r_A \
                 -n $ERA -v1 \
                 --parallel 1 --there \
                 -t -1 
@@ -127,17 +108,11 @@ if [[ $MODE == "FIT" ]]; then
                 combineTool.py -M T2W -o workspace.root -i $DATACARD_OUTPUT/cmb -m 125 \
                     -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
                     --PO verbose \
-                    --PO 'map=.*/WHplus.?$:r[1,-10,10]' \
-                    --PO 'map=.*/WHminus.?$:r'
-                echo "huhu"
-                    #  --PO '"map=^.*/WH.?$:r_WH[1,-10,10]"' \ 
-                    # --PO '"map=^.*/rem_VH.?$:r_rem_VH[1,0.99,1.01]"' \
-                    # --PO '"map=^.*/WHplus.?$:r_WHplus=expr;;r_WHplus(\"@0*(1+@1)/(2*0.8380)\",r_S[1.3693,0.01,5],r_A[0.224,-1,1])"' \
-                    # --PO '"map=^.*/WHminus.?$:r_WHminus=expr;;r_WHminus(\"@0*(1-@1)/(2*0.5313)\",r_S,r_A)"' \
-                    # --PO '"map=^.*/WHplus.?$:r_WHplus[0.831,-200,200]"' \
-                    # --PO '"map=^.*/WHminus.?$:r_WHminus[0.527,-200,200]"'
+                    --PO '"map=^.*/ZH.?$:r_ZH[1,0.99,1.01]"' \
+                    --PO '"map=^.*/WH_h.*_plus.?$:r_WHplus=expr;;r_WHplus(\"@0*(1+@1)/(2*0.8380)\",r_S[1.3693,0.01,5],r_A[0.224,-1,1])"' \
+                    --PO '"map=^.*/WH_h.*_minus.?$:r_WHminus=expr;;r_WHminus(\"@0*(1-@1)/(2*0.5313)\",r_S,r_A)"' 
 
-                source utils/setup_cmssw.sh
+
                 combineTool.py \
                 -M MultiDimFit \
                 -m 125 \
@@ -146,9 +121,9 @@ if [[ $MODE == "FIT" ]]; then
                 --robustFit 1 \
                 --X-rtd MINIMIZER_analytic \
                 --cminDefaultMinimizerStrategy 0 \
-                --setParameters r=1.0 \
-                --setParameterRanges r=-10,10 \
-                --redefineSignalPOIs r \
+                --setParameters r_S=1.3693,r_A=0.224 \
+                --setParameterRanges r_S=0.01,50:r_A=-1,1 \
+                --redefineSignalPOIs r_S,r_A \
                 -n $ERA -v1 \
                 --parallel 1 --there \
                 -t -1 
@@ -161,13 +136,37 @@ if [[ $MODE == "FIT" ]]; then
         fi
     done
 fi
+if [[ $MODE == "COMBINE_ERAS" ]]; then
+    for CHANNEL in $CHANNELS
+    do
+        if [[ $CHANNEL == "all" ]]; then
+            OUTDIR=${BASE_PATH}/all_eras_${CHANNEL}/cmb
+            for ERA in ${ERAS}
+            do
+                DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb"
+                mkdir -p $OUTDIR/common
+                cp ${DATACARD_OUTPUT}/htt_*.txt $OUTDIR
+                cp ${DATACARD_OUTPUT}/common/htt_input_${ERA}.root $OUTDIR/common
+            done
+        else
+            OUTDIR=${BASE_PATH}/all_eras_${CHANNEL}/cmb
+            for ERA in ${ERAS}
+            do
+                DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb"
+                mkdir -p $OUTDIR/common
+                cp ${DATACARD_OUTPUT}/htt_*.txt $OUTDIR
+                cp ${DATACARD_OUTPUT}/common/htt_input_${ERA}.root $OUTDIR/common
+            done
+        fi
+    done 
+fi
 if [[ $MODE == "POSTFIT" ]]; then
     source utils/setup_cmssw.sh
     for ERA in $ERAS
     do
     for CHANNEL in $CHANNELS
     do
-        DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin"
+        DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}"
         RESDIR=$DATACARD_OUTPUT/cmb
         WORKSPACE=${RESDIR}/workspace.root
         echo "[INFO] Printing fit result for category $(basename $RESDIR)"
@@ -221,10 +220,10 @@ if [[ $MODE == "PLOT" ]]; then
         if [[ "$ERA" == "2016preVFP" || "$ERA" == "2016postVFP" ]]; then
             for CHANNEL in $CHANNELS
             do
-                INPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin/cmb/postfitshape.root"
+                INPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb/postfitshape.root"
                 for CAT in all_cats_minus all_cats_plus
                 do
-                    OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}_autorebin
+                    OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
                     python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} --prefit 
                     python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} 
                 done
@@ -232,10 +231,10 @@ if [[ $MODE == "PLOT" ]]; then
         else
             for CHANNEL in $CHANNELS
             do
-                INPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin/cmb/postfitshape.root"
+                INPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb/postfitshape.root"
                 for CAT in control_minus control_plus sig_plus sig_minus
                 do
-                    OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}_autorebin
+                    OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
                     python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} --prefit 
                     python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} 
                 done
@@ -247,21 +246,37 @@ fi
 if [[ $MODE == "IMPACTS" ]]; then
     source utils/setup_cmssw.sh
     CHANNELS="all"
+    ERAS="all_eras"
     for ERA in $ERAS
     do
     for CHANNEL in $CHANNELS
     do
-        DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}_autorebin/cmb"
+        DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb"
         WORKSPACE=${DATACARD_OUTPUT}/workspace.root
-        combineTool.py -M Impacts -d $WORKSPACE -m 125 \
-            --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
-            --doInitialFit --robustFit 1 \
-            --parallel 16
-        combineTool.py -M Impacts -d $WORKSPACE -m 125 \
-            --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
-            --robustFit 1 --doFits \
-            --parallel 16
-        combineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json
+        combineTool.py -M Impacts -d $WORKSPACE -m 125 --doInitialFit -t -1 --setParameters r_S=1.3693,r_A=0.224,r_ZH=1 --setParameterRanges r_S=0,10:r_A=-1,1 --redefineSignalPOIs r_A --freezeParameters r_ZH --parallel 16 
+
+        combineTool.py -M Impacts -d $WORKSPACE -m 125 --doFits -t -1 --setParameters r_S=1.3693,r_A=0.224,r_ZH=1 --setParameterRanges r_S=0,10:r_A=-1,1 --redefineSignalPOIs r_A  --freezeParameters r_ZH --parallel 16  #--job-mode=condor
+
+        combineTool.py -M Impacts -d $WORKSPACE -m 125 -t -1 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_S=1.3693,r_A=0.224,r_ZH=1 --setParameterRanges r_S=0,10:r_A=-1,1 --redefineSignalPOIs r_A --freezeParameters r_ZH
+        # combineTool.py -M Impacts -d $WORKSPACE -m 125 \
+        #     --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
+        #     --doInitialFit --robustFit 1 \
+        #     --parallel 16 \
+        #     --setParameters r_S=1.3693,r_A=0.224 \
+        #     --setParameterRanges r_S=0.01,50:r_A=-1,1 \
+        #     --redefineSignalPOIs r_S,r_A 
+
+        # combineTool.py -M Impacts -d $WORKSPACE -m 125 \
+        #     --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0 \
+        #     --robustFit 1 --doFits \
+        #     --parallel 16 \
+        #     --setParameters r_S=1.3693,r_A=0.224 \
+        #     --setParameterRanges r_S=0.01,50:r_A=-1,1 \
+        #     --redefineSignalPOIs r_S,r_A
+
+        combineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_S=1.3693,r_A=0.224 \
+            --setParameterRanges r_S=0.01,50:r_A=-1,1 \
+            --redefineSignalPOIs r_S,r_A 
         plotImpacts.py -i sm_mc_${ERA}_${CHANNEL}_impacts.json -o sm_mc_${ERA}_${CHANNEL}_impacts
         # cleanup the fit files
         rm higgsCombine*.root
@@ -274,51 +289,54 @@ if [[ $MODE == "IMPACTS" ]]; then
 fi
 if [[ $MODE == "UNC_SPLIT" ]]; then
     source utils/setup_cmssw.sh
+    ERA="all_eras"
     DATACARD_OUTPUT="${BASE_PATH}/${ERA}_all/cmb"
     DATACARD=${DATACARD_OUTPUT}/combined.txt.cmb
     # this can be check by checking if "theory group" can be found in the card. If not, add the groups
     if ! grep -q "theory group" $DATACARD; then
         echo "Adding MC unc groups to datacard"
-        cat uncertainty_groups_2017.txt >> $DATACARD
+        cat uncertainty_groups_alleras.txt >> $DATACARD
     fi
+    #cat $DATACARD 
+    echo $DATACARD 
     combineTool.py -M T2W -o workspace.root -i $DATACARD -m 125 \
-                -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
-                --PO verbose \
-                --PO 'map=.*/WHplus.?$:r[1,-10,10]' \
-                --PO 'map=.*/WHminus.?$:r'
-    POIS=("r")
+                    -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
+                    --PO '"map=^.*/ZH.?$:r_ZH[1,0.99,1.01]"' \
+                    --PO '"map=^.*/WH_h.*_plus.?$:r_WHplus=expr;;r_WHplus(\"@0*(1+@1)/(2*0.8380)\",r_S[1.3693,0.01,5],r_A[0.224,-1,1])"' \
+                    --PO '"map=^.*/WH_h.*_minus.?$:r_WHminus=expr;;r_WHminus(\"@0*(1-@1)/(2*0.5313)\",r_S,r_A)"' 
+    #cat $DATACARD
+    POIS=("r_A")
     RESULTFOLDER=$DATACARD_OUTPUT/unc_split/
 
     mkdir -p $RESULTFOLDER
     echo "Will run fit for POIs: ${POIS[@]}"
     # # loop though the POIs and run the fit
     for POI in ${POIS[@]}; do
-        combine -M MultiDimFit $DATACARD_OUTPUT/workspace.root -n .snapshot -m 125 --saveWorkspace --redefineSignalPOIs $POI -t -1 --setParameters r=1.0 
-        # combineTool.py \
-        # -M MultiDimFit \
-        # -m 125 \
-        # -d $DATACARD_OUTPUT/cmb/workspace.root \
-        # --algo singles \
-        # --robustFit 1 \
-        # --X-rtd MINIMIZER_analytic \
-        # --cminDefaultMinimizerStrategy 0 \
-        # --setParameters r=1.0 \
-        # --setParameterRanges r=-10,10 \
-        # --redefineSignalPOIs r \
-        # -n $ERA -v1 \
-        # -t -1 \
-        # --parallel 1 --there 
-        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .nominal -m 125 --algo grid --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+        combine -M MultiDimFit $DATACARD_OUTPUT/workspace.root -n .snapshot -m 125 --saveWorkspace --redefineSignalPOIs $POI -t -1 --setParameters r_A=0.224 
 
-        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezebbb -m 125 --algo grid --freezeNuisanceGroups autoMCStats --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .nominal -m 125 --algo grid --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r_A=0.224 -t -1
 
-        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezesyst -m 125 --algo grid --freezeNuisanceGroups autoMCStats,syst --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezebbb -m 125 --algo grid --freezeNuisanceGroups autoMCStats --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r_A=0.224 -t -1
 
-        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezetheory -m 125 --algo grid --freezeNuisanceGroups syst,theory,autoMCStats --snapshotName MultiDimFit --redefineSignalPOIs $POI  --points 20 --setParameters r=1.0 -t -1
+        echo " -----------------"
+        echo "syst"
+        echo " -----------------"
 
-        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezeall -m 125 --algo grid --freezeParameters allConstrainedNuisances --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r=1.0 -t -1
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezesyst -m 125 --algo grid --freezeNuisanceGroups autoMCStats,syst --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r_A=0.224 -t -1
+
+        echo " -----------------"
+        echo "theory"
+        echo " -----------------"
+
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezetheory -m 125 --algo grid --freezeNuisanceGroups syst,theory,autoMCStats --snapshotName MultiDimFit --redefineSignalPOIs $POI  --points 20 --setParameters r_A=0.224 -t -1
+
+        combine -M MultiDimFit higgsCombine.snapshot.MultiDimFit.mH125.root -n .freezeall -m 125 --algo grid --freezeParameters allConstrainedNuisances --snapshotName MultiDimFit --redefineSignalPOIs $POI --points 20 --setParameters r_A=0.224 -t -1
 
         outputname=freeze_${POI}_mc
+
+        echo " -----------------"
+        echo "plot"
+        echo " -----------------"
         plot1DScan.py higgsCombine.nominal.MultiDimFit.mH125.root --POI $POI --others higgsCombine.freezebbb.MultiDimFit.mH125.root:"freeze bbb":4 higgsCombine.freezesyst.MultiDimFit.mH125.root:"freeze bbb + syst":6 higgsCombine.freezetheory.MultiDimFit.mH125.root:"freeze bbb + syst + theo":7 higgsCombine.freezeall.MultiDimFit.mH125.root:"Stat. only":2 -o ${outputname} --breakdown bbb,syst,theory,rest,stat --y-max 4  #--x-range 0,2
         #--json $outputname.json
 

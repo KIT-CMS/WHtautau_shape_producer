@@ -58,6 +58,7 @@ def plot_rates(rates_dict, plot_output):
     # plt.ylim(0, 0.0224)
     plt.ylabel(r"jet $\rightarrow \mathrm{e}$ fake rate")
     plt.xlabel(r"$\mathrm{p_{T}} (\mathrm{e})\, (\mathrm{GeV})$")
+    print("hi")
     plt.savefig(
         "{plot_output}/jet_to_ele_fakerates.png".format(plot_output=plot_output)
     )
@@ -89,11 +90,15 @@ def rates(shapes, base_path, syst_unc):
         "zz": "ZZ#mme-VV#Nominal#pt_3",
         "wz": "WZ#mme-VV#Nominal#pt_3",
         "vvv": "VVV#mme-VVV#Nominal#pt_3",
+        # "ggh": "ggH#mme-H#Nominal#pt_3",
+        # "qqh": "qqH#mme-H#Nominal#pt_3",
+        "ggzh": "ggZH#mme-H#Nominal#pt_3",
+        "zh": "ZH#mme-H#Nominal#pt_3",
+        # "tth": "ttH#mme-H#Nominal#pt_3",
         # "zzz": "ZZZ#mme-ZZZ#Nominal#pt_3",
         # "www": "WWW#mme-WWW#Nominal#pt_3",
         # "wwz": "WWZ#mme-WWZ#Nominal#pt_3",
         # "wzz": "WZZ#mme-WZZ#Nominal#pt_3",
-        "rem_h": "rem_H#mme-H#Nominal#pt_3",
         "rem_ttbar": "rem_ttbar#mme-TT#Nominal#pt_3",
     }
     for shape in shapes:
@@ -242,7 +247,6 @@ def correction_lib_format(rates_dict):
 
 def main(shapes, base_path, output_file, plot_output, syst_unc):
     rates_dict = rates(shapes, base_path, syst_unc)
-    print(rates_dict)
     plot_rates(rates_dict, plot_output)
     with open("{output}".format(output=output_file), "w") as outfile:
         json.dump(correction_lib_format(rates_dict), outfile)

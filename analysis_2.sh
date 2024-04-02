@@ -2,15 +2,15 @@
 # 2016prevfp remtt control_minus mtt
 # 2016prevfp zzz sig_minus ett
 MODE=$1
-NTUPLE_TAG="15_03_24_triggermatchDR05_alleras_allch"
+NTUPLE_TAG="16_02_24_charge_req_in_ntuple_alleras_allch"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
-FF_FRIEND_TAG="jetfakes_wpVSjet_Tight_12_03_24"
+FF_FRIEND_TAG="jetfakes_wpVSjet_Tight_19_02_24"
 #FF_FRIENDS="/store/user/rschmieder/CROWN/ntuples/21_08_23_all_ch_17_18_shifts/CROWNFriends"
-CHANNELS="emt met mtt ett mmt"
-SHAPE_TAG="fit_shapes_ssTight_osTight_18_03_24"
+CHANNELS="mmt"
+SHAPE_TAG="fit_shapes_ssTight_osTight_19_02_24"
 ERAS="2016preVFP 2016postVFP 2017 2018"
-REGIONS="control_plus control_minus sig_plus sig_minus"
-CONTROL=0
+REGIONS="control" #"control_plus control_minus sig_plus sig_minus"
+CONTROL=1
 PROCESSES="sig data bkg1 bkg2 bkg3"
 if [[ $MODE == "XSEC" ]]; then
     bash friendtree_production.sh XSEC $NTUPLE_TAG $NTUPLE_PATH "" ""
@@ -86,24 +86,24 @@ if [[ $MODE == "COMB" ]]; then
         done
     done
 
-    #combine control and signal region in 2016eras
-    CHANNELS="emt mmt mtt ett"
-    ERAS="2016preVFP 2016postVFP"
-    CHARGES="plus minus"
-    for ERA in $ERAS
-    do
-        for CHANNEL in $CHANNELS
-        do
-            for CHARGE in $CHARGES
-            do
-                REGION="all_cats_${CHARGE}"
-                mkdir -p output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
-                SHAPES_RFILE="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}.root"
-                echo "${SHAPES_RFILE} output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG_CAT}/sig_${CHARGE}.root output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/control_${CHARGE}.root"
-                hadd -j 1 -n 600 -f ${SHAPES_RFILE} output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/sig_${CHARGE}.root output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/control_${CHARGE}.root
-            done
-        done
-    done 
+    # #combine control and signal region in 2016eras
+    # CHANNELS="emt mmt mtt ett"
+    # ERAS="2016preVFP 2016postVFP"
+    # CHARGES="plus minus"
+    # for ERA in $ERAS
+    # do
+    #     for CHANNEL in $CHANNELS
+    #     do
+    #         for CHARGE in $CHARGES
+    #         do
+    #             REGION="all_cats_${CHARGE}"
+    #             mkdir -p output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
+    #             SHAPES_RFILE="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}.root"
+    #             echo "${SHAPES_RFILE} output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG_CAT}/sig_${CHARGE}.root output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/control_${CHARGE}.root"
+    #             hadd -j 1 -n 600 -f ${SHAPES_RFILE} output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/sig_${CHARGE}.root output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/control_${CHARGE}.root
+    #         done
+    #     done
+    # done 
 fi
 if [[ $MODE == "SYNC" ]]; then
     CHANNELS="emt mtt mmt ett"
@@ -155,7 +155,7 @@ if [[ $MODE == "SYNC" ]]; then
     done
 fi
 if [[ $MODE == "PLOT" ]]; then
-    CHANNELS="emt mtt mmt ett"
+    CHANNELS="mmt" #"emt mtt mmt ett"
     source utils/setup_root.sh
     export PYTHONPATH=$PYTHONPATH:$PWD/Dumbledraw
     for ERA in $ERAS

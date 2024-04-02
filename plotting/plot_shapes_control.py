@@ -125,16 +125,16 @@ def main(info):
         c: split_value
         for c in ["met", "emt", "mmt", "ett", "mtt", "et", "mt", "tt", "em", "mm"]
     }
+    rare = ["ggZZ", "TTV", "VVV"]
+    rem_H = ["ggZH", "ZH"]
     if args.simulation:
         bkg_processes = [
             "TT",
             "DY",
             "Wjets",
             # "rem_VV",
-            "ggZZ",
+            "rare",
             "rem_H",
-            "TTV",
-            "VVV",
             "ZZ",
             "WZ",
         ]
@@ -148,18 +148,16 @@ def main(info):
     else:
         bkg_processes = [
             "jetFakes",
-            "ggZZ",
+            "rare",
             "rem_H",
-            "TTV",
-            "VVV",
             "ZZ",
             "WZ",
         ]
     signal_processes = [
-        "WHtautau_plus",
-        "WHtautau_minus",
-        "WHWW_plus",
-        "WHWW_minus",
+        "WH_htt_plus",
+        "WH_htt_minus",
+        "WH_hww_plus",
+        "WH_hww_minus",
     ]
     if "2016" in args.era:
         era = "Run2016"
@@ -195,6 +193,43 @@ def main(info):
             ).Clone()
             plot.add_hist(
                 rootfile.get(channel, process, args.category_postfix, shape_type=stype),
+                process,
+                "bkg",
+            )
+        elif "rare" in process:
+            for r, rare_bkg in enumerate(rare):
+                if r == 0:
+                    rare_proc = rootfile.get(
+                        channel, rare_bkg, args.category_postfix, shape_type=stype
+                    ).Clone()
+                else:
+                    rare_proc.Add(
+                        rootfile.get(
+                            channel, rare_bkg, args.category_postfix, shape_type=stype
+                        )
+                    )
+            total_bkg.Add(rare_proc)
+            plot.add_hist(
+                rare_proc,
+                process,
+                "bkg",
+            )
+        elif "rem_H" in process:
+            for h, higgs in enumerate(rem_H):
+                if h == 0:
+                    higgs_proc = rootfile.get(
+                        channel, higgs, args.category_postfix, shape_type=stype
+                    ).Clone()
+                else:
+                    higgs_proc.Add(
+                        rootfile.get(
+                            channel, higgs, args.category_postfix, shape_type=stype
+                        )
+                    )
+            print(h, higgs_proc)
+            total_bkg.Add(higgs_proc)
+            plot.add_hist(
+                higgs_proc,
                 process,
                 "bkg",
             )
@@ -296,12 +331,20 @@ def main(info):
 
     # draw subplots. Argument contains names of objects to be drawn in corresponding order.
 
-    procs_to_draw = ["stack", "total_bkg", "data_obs", "WHplus", "WHminus"]
+    procs_to_draw = [
+        "stack",
+        "total_bkg",
+        "data_obs",
+        "WH_htt_plus",
+        "WH_htt_minus",
+        "WH_hww_plus",
+        "WH_hww_minus",
+    ]
     plot.subplot(0).Draw(procs_to_draw)
     plot.subplot(2).Draw(["total_bkg", "data_obs"])
     # create legends
     for i in range(2):
-        plot.add_legend(width=0.625, height=0.15)
+        plot.add_legend(width=0.48, height=0.15)
         for process in legend_bkg_processes:
             plot.legend(i).add_entry(
                 0,
@@ -336,7 +379,7 @@ def main(info):
     plot.legend(3).setAlpha(0.0)
     plot.legend(3).Draw()
     # draw additional labels
-    plot.DrawCMS(thesisstyle=True, preliminary=False)
+    plot.DrawCMS(thesisstyle=True, preliminary=True)
     if "2016preVFP" in args.era:
         plot.DrawLumi("19.5 fb^{-1} (2016preVFP, 13 TeV)")
     elif "2016postVFP" in args.era:

@@ -87,11 +87,15 @@ def rates(shapes, base_path, syst_unc):
         "zz": "ZZ#eem-VV#Nominal#pt_3",
         "wz": "WZ#eem-VV#Nominal#pt_3",
         "vvv": "VVV#eem-VVV#Nominal#pt_3",
+        # "ggh": "ggH#eem-H#Nominal#pt_3",
+        # "qqh": "qqH#eem-H#Nominal#pt_3",
+        "ggzh": "ggZH#eem-H#Nominal#pt_3",
+        "zh": "ZH#eem-H#Nominal#pt_3",
+        # "tth": "ttH#eem-H#Nominal#pt_3",
         # "zzz": "ZZZ#eem-ZZZ#Nominal#pt_3",
         # "www": "WWW#eem-WWW#Nominal#pt_3",
         # "wwz": "WWZ#eem-WWZ#Nominal#pt_3",
         # "wzz": "WZZ#eem-WZZ#Nominal#pt_3",
-        "rem_h": "rem_H#eem-H#Nominal#pt_3",
         "rem_ttbar": "rem_ttbar#eem-TT#Nominal#pt_3",
     }
     for shape in shapes:
@@ -241,7 +245,6 @@ def correction_lib_format(rates_dict):
 
 def main(shapes, base_path, output_file, plot_output, syst_unc):
     rates_dict = rates(shapes, base_path, syst_unc)
-    print(rates_dict)
     plot_rates(rates_dict, plot_output)
     with open("{output}".format(output=output_file), "w") as outfile:
         json.dump(correction_lib_format(rates_dict), outfile)

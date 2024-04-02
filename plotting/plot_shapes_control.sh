@@ -3,10 +3,10 @@ source utils/setup_root.sh
 export PYTHONPATH=$PYTHONPATH:$PWD/Dumbledraw
 
 
-ERAS="2016preVFP 2016postVFP 2017 2018"
-CHANNELS="emt"
-NTUPLE_TAG="03_11_23_allch_alleras_shifts"
-SHAPE_TAG="fit_shapes_ssTight_osTight_emt_met_comb_2016combcats"
+ERAS="2016preVFP" # 2016postVFP 2017 2018"
+CHANNELS="mtt"
+NTUPLE_TAG="16_02_24_charge_req_in_ntuple_alleras_allch"
+SHAPE_TAG="test_shapes_ssTight_osTight_08_03_24"
 REGIONS="control"
 for ERA in $ERAS
 do

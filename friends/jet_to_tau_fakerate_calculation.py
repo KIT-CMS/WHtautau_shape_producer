@@ -85,14 +85,14 @@ def plot_rates(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele, DM, plot_output):
                             marker=".",
                             linestyle="",
                             markersize="7",
-                            label=r"vs$\mu$({wp_mu})+vsEle({wp_ele})".format(wp_mu=wp_mu, wp_ele=wp_ele),
+                            label=r"vs$\mu$({wp_mu})+vsEle({wp_ele})".format(
+                                wp_mu=wp_mu, wp_ele=wp_ele
+                            ),
                         )
             plt.legend()
             # plt.ylim(0, 0.15)
             plt.ylabel(r"jet $\rightarrow\tau_{\mathrm{h}}$ fake rate")
-            plt.xlabel(
-                r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$"
-                        )
+            plt.xlabel(r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$")
             plt.savefig(
                 "{plot_output}/{wps_jets}__{dm}.png".format(
                     plot_output=plot_output,
@@ -142,11 +142,15 @@ def rates(wps_vs_jets, wps_vs_mu, wps_vs_ele, DMs, base_path, syst_unc):
         "zz": "ZZ#mmt-VV#Nominal#pt_3",
         "wz": "WZ#mmt-VV#Nominal#pt_3",
         "vvv": "VVV#mmt-VVV#Nominal#pt_3",
+        # "ggh": "ggH#mmt-H#Nominal#pt_3",
+        # "qqh": "qqH#mmt-H#Nominal#pt_3",
+        "ggzh": "ggZH#mmt-H#Nominal#pt_3",
+        "zh": "ZH#mmt-H#Nominal#pt_3",
+        # "tth": "ttH#mmt-H#Nominal#pt_3",
         # "zzz": "ZZZ#mmt-ZZZ#Nominal#pt_3",
         # "www": "WWW#mmt-WWW#Nominal#pt_3",
         # "wwz": "WWZ#mmt-WWZ#Nominal#pt_3",
         # "wzz": "WZZ#mmt-WZZ#Nominal#pt_3",
-        "rem_h": "rem_H#mmt-H#Nominal#pt_3",
         "rem_ttbar": "rem_ttbar#mmt-TT#Nominal#pt_3",
     }
     for wps_jets in wps_vs_jets:
@@ -273,7 +277,6 @@ def values(rates_dict, wp_jets, wp_mu, wp_ele, dm):
 
 
 def decay_modes(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele):
-    print(wp_vs_jets, wp_vs_mu, wp_vs_ele)
     content = []
     for dm in [(0, "DM0"), (1, "DM1"), (10, "DM10"), (11, "DM11")]:
         content.append(

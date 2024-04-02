@@ -1,9 +1,9 @@
 #jetfake calculation and json 
-source utils/setup_root.sh
+#source utils/setup_root.sh
 
-
+source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc9-opt/setup.sh
 NTUPLE_TAG=$1
-ERAS=$2
+ERA=$2
 DATE=$3
 # #jet to tau fakerates
 INPUT_FILE="output/shapes/${NTUPLE_TAG}/${ERA}/mmt/fakerate_measurement_${DATE}/TightvsJets"
@@ -16,7 +16,8 @@ WP_VS_MU="Tight,VLoose"
 WP_VS_ELE="Tight,VLoose"
 mkdir -p ${PLOT_OUTPUT}
 mkdir -p friends/${ERA}/
-python friends/jet_to_tau_fakerate_calculation.py --base_path ${INPUT_FILE} --output_file ${OUTPUT_FILE} --plot_output ${PLOT_OUTPUT} --syst_unc ${SYST_UNC} --wp_vs_jets ${WP_VS_JET} --wp_vs_mu ${WP_VS_MU} --wp_vs_ele ${WP_VS_ELE}
+
+python friends/jet_to_tau_fakerate_calculation.py --base_path ${INPUT_FILE} --output_file ${OUTPUT_FILE} --plot_output ${PLOT_OUTPUT} --syst_unc ${SYST_UNC} --wp_vs_jets ${WP_VS_JET} --wp_vs_mu ${WP_VS_MU} --wp_vs_ele ${WP_VS_ELE} 
 
 # jet to mu fakerates
 INPUT_FILE="output/shapes/${NTUPLE_TAG}/${ERA}/eem/fakerate_measurement_${DATE}"

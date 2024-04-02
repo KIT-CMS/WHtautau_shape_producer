@@ -238,6 +238,7 @@ if __name__ == "__main__":
     dataset = yaml.safe_load(open(args.dataset_config))
     print("Collecting ntuples from {}".format(base_path))
     if base_path.startswith("root://"):
+        print(base_path)
         ntuples = xrdglob.glob(base_path)
     else:
         ntuples = glob.glob(base_path)

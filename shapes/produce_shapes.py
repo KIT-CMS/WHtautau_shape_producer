@@ -103,6 +103,7 @@ from config.shapes.variations import (
     zpt,
     top_pt,
     pileup_reweighting,
+    btag_sf_unc,
 )
 
 # fake rate uncertainties
@@ -368,9 +369,23 @@ def main(args):
                     ],
                 )
             ],
-            "rem_h": [
+            "zh": [
                 Unit(
-                    datasets["rem_H"],
+                    datasets["ZH"],
+                    [
+                        channel_selection(channel, era, region),
+                        H_process_selection(channel, era),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            "ggzh": [
+                Unit(
+                    datasets["ggZH"],
                     [
                         channel_selection(channel, era, region),
                         H_process_selection(channel, era),
@@ -412,7 +427,7 @@ def main(args):
             ],
             "vvv": [
                 Unit(
-                    datasets["vvv"],
+                    datasets["VVV"],
                     [
                         channel_selection(channel, era, region),
                         VVV_process_selection(channel, era),
@@ -424,9 +439,9 @@ def main(args):
                     ],
                 )
             ],
-            "whtautau_minus": [
+            "wh_htt_minus": [
                 Unit(
-                    datasets["WHtautau_minus"],
+                    datasets["WH_htt_minus"],
                     [
                         channel_selection(channel, era, region),
                         H_process_selection(channel, era),
@@ -438,9 +453,9 @@ def main(args):
                     ],
                 )
             ],
-            "whtautau_plus": [
+            "wh_htt_plus": [
                 Unit(
-                    datasets["WHtautau_plus"],
+                    datasets["WH_htt_plus"],
                     [
                         channel_selection(channel, era, region),
                         H_process_selection(channel, era),
@@ -452,9 +467,9 @@ def main(args):
                     ],
                 )
             ],
-            "whww_minus": [
+            "wh_hww_minus": [
                 Unit(
-                    datasets["WHWW_minus"],
+                    datasets["WH_hww_minus"],
                     [
                         channel_selection(channel, era, region),
                         H_process_selection(channel, era),
@@ -466,9 +481,9 @@ def main(args):
                     ],
                 )
             ],
-            "whww_plus": [
+            "wh_hww_plus": [
                 Unit(
-                    datasets["WHWW_plus"],
+                    datasets["WH_hww_plus"],
                     [
                         channel_selection(channel, era, region),
                         H_process_selection(channel, era),
@@ -521,20 +536,18 @@ def main(args):
                 channel, args.era, region, nominals[args.era]["datasets"][channel]
             )
     um = UnitManager()
-
-    # available sm processes are: {"data", "emb", "ztt", "zl", "zj", "ttt", "ttl", "ttj", "vvt", "vvl", "vvj", "w", "ggh", "qqh","vh","tth"}
-    # necessary processes for analysis with emb and ff method are: {"data", "emb", "zl", "ttl","ttt", "vvl","ttt" "ggh", "qqh","vh","tth"}
     if args.process_selection is None:
         procS = {
             "data",
             "ggzz",
-            "rem_h",
+            "ggzh",
+            "zh",
             "rem_ttbar",
             "vvv",
-            "whtautau_minus",
-            "whtautau_plus",
-            "whww_minus",
-            "whww_plus",
+            "wh_htt_minus",
+            "wh_htt_plus",
+            "wh_hww_minus",
+            "wh_hww_plus",
             "wz",
             "zz",
             # simulated fake estimation
@@ -544,93 +557,29 @@ def main(args):
         }
     else:
         procS = args.process_selection
-
+    print(args.process_selection)
     print("Processes to be computed: ", procS)
     dataS = {"data"} & procS
-    simulatedProcsDS = {
-        "emt": {
-            "ggzz",
-            "rem_h",
-            "rem_ttbar",
-            "vvv",
-            "whtautau_minus",
-            "whtautau_plus",
-            "whww_minus",
-            "whww_plus",
-            "wz",
-            "zz",
-            # simulated fake estimation
-            "dy",
-            "tt",
-            "wjets",
-        },
-        "met": {
-            "ggzz",
-            "rem_h",
-            "rem_ttbar",
-            "vvv",
-            "whtautau_minus",
-            "whtautau_plus",
-            "whww_minus",
-            "whww_plus",
-            "wz",
-            "zz",
-            # simulated fake estimation
-            "dy",
-            "tt",
-            "wjets",
-        },
-        "mmt": {
-            "ggzz",
-            "rem_h",
-            "rem_ttbar",
-            "vvv",
-            "whtautau_minus",
-            "whtautau_plus",
-            "whww_minus",
-            "whww_plus",
-            "wz",
-            "zz",
-            # simulated fake estimation
-            "dy",
-            "tt",
-            "wjets",
-        },
-        "mtt": {
-            "ggzz",
-            "rem_h",
-            "rem_ttbar",
-            "vvv",
-            "whtautau_minus",
-            "whtautau_plus",
-            "whww_minus",
-            "whww_plus",
-            "wz",
-            "zz",
-            # simulated fake estimation
-            "dy",
-            "tt",
-            "wjets",
-        },
-        "ett": {
-            "ggzz",
-            "rem_h",
-            "rem_ttbar",
-            "vvv",
-            "whtautau_minus",
-            "whtautau_plus",
-            "whww_minus",
-            "whww_plus",
-            "wz",
-            "zz",
-            # simulated fake estimation
-            "dy",
-            "tt",
-            "wjets",
-        },
-    }
+    simulatedProcsDS = {}
     for ch_ in args.channels:
-        # signalsS = {"wh"} & procS
+        simulatedProcsDS[ch_] = {
+            "ggzz",
+            "ggzh",
+            "zh",
+            "rem_ttbar",
+            "vvv",
+            "wh_htt_minus",
+            "wh_htt_plus",
+            "wh_hww_minus",
+            "wh_hww_plus",
+            "wz",
+            "zz",
+            # simulated fake estimation
+            "dy",
+            "tt",
+            "wjets",
+        }
+    for ch_ in args.channels:
         if ch_ == "emt":
             um.book(
                 [
@@ -715,14 +664,15 @@ def main(args):
                 [*jet_es],
                 enable_check=args.enable_booking_check,
             )
-            # TODO add btag stuff
-            # um.book(
-            #     um,
-            #     processes=simulatedProcsDS[channel],
-            #     datasets=nominals[era]["units"][channel],
-            #     variations=[mistag_eff, btag_eff],
-            #     enable_check=args.enable_booking_check,
-            # )
+            um.book(
+                [
+                    unit
+                    for d in simulatedProcsDS[ch_] & procS
+                    for unit in nominals[args.era]["units"][ch_][d]
+                ],
+                [*btag_sf_unc],
+                enable_check=args.enable_booking_check,
+            )
             um.book(
                 [
                     unit
@@ -961,5 +911,5 @@ if __name__ == "__main__":
         log_file = args.output_file.replace(".root", ".log")
     else:
         log_file = "{}.log".format(args.output_file)
-    setup_logging(log_file, logging.DEBUG)
+    setup_logging(log_file, logging.INFO)
     main(args)

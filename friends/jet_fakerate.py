@@ -308,7 +308,7 @@ def friend_producer(
     elif era == "2016postVFP":
         corr_file_tau = corr_file_dict_tau["2016postVFP"]
         corr_file_ele = corr_file_dict_ele["2016postVFP"]
-        corr_file_mu = corr_file_dict_mu["2016postVFP"]    
+        corr_file_mu = corr_file_dict_mu["2016postVFP"]
     elif era == "2017":
         corr_file_tau = corr_file_dict_tau["2017"]
         corr_file_ele = corr_file_dict_ele["2017"]

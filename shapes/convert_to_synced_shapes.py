@@ -10,10 +10,10 @@ import ROOT
 logger = logging.getLogger("")
 
 _process_map = {
-    "WHtautau_plus": "H",
-    "WHtautau_minus": "H",
-    "WHWW_plus": "H",
-    "WHWW_minus": "H",
+    "WH_htt_plus": "H",
+    "WH_htt_minus": "H",
+    "WH_hww_plus": "H",
+    "WH_hww_minus": "H",
     "VVV": "VVV",
     "rem_VV": "VV",
     "ggZZ": "VV",
@@ -23,6 +23,11 @@ _process_map = {
     "jetFakes": "jetFakes",
     "DY": "DY",
     "rem_H": "H",
+    "ggH": "H",
+    "qqH": "H",
+    "ggZH": "H",
+    "ZH": "H",
+    "ttH": "H",
     "ZZ": "ZZ",
     "TT": "TT",
 }

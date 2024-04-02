@@ -1,14 +1,14 @@
 #shape production to plots
 source utils/setup_root.sh
 
-NTUPLE_TAG="03_11_23_allch_alleras_shifts"
+NTUPLE_TAG="15_03_24_triggermatchDR05_alleras_allch"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 FRIEND_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/"
-FF="jetfakes_wpVSjet_Tight_22_11"
+FF="jetfakes_wpVSjet_Tight_12_03_24"
 #FF_FRIENDS="/store/user/rschmieder/CROWN/ntuples/21_08_23_all_ch_17_18_shifts/CROWNFriends"
 CHANNELS="mtt"
-SHAPE_TAG="fit_shapes_ssTight_osTight_datayield"
-ERAS="2016preVFP 2016postVFP"
+SHAPE_TAG="test"
+ERAS="2018"
 REGIONS="control"
 #shape production
 for ERA in $ERAS 
@@ -23,12 +23,12 @@ do
         OUTPUT_FILE="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${FILENAME}"
         mkdir -p output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
         if [ $REGION == "control" ]; then
-            python shapes/produce_shapes.py --channels ${CHANNEL} --output-file ${OUTPUT_FILE} --directory ${NTUPLE_PATH}  --era ${ERA} --num-processes 1 --num-threads 1 --optimization-level 1 --control-plots --ntuple_type crown --${CHANNEL}-friend-directory ${FRIEND_PATH}/crosssection ${FRIEND_PATH}/${FF} --control-plot-set m_tt  --region ${REGION} --xrootd --skip-systematic-variations --process-selection data #,m_vis,mjj,njets,pt_vis,nbtag,pt_W,pt_1,pt_2,pt_3
+            python shapes/produce_shapes.py --channels ${CHANNEL} --output-file ${OUTPUT_FILE} --directory ${NTUPLE_PATH}  --era ${ERA} --num-processes 2 --num-threads 2 --optimization-level 1 --control-plots --ntuple_type crown --${CHANNEL}-friend-directory ${FRIEND_PATH}/crosssection  ${FRIEND_PATH}/${FF} --control-plot-set m_tt  --region ${REGION} --xrootd --skip-systematic-variation #--process-selection d,wh_htt_minus #,m_vis,mjj,njets,pt_vis,nbtag,pt_W,pt_1,pt_2,pt_3
             # # # #jetfakes estimation
-            #bash shapes/do_estimations.sh ${ERA} ${OUTPUT_FILE}.root 0 
+            bash shapes/do_estimations.sh ${ERA} ${OUTPUT_FILE}.root 0 
             # bash shapes/convert_to_synced_shapes.sh ${ERA} ${CHANNEL} ${NTUPLE_TAG} ${SHAPE_TAG} ${OUTPUT_FILE}.root ${REGION}
         else
-            python shapes/produce_shapes.py --channels ${CHANNEL} --output-file ${OUTPUT_FILE} --directory ${NTUPLE_PATH}  --era ${ERA} --num-processes 4 --num-threads 12 --optimization-level 1 --control-plots --ntuple_type crown --${CHANNEL}-friend-directory ${FRIEND_PATH}/crosssection ${FRIEND_PATH}/${FF} --control-plot-set m_tt --region ${REGION} --xrootd
+            python shapes/produce_shapes.py --channels ${CHANNEL} --output-file ${OUTPUT_FILE} --directory ${NTUPLE_PATH}  --era ${ERA} --num-processes 4 --num-threads 12 --optimization-level 1 --control-plots --ntuple_type crown --${CHANNEL}-friend-directory ${FRIEND_PATH}/crosssection ${FRIEND_PATH}/${FF} --control-plot-set m_tt --region ${REGION} --xrootd 
             # # # #jetfakes estimation
             bash shapes/do_estimations.sh ${ERA} ${OUTPUT_FILE}.root 0 
             #synced shapes for fit

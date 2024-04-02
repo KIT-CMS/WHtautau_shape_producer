@@ -511,17 +511,6 @@ def W_process_selection(channel, era):
     return Selection(name="W", weights=W_process_weights)
 
 
-def HTT_process_selection(channel, era):
-    HTT_weights = HTT_base_process_selection(channel, era).weights + [
-        ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
-        ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
-        (
-            "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
-            "generator_weight",
-        ),
-    ]
-    return Selection(name="HTT", weights=HTT_weights)
-
 
 def HWW_process_selection(channel, era):
     HWW_process_weights = MC_base_process_selection(channel, era).weights

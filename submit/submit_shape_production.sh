@@ -10,9 +10,19 @@ CONTROL=$7
 OUTPUT=$8
 FF_FRIEND_TAG=$9
 PROC=${10}
-
 if [[ "$PROC" == "all" ]]; then
-    PROC="data,dy,ggzz,rem_ttbar,rem_vh,tt,whminus,whplus,wjets,www,wwz,wz,wzz,zh,zz,zzz"
+    PROC="data,dy,ggh,ggzh,ggzz,qqh,rem_ttbar,tt,tth,vvv,wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus,wjets,wz,zh,zz"
+elif [[ "$PROC" == "data" ]]; then
+    PROC="data"
+elif [[ "$PROC" == "bkg1" ]]; then
+    PROC="dy,ggzz,rem_ttbar,zz"
+elif [[ "$PROC" == "bkg2" ]]; then
+    PROC="ggh,ggzh,qqh,tt,tth,zh"
+elif [[ "$PROC" == "sig" ]]; then
+    PROC="wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus"
+elif [[ "$PROC" == "bkg3" ]]; then
+    PROC="vvv,wjets,wz"
+fi
 echo "producing shapes for processes era=$ERA, ch=$CHANNEL sub_mod=$SUBMIT_MODE ntupletag=$NTUPLE_TAG shapetag=$SHAPE_TAG region=$REGION crtl_arg=$CONTROL output=$OUTPUT ff=$FF_FRIEND_TAG proc=$PROC"
 [[ ! -z $1 && ! -z $2 && ! -z $3 && ! -z $4 && ! -z $5 ]] || (
     echo "[ERROR] Number of given parameters is too small."
@@ -21,7 +31,7 @@ echo "producing shapes for processes era=$ERA, ch=$CHANNEL sub_mod=$SUBMIT_MODE 
 [[ ! -z $6 ]] || CONTROL=0
 CONTROL_ARG=""
 if [[ $REGION == "control" ]]; then
-    CONTROL_ARG="--control-plot-set m_tt,m_vis,njets,pt_vis,pt_W,pt_1,pt_2,pt_3 --skip-systematic-variations" # "
+    CONTROL_ARG="--control-plot-set m_tt,pt_1,pt_2,pt_3 --skip-systematic-variations" # "
     echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
 else
     CONTROL_ARG="--control-plot-set m_tt" # ,m_vis,mjj,njets,pt_vis,nbtag,pt_W,m_tt,m_vis,pt_1,pt_2,pt_3"

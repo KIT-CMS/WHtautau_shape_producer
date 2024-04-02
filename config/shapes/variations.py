@@ -186,6 +186,26 @@ pileup_reweighting = [
     ReplaceVariable("CMS_PileUpDown", "PileUpDown"),
 ]
 
+# btag uncertainties
+# TODO btag_jes
+btag_sf_unc = [
+    ReplaceVariable("CMS_btag_hfUp", "btagUncHFUp"),
+    ReplaceVariable("CMS_btag_hfDown", "btagUncHFDown"),
+    ReplaceVariable("CMS_btag_hfstats1_EraUp", "btagUncHFstats1Up"),
+    ReplaceVariable("CMS_btag_hfstats1_EraDown", "btagUncHFstats1Down"),
+    ReplaceVariable("CMS_btag_hfstats2_EraUp", "btagUncHFstats2Up"),
+    ReplaceVariable("CMS_btag_hfstats2_EraDown", "btagUncHFstats2Down"),
+    ReplaceVariable("CMS_btag_lfUp", "btagUncLFUp"),
+    ReplaceVariable("CMS_btag_lfDown", "btagUncLFDown"),
+    ReplaceVariable("CMS_btag_lfstats1_EraUp", "btagUncLFstats1Up"),
+    ReplaceVariable("CMS_btag_lfstats1_EraDown", "btagUncLFstats1Down"),
+    ReplaceVariable("CMS_btag_lfstats2_EraUp", "btagUncLFstats2Up"),
+    ReplaceVariable("CMS_btag_lfstats2_EraDown", "btagUncLFstats2Down"),
+    ReplaceVariable("CMS_btag_cferr1Up", "btagUncCFerr1Up"),
+    ReplaceVariable("CMS_btag_cferr1Down", "btagUncCFerr1Down"),
+    ReplaceVariable("CMS_btag_cferr2Up", "btagUncCFerr2Up"),
+    ReplaceVariable("CMS_btag_cferr2Down", "btagUncCFerr2Down"),
+]
 
 # Energy scales.
 # Previously defined with 2017 in name.
@@ -253,8 +273,8 @@ jet_es = [
 
 # MET variations.
 met_unclustered = [
-    ReplaceVariable("CMS_scale_met_unclustered_EraUp", "metUnclusteredEnUp"),
-    ReplaceVariable("CMS_scale_met_unclustered_EraDown", "metUnclusteredEnDown"),
+    ReplaceVariable("CMS_scale_met_EraUp", "metUnclusteredEnUp"),
+    ReplaceVariable("CMS_scale_met_EraDown", "metUnclusteredEnDown"),
 ]
 
 # Recoil correction uncertainties
@@ -385,8 +405,8 @@ zpt = [
 ]
 
 top_pt = [
-    SquareWeight("CMS_htt_ttbarShapeUp", "topPtReweightWeight"),
-    RemoveWeight("CMS_htt_ttbarShapeDown", "topPtReweightWeight"),
+    SquareWeight("CMS_topPtRewUp", "topPtReweightWeight"),
+    RemoveWeight("CMS_topPtRewDown", "topPtReweightWeight"),
 ]
 
 # fake factor variations

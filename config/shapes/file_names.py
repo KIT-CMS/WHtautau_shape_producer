@@ -436,10 +436,10 @@ files = {
                     "EGamma_Run2018B-UL2018",
                     "EGamma_Run2018C-UL2018",
                     "EGamma_Run2018D-UL2018",
-                    "SingleMuon_Run2018A-UL2018",
-                    "SingleMuon_Run2018B-UL2018",
-                    "SingleMuon_Run2018C-UL2018",
-                    "SingleMuon_Run2018D-UL2018",
+                    # "SingleMuon_Run2018A-UL2018",
+                    # "SingleMuon_Run2018B-UL2018",
+                    # "SingleMuon_Run2018C-UL2018",
+                    # "SingleMuon_Run2018D-UL2018",
                 ]
             },
             **common_files_2018
@@ -447,10 +447,10 @@ files = {
         "met": dict(
             {
                 "data": [
-                    "EGamma_Run2018A-UL2018",
-                    "EGamma_Run2018B-UL2018",
-                    "EGamma_Run2018C-UL2018",
-                    "EGamma_Run2018D-UL2018",
+                    # "EGamma_Run2018A-UL2018",
+                    # "EGamma_Run2018B-UL2018",
+                    # "EGamma_Run2018C-UL2018",
+                    # "EGamma_Run2018D-UL2018",
                     "SingleMuon_Run2018A-UL2018",
                     "SingleMuon_Run2018B-UL2018",
                     "SingleMuon_Run2018C-UL2018",
@@ -536,11 +536,11 @@ files = {
                     "SingleElectron_Run2017D-UL2017",
                     "SingleElectron_Run2017E-UL2017",
                     "SingleElectron_Run2017F-UL2017",
-                    "SingleMuon_Run2017B-UL2017",
-                    "SingleMuon_Run2017C-UL2017",
-                    "SingleMuon_Run2017D-UL2017",
-                    "SingleMuon_Run2017E-UL2017",
-                    "SingleMuon_Run2017F-UL2017",
+                    # "SingleMuon_Run2017B-UL2017",
+                    # "SingleMuon_Run2017C-UL2017",
+                    # "SingleMuon_Run2017D-UL2017",
+                    # "SingleMuon_Run2017E-UL2017",
+                    # "SingleMuon_Run2017F-UL2017",
                 ]
             },
             **common_files_2017
@@ -548,11 +548,11 @@ files = {
         "met": dict(
             {
                 "data": [
-                    "SingleElectron_Run2017B-UL2017",
-                    "SingleElectron_Run2017C-UL2017",
-                    "SingleElectron_Run2017D-UL2017",
-                    "SingleElectron_Run2017E-UL2017",
-                    "SingleElectron_Run2017F-UL2017",
+                    # "SingleElectron_Run2017B-UL2017",
+                    # "SingleElectron_Run2017C-UL2017",
+                    # "SingleElectron_Run2017D-UL2017",
+                    # "SingleElectron_Run2017E-UL2017",
+                    # "SingleElectron_Run2017F-UL2017",
                     "SingleMuon_Run2017B-UL2017",
                     "SingleMuon_Run2017C-UL2017",
                     "SingleMuon_Run2017D-UL2017",
@@ -630,9 +630,9 @@ files = {
                     "SingleElectron_Run2016F-UL2016",
                     "SingleElectron_Run2016G-UL2016",
                     "SingleElectron_Run2016H-UL2016",
-                    "SingleMuon_Run2016F-UL2016",
-                    "SingleMuon_Run2016G-UL2016",
-                    "SingleMuon_Run2016H-UL2016",
+                    # "SingleMuon_Run2016F-UL2016",
+                    # "SingleMuon_Run2016G-UL2016",
+                    # "SingleMuon_Run2016H-UL2016",
                 ]
             },
             **common_files_2016postVFP
@@ -640,9 +640,9 @@ files = {
         "met": dict(
             {
                 "data": [
-                    "SingleElectron_Run2016F-UL2016",
-                    "SingleElectron_Run2016G-UL2016",
-                    "SingleElectron_Run2016H-UL2016",
+                    # "SingleElectron_Run2016F-UL2016",
+                    # "SingleElectron_Run2016G-UL2016",
+                    # "SingleElectron_Run2016H-UL2016",
                     "SingleMuon_Run2016F-UL2016",
                     "SingleMuon_Run2016G-UL2016",
                     "SingleMuon_Run2016H-UL2016",
@@ -711,12 +711,12 @@ files = {
                     "SingleElectron_Run2016D-HIPM",
                     "SingleElectron_Run2016E-HIPM",
                     "SingleElectron_Run2016F-HIPM",
-                    "SingleMuon_Run2016B-ver1",
-                    "SingleMuon_Run2016B-ver2",
-                    "SingleMuon_Run2016C-HIPM",
-                    "SingleMuon_Run2016D-HIPM",
-                    "SingleMuon_Run2016E-HIPM",
-                    "SingleMuon_Run2016F-HIPM",
+                    # "SingleMuon_Run2016B-ver1",
+                    # "SingleMuon_Run2016B-ver2",
+                    # "SingleMuon_Run2016C-HIPM",
+                    # "SingleMuon_Run2016D-HIPM",
+                    # "SingleMuon_Run2016E-HIPM",
+                    # "SingleMuon_Run2016F-HIPM",
                 ]
             },
             **common_files_2016preVFP
@@ -724,12 +724,12 @@ files = {
         "met": dict(
             {
                 "data": [
-                    "SingleElectron_Run2016B-ver1",
-                    "SingleElectron_Run2016B-ver2",
-                    "SingleElectron_Run2016C-HIPM",
-                    "SingleElectron_Run2016D-HIPM",
-                    "SingleElectron_Run2016E-HIPM",
-                    "SingleElectron_Run2016F-HIPM",
+                    # "SingleElectron_Run2016B-ver1",
+                    # "SingleElectron_Run2016B-ver2",
+                    # "SingleElectron_Run2016C-HIPM",
+                    # "SingleElectron_Run2016D-HIPM",
+                    # "SingleElectron_Run2016E-HIPM",
+                    # "SingleElectron_Run2016F-HIPM",
                     "SingleMuon_Run2016B-ver1",
                     "SingleMuon_Run2016B-ver2",
                     "SingleMuon_Run2016C-HIPM",

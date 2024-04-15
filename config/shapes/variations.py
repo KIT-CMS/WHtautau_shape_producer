@@ -40,7 +40,7 @@ anti_isoid_mu_2 = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2"],
     [
         Cut(
-            "(iso_2>0.15 || muon_is_mediumid_2<0.5) && pt_2<25",
+            "(iso_2>0.15 || muon_is_mediumid_2<0.5)",
             "mu_2_anti_isoid",
         )
     ],
@@ -73,7 +73,7 @@ anti_isoid_ele_2 = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2"],
     [
         Cut(
-            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && pt_1>25",
+            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5)",
             "ele_2_anti_isoid",
         )
     ],
@@ -99,7 +99,7 @@ anti_isoid_mu_2_tau = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2", "tau_iso"],
     [
         Cut(
-            "(iso_2>0.15 || muon_is_mediumid_2<0.5) && pt_2<25",
+            "(iso_2>0.15 || muon_is_mediumid_2<0.5)",
             "mu_2_anti_iso",
         ),
         Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
@@ -144,7 +144,7 @@ anti_isoid_ele_2_tau = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2", "tau_iso"],
     [
         Cut(
-            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && pt_1>25",
+            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5)",
             "ele_2_anti_iso",
         ),
         Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
@@ -448,7 +448,7 @@ anti_isoid_mu_2_var = [
         ["id_iso_cut_2"],
         [
             Cut(
-                "(iso_2>0.15 || muon_is_mediumid_2<0.5) && pt_2<25",
+                "(iso_2>0.15 || muon_is_mediumid_2<0.5)",
                 "mu_2_anti_isoid",
             )
         ],
@@ -502,7 +502,7 @@ anti_isoid_ele_2_var = [
         ["id_iso_cut_2"],
         [
             Cut(
-                "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && pt_1>25",
+                "(iso_2>0.15 || electron_is_nonisowp90_2<0.5)",
                 "ele_2_anti_isoid",
             )
         ],
@@ -616,7 +616,7 @@ anti_isoid_ele_2_tau_var = [
         ["id_iso_cut_2", "tau_iso"],
         [
             Cut(
-                "(iso_2>0.15 || electron_is_nonisowp90_2<0.5) && pt_1>25",
+                "(iso_2>0.15 || electron_is_nonisowp90_2<0.5)",
                 "ele_2_anti_iso",
             ),
             Cut(

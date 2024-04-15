@@ -267,15 +267,15 @@ def jet_fakes_nominal(rootfile, channel, category, variable, variation):
     if channel == "emt":
         fake_contributions = [
             "mu2tau_anti_isoid",
-            "ele1tau_anti_isoid",
+            # "ele1tau_anti_isoid",
             "mu2_anti_isoid",
-            "ele1_anti_isoid",
+            # "ele1_anti_isoid",
         ]
     elif channel == "met":
         fake_contributions = [
-            "mu1tau_anti_isoid",
+            # "mu1tau_anti_isoid",
             "ele2tau_anti_isoid",
-            "mu1_anti_isoid",
+            # "mu1_anti_isoid",
             "ele2_anti_isoid",
         ]
     elif channel == "mmt":

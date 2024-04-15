@@ -116,21 +116,21 @@ def channel_selection(channel, era, region):
             if era == "2018":
                 cuts.append(
                     (
-                        "(((pt_2>=28&&(trg_single_mu27 == 1)) || (pt_2>25&&pt_2<28&&(trg_single_mu24 == 1))) &&pt_1<33 && (abs(eta_2)<2.1)) || ((abs(eta_1)<2.1)&&((pt_1>=33 && pt_1 < 36 && (trg_single_ele32==1)) || (pt_1 >=36 && (trg_single_ele35==1))))",
+                        "((abs(eta_1)<2.1)&&((pt_1>=33 && pt_1 < 36 && (trg_single_ele32==1)) || (pt_1 >=36 && (trg_single_ele35==1))))",
                         "trg_selection",
                     )
                 )
             elif era == "2017":
                 cuts.append(
                     (
-                        "(((pt_2>=28&&(trg_single_mu27 == 1)) || (pt_2>25&&pt_2<28&&(trg_single_mu24 == 1))) && pt_1<28 && (abs(eta_2)<2.1)) || ((abs(eta_1)<2.1)&&((pt_1>=33 && pt_1 < 36 && (trg_single_ele32==1)) || (pt_1 >=36 && (trg_single_ele35==1)) ||(pt_1>28&&pt_1<=33&&(trg_single_ele27==1))))",
+                        "((abs(eta_1)<2.1)&&((pt_1>=33 && pt_1 < 36 && (trg_single_ele32==1)) || (pt_1 >=36 && (trg_single_ele35==1)) ||(pt_1>28&&pt_1<=33&&(trg_single_ele27==1))))",
                         "trg_selection",
                     )
                 )
             elif "2016" in era:
                 cuts.append(
                     (
-                        "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_2 > 23 && pt_1<26 && (abs(eta_2)<2.1)) || (pt_1 > 26 && (abs(eta_1)<2.1) && (trg_single_ele25 == 1))",
+                        "(pt_1 > 26 && (abs(eta_1)<2.1) && (trg_single_ele25 == 1))",
                         "trg_selection",
                     )
                 )
@@ -141,21 +141,21 @@ def channel_selection(channel, era, region):
             if era == "2018":
                 cuts.append(
                     (
-                        "((((trg_single_mu27 == 1)&&pt_1>27) || ((trg_single_mu24 == 1)&&pt_1<=27&&pt_1>25)) && (abs(eta_1)<2.1)) || (pt_1 < 25 && (abs(eta_2)<2.1) && (((trg_single_ele32 == 1)&&pt_2>33&&pt_2<=36) || ((trg_single_ele35 == 1)&&pt_2>36)))",
+                        "(((trg_single_mu27 == 1)&&pt_1>27) || ((trg_single_mu24 == 1)&&pt_1<=27&&pt_1>25))",
                         "trg_selection",
                     )
                 )
             elif era == "2017":
                 cuts.append(
                     (
-                        "((((trg_single_mu27 == 1)&&pt_1>27) || ((trg_single_mu24 == 1)&&pt_1<=27&&pt_1>25)) && (abs(eta_1)<2.4)) || (pt_1 < 25 && (abs(eta_2)<2.1) && (((trg_single_ele32 == 1)&&pt_2>33&&pt_2<=36) || ((trg_single_ele35 == 1)&&pt_2>36)) || ((trg_single_ele27 == 1)&&pt_2>28&&pt_2<=33))",
+                        "((((trg_single_mu27 == 1)&&pt_1>27) || ((trg_single_mu24 == 1)&&pt_1<=27&&pt_1>25)) && (abs(eta_1)<2.4))",
                         "trg_selection",
                     )
                 )
             elif "2016" in era:
                 cuts.append(
                     (
-                        "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_1 > 23 && (abs(eta_1)<2.1)) || (pt_1 < 23 && pt_2 > 26 && (abs(eta_2)<2.1) && (trg_single_ele25 == 1))",
+                        "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_1 > 23 && (abs(eta_1)<2.1))",
                         "trg_selection",
                     )
                 )

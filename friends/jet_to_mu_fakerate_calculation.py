@@ -55,7 +55,7 @@ def plot_rates(rates_dict, plot_output):
         markersize="7",
     )
     plt.grid()
-    # plt.ylim(0, 0.06)
+    plt.ylim(-0.002, 0.045)
     plt.ylabel(r"jet $\rightarrow\mu$ fake rate")
     plt.xlabel(r"$\mathrm{p_{T}}(\mu)\, (\mathrm{GeV})$")
     plt.savefig("{plot_output}/jet_to_mu_fakerates.png".format(plot_output=plot_output))
@@ -153,7 +153,6 @@ def rates(shapes, base_path, syst_unc):
             tight_file.Close()
             del tight_data
             del base_data
-
     return rates_dict
 
 

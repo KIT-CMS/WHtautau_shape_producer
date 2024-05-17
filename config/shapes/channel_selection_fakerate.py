@@ -2,6 +2,7 @@ from asyncio import new_event_loop
 from ntuple_processor.utils import Selection
 import ROOT as R
 
+
 ##### wh analysis selction
 def channel_selection(
     channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, decay_mode, id_wp_ele, id_wp_mu
@@ -28,7 +29,7 @@ def channel_selection(
         if wp_vs_jet == "VVVLoose":
             cuts.append(
                 (
-                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_Tight_3<0.5".format(
+                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_VTight_3<0.5".format(
                         wp_vs_jet=wp_vs_jet
                     ),
                     "tau_iso",
@@ -37,23 +38,21 @@ def channel_selection(
         else:
             cuts.append(
                 (
-                    "id_tau_vsJet_{wp_vs_jet}_3>0.5".format(
-                        wp_vs_jet=wp_vs_jet
-                    ),
+                    "id_tau_vsJet_{wp_vs_jet}_3>0.5".format(wp_vs_jet=wp_vs_jet),
                     "tau_iso",
                 )
             )
         if era in ["2018", "2017"]:
             cuts.append(
                 (
-                    "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25 && (abs(eta_1)<2.4))",
+                    "((((trg_single_mu27 == 1)&&pt_1>28) || ((trg_single_mu24 == 1)&&pt_1>25&&pt_1<=28)) && (abs(eta_1)<2.1))",
                     "trg_selection",
                 ),
             )
         else:
             cuts.append(
                 (
-                    "((trg_single_mu22 == 1) && pt_1 > 23 && (abs(eta_1)<2.1))",
+                    "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_1 > 23 && (abs(eta_1)<2.1))",
                     "trg_selection",
                 ),
             )
@@ -81,14 +80,14 @@ def channel_selection(
         if era in ["2018", "2017"]:
             cuts.append(
                 (
-                    "(((trg_single_mu27 == 1) || (trg_single_mu24 == 1)) && pt_1 > 25 && (abs(eta_1)<2.4))",
+                    "((((trg_single_mu27 == 1)&&pt_1>28) || ((trg_single_mu24 == 1)&&pt_1>25&&pt_1<=28)) && (abs(eta_1)<2.1))",
                     "trg_selection",
                 ),
             )
         else:
             cuts.append(
                 (
-                    "((trg_single_mu22 == 1) && pt_1 > 23 && (abs(eta_1)<2.1))",
+                    "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_1 > 23 && (abs(eta_1)<2.1))",
                     "trg_selection",
                 ),
             )
@@ -117,14 +116,14 @@ def channel_selection(
         if era == "2018":
             cuts.append(
                 (
-                    "pt_1 > 33 && (abs(eta_1)<2.1) && ((trg_single_ele32 == 1) || (trg_single_ele35 == 1))",
+                    "(abs(eta_1)<2.1) && (((trg_single_ele32 == 1)&&pt_1>33&&pt_1<=36) || ((trg_single_ele35 == 1&&pt_1>36)))",
                     "trg_selection",
                 )
             )
         elif era == "2017":
             cuts.append(
                 (
-                    "pt_1 > 28 && (abs(eta_1)<2.1) && ((trg_single_ele27 == 1) || (trg_single_ele32 == 1) || (trg_single_ele35 == 1))",
+                    "(abs(eta_1)<2.1) && (((trg_single_ele27 == 1)&&pt_1>28&&pt_1<=33) || ((trg_single_ele32 == 1)&&pt_1>33&&pt_1<=36) || ((trg_single_ele35 == 1)&&pt_1>36))",
                     "trg_selection",
                 )
             )

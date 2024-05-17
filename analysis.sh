@@ -2,18 +2,29 @@
 # 2016prevfp remtt control_minus mtt
 # 2016prevfp zzz sig_minus ett
 MODE=$1
-NTUPLE_TAG="15_03_24_triggermatchDR05_alleras_allch"
+NTUPLE_TAG="07_05_24_noDeltaRcutLep_alleras_allch"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
-FF_FRIEND_TAG="jetfakes_wpVSjet_Tight_12_03_24"
+#this date is only for FF friends
+DATE="07_05_24"
+FF_FRIEND_TAG_LLT="jetfakes_wpVSjet_Tight_${DATE}"
+FF_FRIEND_TAG_LTT="jetfakes_wpVSjet_VTight_${DATE}"
+FF_NTUPLE_TAG="06_05_24_FF_ntuples"
 #FF_FRIENDS="/store/user/rschmieder/CROWN/ntuples/21_08_23_all_ch_17_18_shifts/CROWNFriends"
-CHANNELS="emt met mtt ett mmt"
-SHAPE_TAG="fit_shapes_ssTight_osTight_18_03_24"
+CHANNELS="emt met mmt ett mtt"
+SHAPE_TAG="fit_shapes_13_05_24_lep1DR"
 ERAS="2016preVFP 2016postVFP 2017 2018"
 REGIONS="control_plus control_minus sig_plus sig_minus"
 CONTROL=0
 PROCESSES="sig data bkg1 bkg2 bkg3"
+
 if [[ $MODE == "XSEC" ]]; then
     bash friendtree_production.sh XSEC $NTUPLE_TAG $NTUPLE_PATH "" ""
+fi
+if [[ $MODE == "FF_FRIEND" ]]; then
+    for ERA in $ERAS
+    do
+        bash friendtree_production.sh FF $NTUPLE_TAG $NTUPLE_PATH $ERA $FF_NTUPLE_TAG $DATE
+    done
 fi
 if [[ $MODE == "CONDOR" ]]; then
     source utils/setup_root.sh
@@ -22,6 +33,11 @@ if [[ $MODE == "CONDOR" ]]; then
     do
         for CHANNEL in $CHANNELS
         do
+            if [ "$CHANNEL" = "ett" ] || [ "$CHANNEL" = "mtt" ] ; then
+                FF_FRIEND_TAG=$FF_FRIEND_TAG_LTT
+            else
+                FF_FRIEND_TAG=$FF_FRIEND_TAG_LLT
+            fi
             for REGION in $REGIONS
             do
                 for PROC in $PROCESSES

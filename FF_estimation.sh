@@ -1,11 +1,11 @@
 MODE=$1
-NTUPLE_TAG="15_03_24_triggermatchDR05_alleras_allch"
+NTUPLE_TAG="06_05_24_FF_ntuples"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 FRIEND_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/"
 ERAS="2016preVFP 2016postVFP 2017 2018"
 #ERAS="2016postVFP"
-FF_NTUPLE_TAG="11_03_24_triggermatchDR05_FF"
-DATE="12_03_24"
+ulimit -s unlimited
+DATE="07_05_24"
 #if you want to change the TauvsJets WP you have to change the scripts: 
 #jet_to_tau_fakerate_shapes.sh
 #jet_fakerate_caluclation.sh
@@ -27,11 +27,5 @@ if [[ $MODE == "FF_CALC" ]]; then
     for ERA in $ERAS
     do
         bash jet_fakerate_calculation.sh $NTUPLE_TAG $ERA $DATE
-    done
-fi
-if [[ $MODE == "FRIEND" ]]; then
-    for ERA in $ERAS
-    do
-        bash friendtree_production.sh FF $NTUPLE_TAG $NTUPLE_PATH $ERA $FF_NTUPLE_TAG $DATE
     done
 fi

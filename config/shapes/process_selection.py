@@ -48,7 +48,7 @@ def prefiring_weight(era):
 def MC_base_process_selection(channel, era):
     if channel in ["emt", "met"]:
         tauidweight = (
-            "((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3 + (id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*id_wgt_tau_vsJet_VVVLoose_3) + (gen_match_3!=5))",
+            "((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3 + (id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*1.0) + (gen_match_3!=5))",
             "taubyIsoIdWeight",
         )
         vsmu_weight = ("id_wgt_tau_vsMu_Tight_3", "vsmuweight")
@@ -103,7 +103,7 @@ def MC_base_process_selection(channel, era):
                 )
     elif channel == "mmt":
         tauidweight = (
-            "((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3 + (id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*id_wgt_tau_vsJet_VVVLoose_3) + (gen_match_3!=5))",
+            "((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3 + (id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*1.0) + (gen_match_3!=5))",
             "taubyIsoIdWeight",
         )
         vsmu_weight = ("id_wgt_tau_vsMu_Tight_3", "vsmuweight")
@@ -128,14 +128,14 @@ def MC_base_process_selection(channel, era):
                 "trgweight",
             )
     elif channel == "ett":
-        # tauidweight = (
-        #     "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Medium_3>0.5)*id_wgt_tau_vsJet_Medium_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2+(id_tau_vsJet_Tight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*id_wgt_tau_vsJet_VVVLoose_2) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3+(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*id_wgt_tau_vsJet_VVVLoose_3) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Medium_2>0.5)*id_wgt_tau_vsJet_Medium_2) + (gen_match_2!=5))))",
-        #     "taubyIsoIdWeight",
-        # )
         tauidweight = (
-            "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2+(id_tau_vsJet_Tight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*id_wgt_tau_vsJet_VVVLoose_2) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3+(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*id_wgt_tau_vsJet_VVVLoose_3) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2) + (gen_match_2!=5))))",
+            "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Medium_3>0.5)*id_wgt_tau_vsJet_Medium_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_VTight_2>0.5)*id_wgt_tau_vsJet_VTight_2+(id_tau_vsJet_VTight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*1.0) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_VTight_3>0.5)*id_wgt_tau_vsJet_VTight_3+(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*1.0) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Medium_2>0.5)*id_wgt_tau_vsJet_Medium_2) + (gen_match_2!=5))))",
             "taubyIsoIdWeight",
         )
+        # tauidweight = (
+        #     "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2+(id_tau_vsJet_Tight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*1.0) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3+(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*1.0) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2) + (gen_match_2!=5))))",
+        #     "taubyIsoIdWeight",
+        # )
         vsmu_weight = (
             "id_wgt_tau_vsMu_VLoose_3*id_wgt_tau_vsMu_VLoose_2",
             "vsmuweight",
@@ -151,17 +151,17 @@ def MC_base_process_selection(channel, era):
             trgweight = ("pt_1>26 * trg_wgt_single_ele25", "trgweight")
         elif "2017" in era:
             trgweight = ("trg_wgt_single_ele27orele32orele35", "trgweight")
-        elif "2018" in era: 
+        elif "2018" in era:
             trgweight = ("trg_wgt_single_ele32orele35", "trgweight")
     elif channel == "mtt":
-        # tauidweight = (
-        #     "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Medium_3>0.5)*id_wgt_tau_vsJet_Medium_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2+(id_tau_vsJet_Tight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*id_wgt_tau_vsJet_VVVLoose_2) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3+(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*id_wgt_tau_vsJet_VVVLoose_3) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Medium_2>0.5)*id_wgt_tau_vsJet_Medium_2) + (gen_match_2!=5))))",
-        #     "taubyIsoIdWeight",
-        # )
         tauidweight = (
-            "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2+(id_tau_vsJet_Tight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*id_wgt_tau_vsJet_VVVLoose_2) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3+(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*id_wgt_tau_vsJet_VVVLoose_3) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2) + (gen_match_2!=5))))",
+            "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Medium_3>0.5)*id_wgt_tau_vsJet_Medium_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_VTight_2>0.5)*id_wgt_tau_vsJet_VTight_2+(id_tau_vsJet_VTight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*1.0) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_VTight_3>0.5)*id_wgt_tau_vsJet_VTight_3+(id_tau_vsJet_VTight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*1.0) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Medium_2>0.5)*id_wgt_tau_vsJet_Medium_2) + (gen_match_2!=5))))",
             "taubyIsoIdWeight",
         )
+        # tauidweight = (
+        #     "((q_1*q_2>0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3) + (gen_match_3!=5))*((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2+(id_tau_vsJet_Tight_2<0.5&&id_tau_vsJet_VVVLoose_2>0.5)*1.0) + (gen_match_2!=5))+((q_1*q_2<0.5)*((gen_match_3==5)*((id_tau_vsJet_Tight_3>0.5)*id_wgt_tau_vsJet_Tight_3+(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)*1.0) + (gen_match_3!=5)) * ((gen_match_2==5)*((id_tau_vsJet_Tight_2>0.5)*id_wgt_tau_vsJet_Tight_2) + (gen_match_2!=5))))",
+        #     "taubyIsoIdWeight",
+        # )
         vsmu_weight = (
             "id_wgt_tau_vsMu_Tight_3*id_wgt_tau_vsMu_Tight_2",
             "vsmuweight",
@@ -176,7 +176,10 @@ def MC_base_process_selection(channel, era):
         if "2016" in era:
             trgweight = ("trg_wgt_single_mu22", "trgweight")
         elif era in ["2017", "2018"]:
-            trgweight = ("(trg_wgt_single_mu27*(pt_1>28))+(trg_wgt_single_mu24*(pt_1>25&&pt_1<=28))", "trgweight")
+            trgweight = (
+                "(trg_wgt_single_mu27*(pt_1>28))+(trg_wgt_single_mu24*(pt_1>25&&pt_1<=28))",
+                "trgweight",
+            )
     MC_base_process_weights = [
         ("btag_weight", "btagWeight"),
         ("puweight", "puweight"),
@@ -445,13 +448,17 @@ def ZZZ_process_selection(channel, era):
         )
     return Selection(name="ZZZ", weights=ZZZ_process_weights)
 
-#collection of ZZZ,WZZ,WWZ,WWW processes. To ensure every event has the same weight as if the process selection for the four processes were seperated, the numberofgeneratedeventsweight has to be the same. This is ensured by hard coding the crosssection (from datasets.yaml in the sample database repo). The condition has the queue ZZZ,WZZ,WWZ,WWW
+
+# collection of ZZZ,WZZ,WWZ,WWW processes. To ensure every event has the same weight as if the process selection for the four processes were seperated, the numberofgeneratedeventsweight has to be the same. This is ensured by hard coding the crosssection (from datasets.yaml in the sample database repo). The condition has the queue ZZZ,WZZ,WWZ,WWW
 def VVV_process_selection(channel, era):
     VVV_process_weights = MC_base_process_selection(channel, era).weights
     if era == "2016preVFP":
         VVV_process_weights.extend(
             [
-                ("(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(81000+5302000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(160000+5394000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(81000+5072000)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(71000+5190000)", "numberGeneratedEventsWeight"),
+                (
+                    "(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(81000+5302000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(160000+5394000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(81000+5072000)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(71000+5190000)",
+                    "numberGeneratedEventsWeight",
+                ),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -462,7 +469,10 @@ def VVV_process_selection(channel, era):
     elif era == "2016postVFP":
         VVV_process_weights.extend(
             [
-                ("(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(72000+4534000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(137000+4554000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(67000+4595000)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(69000+4159000)", "numberGeneratedEventsWeight"),
+                (
+                    "(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(72000+4534000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(137000+4554000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(67000+4595000)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(69000+4159000)",
+                    "numberGeneratedEventsWeight",
+                ),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -473,7 +483,10 @@ def VVV_process_selection(channel, era):
     elif era == "2017":
         VVV_process_weights.extend(
             [
-                ("(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(178000+9524000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(298000+9898000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(178000+9938400)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(171000+9854000)", "numberGeneratedEventsWeight"),
+                (
+                    "(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(178000+9524000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(298000+9898000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(178000+9938400)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(171000+9854000)",
+                    "numberGeneratedEventsWeight",
+                ),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -484,7 +497,10 @@ def VVV_process_selection(channel, era):
     elif era == "2018":
         VVV_process_weights.extend(
             [
-                ("(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(250000+9889000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(300000+9994000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(248000+9961999)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(240000+9894000)", "numberGeneratedEventsWeight"),
+                (
+                    "(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(250000+9889000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(300000+9994000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(248000+9961999)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(240000+9894000)",
+                    "numberGeneratedEventsWeight",
+                ),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -509,7 +525,6 @@ def W_process_selection(channel, era):
     )
     # W_process_weights.append(W_stitching_weight(era)) # TODO add W stitching weight in when npartons is available
     return Selection(name="W", weights=W_process_weights)
-
 
 
 def HWW_process_selection(channel, era):
@@ -540,6 +555,8 @@ def VH_process_selection(channel, era):
         ]
     )
     return Selection(name="VH", weights=VH_process_weights)
+
+
 def H_process_selection(channel, era):
     H_process_weights = MC_base_process_selection(channel, era).weights
     H_process_weights.extend(

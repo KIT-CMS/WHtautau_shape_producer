@@ -11,13 +11,13 @@ OUTPUT=$8
 FF_FRIEND_TAG=$9
 PROC=${10}
 if [[ "$PROC" == "all" ]]; then
-    PROC="data,dy,ggh,ggzh,ggzz,qqh,rem_ttbar,tt,tth,vvv,wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus,wjets,wz,zh,zz"
+    PROC="data,dy,ggzh,ggzz,rem_ttbar,tt,vvv,wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus,wjets,wz,zh,zz"
 elif [[ "$PROC" == "data" ]]; then
     PROC="data"
 elif [[ "$PROC" == "bkg1" ]]; then
     PROC="dy,ggzz,rem_ttbar,zz"
 elif [[ "$PROC" == "bkg2" ]]; then
-    PROC="ggh,ggzh,qqh,tt,tth,zh"
+    PROC="ggzh,tt,zh"
 elif [[ "$PROC" == "sig" ]]; then
     PROC="wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus"
 elif [[ "$PROC" == "bkg3" ]]; then

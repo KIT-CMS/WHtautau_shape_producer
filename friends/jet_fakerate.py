@@ -1,7 +1,7 @@
 import ROOT
 from correctionlib import _core
 import argparse
-import yaml
+import json
 import os
 import glob
 import shutil
@@ -40,8 +40,8 @@ def args_parser():
     parser.add_argument(
         "--dataset-config",
         type=str,
-        default="datasets/datasets.yaml",
-        help="path to the datasets.yaml",
+        default="datasets/datasets.json",
+        help="path to the datasets.json",
     )
     parser.add_argument(
         "--xrootd",
@@ -741,10 +741,11 @@ if __name__ == "__main__":
     base_path = os.path.join(args.basepath, "*/*/*/*.root")
     output_path = os.path.join(args.outputpath)
     workdir = os.path.join(args.tempdir)
-    dataset = yaml.safe_load(open(args.dataset_config))
+    dataset = json.load(open(args.dataset_config))
     wp_vs_jets = args.wp_vs_jets
     ntuples = glob.glob(base_path)
     print(args.eras)
+    print(base_path)
     corr_file_dict_tau = {}
     corr_file_dict_ele = {}
     corr_file_dict_mu = {}

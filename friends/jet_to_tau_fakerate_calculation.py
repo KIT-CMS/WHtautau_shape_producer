@@ -90,7 +90,7 @@ def plot_rates(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele, DM, plot_output):
                             ),
                         )
             plt.legend()
-            # plt.ylim(0, 0.15)
+            plt.ylim(0, 0.2)
             plt.ylabel(r"jet $\rightarrow\tau_{\mathrm{h}}$ fake rate")
             plt.xlabel(r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$")
             plt.savefig(

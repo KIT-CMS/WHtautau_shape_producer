@@ -171,73 +171,70 @@ def main(args):
     logging.info("Reading input histograms from file %s", args.input)
     hist_map = {}
     for key in input_file.GetListOfKeys():
-        split_name = key.GetName().split("#")
-        channel = split_name[1].split("-")[0]
-        if args.gof:
-            # Use variable as category label for GOF test and control plots.
-            category = split_name[3]
-            process = split_name[0] if not "data" in split_name[0] else "data_obs"
-        else:
-            category = split_name[1].split("-")[-1]
-            process = (
-                "-".join(split_name[1].split("-")[1:-1])
-                if not "data" in split_name[0]
-                else "data_obs"
-            )
-            # Skip discriminant variables we do not want in the sync file.
-            # This is necessary because the sync file only allows for one type of histogram.
-            # A combination of the runs for different variables can then be used in separate files.
-            if args.variable_selection is None:
-                pass
+        if "predicted_max_value" in key.GetName():
+            split_name = key.GetName().split("#")
+            channel = split_name[1].split("-")[0]
+            if args.gof:
+                # Use variable as category label for GOF test and control plots.
+                category = split_name[3]
+                process = split_name[0] if not "data" in split_name[0] else "data_obs"
             else:
-                if split_name[3] not in args.variable_selection:
-                    continue
-        variation = split_name[2]
-        # Skip variations necessary for estimations which are of no further use.
-        if "same_sign" in variation or "anti_iso" in variation:
-            continue
-
-        # Check if channel and category are already in the map
-        if not channel in hist_map:
-            hist_map[channel] = {}
-        if not category in hist_map[channel]:
-            hist_map[channel][category] = {}
-
-        # Skip copying of jetFakes estimations based on underlying shapes to be able
-        # to use one name in the synced file.
-        # TODO: Should this be kept or do we want to put both version in the synced file and
-        #       perform the switch on combine level.
-        if args.mc:
-            _process_map["jetFakes"] = "jetFakesMC"
-            _process_map["QCD"] = "QCDMC"
-            if process in ["jetFakes", "QCD"]:
-                continue
-        else:
-            if "MC" in process:
-                continue
-        _rev_process_map = {val: key for key, val in _process_map.items()}
-        if process in _rev_process_map.keys():
-            # Check if MSSM sample.
-            if "SUSY" in process:
-                # Read mass from dataset name in case of SUSY samples.
-                mass = split_name[0].split("_")[-1]
-                process = "_".join([_rev_process_map[process], mass])
-            else:
-                if args.special != "TauES":
-                    process = _rev_process_map[process]
+                category = split_name[1].split("-")[-1]
+                process = split_name[0] if not "data" in split_name[0] else "data_obs"
+                # Skip discriminant variables we do not want in the sync file.
+                # This is necessary because the sync file only allows for one type of histogram.
+                # A combination of the runs for different variables can then be used in separate files.
+                if args.variable_selection is None:
+                    pass
                 else:
-                    if not "emb" in process and not "jetFakes" in process:
+                    if split_name[3] not in args.variable_selection:
+                        continue
+            variation = split_name[2]
+            # Skip variations necessary for estimations which are of no further use.
+            if "same_sign" in variation or "anti_iso" in variation:
+                continue
+
+            # Check if channel and category are already in the map
+            if not channel in hist_map:
+                hist_map[channel] = {}
+            if not category in hist_map[channel]:
+                hist_map[channel][category] = {}
+
+            # Skip copying of jetFakes estimations based on underlying shapes to be able
+            # to use one name in the synced file.
+            # TODO: Should this be kept or do we want to put both version in the synced file and
+            #       perform the switch on combine level.
+            if args.mc:
+                _process_map["jetFakes"] = "jetFakesMC"
+                _process_map["QCD"] = "QCDMC"
+                if process in ["jetFakes", "QCD"]:
+                    continue
+            else:
+                if "MC" in process:
+                    continue
+            _rev_process_map = {val: key for key, val in _process_map.items()}
+            if process in _rev_process_map.keys():
+                # Check if MSSM sample.
+                if "SUSY" in process:
+                    # Read mass from dataset name in case of SUSY samples.
+                    mass = split_name[0].split("_")[-1]
+                    process = "_".join([_rev_process_map[process], mass])
+                else:
+                    if args.special != "TauES":
                         process = _rev_process_map[process]
-        name_output = "{process}".format(process=process)
-        if "Nominal" not in variation:
-            name_output += "_" + variation
-        logging.debug(
-            "Adding histogram with name %s as %s to category %s.",
-            key.GetName(),
-            name_output,
-            channel + "_" + category,
-        )
-        hist_map[channel][category][key.GetName()] = name_output
+                    else:
+                        if not "emb" in process and not "jetFakes" in process:
+                            process = _rev_process_map[process]
+            name_output = "{process}".format(process=process)
+            if "Nominal" not in variation:
+                name_output += "_" + variation
+            logging.debug(
+                "Adding histogram with name %s as %s to category %s.",
+                key.GetName(),
+                name_output,
+                channel + "_" + category,
+            )
+            hist_map[channel][category][key.GetName()] = name_output
     # Clean up
     input_file.Close()
     # Loop over map and create the output file.

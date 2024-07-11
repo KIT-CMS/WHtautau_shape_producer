@@ -109,6 +109,8 @@ def main(info):
         "mmt": "#font[42]{#mu#mu#tau_{#font[42]{h}}}",
         "mtt": "#font[42]{#mu#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
         "ett": "#font[42]{#scale[0.85]{e}#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
+        "llt": "#font[42]{ll#tau_{#font[42]{h}}}",
+        "ltt": "#font[42]{l#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
         "mm": "#mu#mu",
         "mt": "#mu#tau_{#font[42]{h}}",
         "tt": "#tau_{#font[42]{h}}#tau_{#font[42]{h}}",
@@ -123,7 +125,19 @@ def main(info):
 
     split_dict = {
         c: split_value
-        for c in ["met", "emt", "mmt", "ett", "mtt", "et", "mt", "tt", "em", "mm"]
+        for c in [
+            "met",
+            "emt",
+            "mmt",
+            "ett",
+            "mtt",
+            "llt",
+            "ltt" "et",
+            "mt",
+            "tt",
+            "em",
+            "mm",
+        ]
     }
     rare = ["ggZZ", "TTV", "VVV"]
     rem_H = ["ggZH", "ZH"]
@@ -187,15 +201,18 @@ def main(info):
     else:
         stype = args.draw_jet_fake_variation
     for index, process in enumerate(bkg_processes):
+        print(process)
         if index == 0:
             total_bkg = rootfile.get(
                 channel, process, args.category_postfix, shape_type=stype
             ).Clone()
+            print("got it")
             plot.add_hist(
                 rootfile.get(channel, process, args.category_postfix, shape_type=stype),
                 process,
                 "bkg",
             )
+            print("got")
         elif "rare" in process:
             for r, rare_bkg in enumerate(rare):
                 if r == 0:
@@ -379,7 +396,7 @@ def main(info):
     plot.legend(3).setAlpha(0.0)
     plot.legend(3).Draw()
     # draw additional labels
-    plot.DrawCMS(thesisstyle=True, preliminary=True)
+    plot.DrawCMS(thesisstyle=True, own_work=True)
     if "2016preVFP" in args.era:
         plot.DrawLumi("19.5 fb^{-1} (2016preVFP, 13 TeV)")
     elif "2016postVFP" in args.era:

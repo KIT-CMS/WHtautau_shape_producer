@@ -134,7 +134,7 @@ def args_parser():
     parser.add_argument(
         "--tempdir",
         type=str,
-        default="tmp_dir",
+        default="tmp_dir_ff",
         help="Temporary directory to store intermediate files",
     )
     parser.add_argument(
@@ -142,6 +142,12 @@ def args_parser():
         type=str,
         default="VTight",
         help="working point vs. jets",
+    )
+    parser.add_argument(
+        "--wp_vs_lep",
+        type=str,
+        default="Tight",
+        help="tight DeepTau working point vs. leptons",
     )
     return parser.parse_args()
 
@@ -225,23 +231,23 @@ def convert_to_xrootd(path):
         return path
 
 
-def working_points(channel, wp_vs_jets):
+def working_points(channel, wp_vs_jets, wp_vs_lep):
     if channel == "emt" or channel == "met":
         wp_vs_jets = wp_vs_jets
-        wp_vs_mu = "Tight"
-        wp_vs_ele = "Tight"
+        wp_vs_mu = wp_vs_lep
+        wp_vs_ele = wp_vs_lep
     elif channel == "mmt":
         wp_vs_jets = wp_vs_jets
-        wp_vs_mu = "Tight"
+        wp_vs_mu = wp_vs_lep
         wp_vs_ele = "VLoose"
     elif channel == "mtt":
         wp_vs_jets = wp_vs_jets
-        wp_vs_mu = "Tight"
+        wp_vs_mu = wp_vs_lep
         wp_vs_ele = "VLoose"
     elif channel == "ett":
         wp_vs_jets = wp_vs_jets
         wp_vs_mu = "VLoose"
-        wp_vs_ele = "Tight"
+        wp_vs_ele = wp_vs_lep
     return [wp_vs_jets, wp_vs_mu, wp_vs_ele]
 
 
@@ -271,8 +277,7 @@ def is_file_empty(inputfile, debug=False):
     except OSError:
         print(f"{inputfile} is broken")
         return True
-    ntuple = rootfile.Get("ntuple")
-    if len(ntuple.GetListOfLeaves()) < 1:
+    if "ntuple" not in [x.GetTitle() for x in rootfile.GetListOfKeys()]:
         print(f"{inputfile} is empty")
         if debug:
             print("Available keys: ", [x.GetTitle() for x in rootfile.GetListOfKeys()])
@@ -293,6 +298,7 @@ def friend_producer(
     corr_file_dict_ele,
     corr_file_dict_mu,
     wp_vs_jets,
+    wp_vs_lep,
     debug=True,
 ):
     temp_output_file = os.path.join(
@@ -333,6 +339,7 @@ def friend_producer(
                 corr_file_ele,
                 corr_file_mu,
                 wp_vs_jets,
+                wp_vs_lep,
             )
             upload_file(output_path, temp_output_file, final_output_file)
     else:
@@ -350,12 +357,13 @@ def build_rdf(
     corr_file_ele,
     corr_file_mu,
     wp_vs_jets,
+    wp_vs_lep,
 ):
     rootfile = ROOT.TFile.Open(inputfile, "READ")
     rdf = ROOT.RDataFrame("ntuple", rootfile)
-    wp_vs_jets = working_points(channel, wp_vs_jets)[0]
-    wp_vs_mu = working_points(channel, wp_vs_jets)[1]
-    wp_vs_ele = working_points(channel, wp_vs_jets)[2]
+    wp_vs_jets = working_points(channel, wp_vs_jets, wp_vs_lep)[0]
+    wp_vs_mu = working_points(channel, wp_vs_jets, wp_vs_lep)[1]
+    wp_vs_ele = working_points(channel, wp_vs_jets, wp_vs_lep)[2]
     if channel in ["emt", "met", "mmt"]:
         rdf = rdf.Define(
             "tau_fakerate_Era",
@@ -703,6 +711,7 @@ def generate_friend_trees(
     corr_file_dict_ele,
     corr_file_dict_mu,
     wp_vs_jets,
+    wp_vs_lep,
     debug,
 ):
     print("Using {} threads".format(nthreads))
@@ -718,6 +727,7 @@ def generate_friend_trees(
             corr_file_dict_ele,
             corr_file_dict_mu,
             wp_vs_jets,
+            wp_vs_lep,
             debug,
         )
         for ntuple in ntuples
@@ -743,6 +753,7 @@ if __name__ == "__main__":
     workdir = os.path.join(args.tempdir)
     dataset = json.load(open(args.dataset_config))
     wp_vs_jets = args.wp_vs_jets
+    wp_vs_lep = args.wp_vs_lep
     ntuples = glob.glob(base_path)
     print(args.eras)
     print(base_path)
@@ -781,6 +792,7 @@ if __name__ == "__main__":
         corr_file_dict_ele,
         corr_file_dict_mu,
         wp_vs_jets,
+        wp_vs_lep,
         args.debug,
     )
     if os.path.exists(workdir):

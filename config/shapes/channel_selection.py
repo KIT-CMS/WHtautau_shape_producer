@@ -45,6 +45,13 @@ def channel_selection(channel, era, region):
                     "ctrl_region",
                 ),
             ]
+        elif region == "nn_control":
+            cuts = [
+                (
+                    "1.0",
+                    "ctrl",
+                ),
+            ]
     elif channel in ["ett", "mtt"]:
         if region == "sig_plus":
             cuts = [
@@ -93,6 +100,13 @@ def channel_selection(channel, era, region):
                     "ctrl",
                 ),
             ]
+        elif region == "nn_control":
+            cuts = [
+                (
+                    "1.0",
+                    "ctrl",
+                ),
+            ]
     # Specify general channel and era independent cuts.
     if channel in ["emt", "met"]:
         cuts.extend(
@@ -100,12 +114,12 @@ def channel_selection(channel, era, region):
                 ("q_1*q_2>0.0", "ss"),
                 ("q_2*q_3<0.0", "os"),
                 ("pt_1>15.", "pt_1_cut"),
-                ("pt_2>15.", "pt_2_cut"),
+                # ("pt_2>15.", "pt_2_cut"),
                 ("nbtag<0.5", "b_veto"),
-                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
-                ("id_tau_vsEle_Tight_3>0.5", "againstElectronDiscriminator"),
-                ("id_tau_vsJet_Tight_3>0.5", "tau_iso"),
-                ("deltaR_12>0.3&&deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
+                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsEle_Loose_3>0.5", "againstElectronDiscriminator"),
+                ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
+                # ("deltaR_12>0.3&&deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
             ]
         )
         if channel == "emt":
@@ -114,6 +128,7 @@ def channel_selection(channel, era, region):
             # cuts.append(("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"))
             cuts.append(("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"))
             cuts.append(("electron_is_nonisowp90_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
+            cuts.append(("pt_2>15.", "pt_2_cut"))
             if era == "2018":
                 cuts.append(
                     (
@@ -138,6 +153,8 @@ def channel_selection(channel, era, region):
         elif channel == "met":
             cuts.append(("muon_is_mediumid_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
             cuts.append(("electron_is_nonisowp90_2>0.5 && iso_2<0.15", "id_iso_cut_2"))
+            cuts.append(("pt_2>21.", "pt_2_cut"))
+            cuts.append(("deltaR_23>0.1", "deltaR_cut"))
             # triggermatching for single ele and single mu trigger and corresponding pt requirements
             if era == "2018":
                 cuts.append(
@@ -168,11 +185,11 @@ def channel_selection(channel, era, region):
                 ("pt_1>15.", "pt_1_cut"),
                 ("pt_2>15.", "pt_2_cut"),
                 ("nbtag<0.5", "b_veto"),
-                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
                 ("id_tau_vsEle_VLoose_3>0.5", "againstElectronDiscriminator"),
-                ("id_tau_vsJet_Tight_3>0.5", "tau_iso"),
+                ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
                 ("iso_1<0.15", "iso_cut_1"),
-                ("deltaR_12>0.3&&deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
+                # ("deltaR_12>0.3&&deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
                 ("muon_is_mediumid_1 > 0.5", "id_cut_1"),
                 ("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"),
             ]
@@ -200,22 +217,22 @@ def channel_selection(channel, era, region):
                 ("nbtag<0.5", "b_veto"),
                 ("q_2*q_3<0.0", "os"),
                 (
-                    "id_tau_vsEle_Tight_3>0.5&&id_tau_vsEle_Tight_2>0.5",
+                    "id_tau_vsEle_Medium_3>0.5&&id_tau_vsEle_Medium_2>0.5",
                     "againstElectronDiscriminator",
                 ),
                 (
                     "id_tau_vsMu_VLoose_3>0.5&&id_tau_vsMu_VLoose_2>0.5",
                     "againstMuonDiscriminator",
                 ),
-                (
-                    "((q_1*q_2>0.5)*id_tau_vsJet_VTight_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0.5)*id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_VTight_3>0.5)",
-                    "tau_iso",
-                ),
                 # (
-                #     "(id_tau_vsJet_Tight_2>0.5 && id_tau_vsJet_Tight_3>0.5)",
+                #     "((q_1*q_2>0.5)*id_tau_vsJet_VTight_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0.5)*id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_VTight_3>0.5)",
                 #     "tau_iso",
                 # ),
-                ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
+                (
+                    "(id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_Medium_3>0.5)",
+                    "tau_iso",
+                ),
+                # ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
                 ("extramuon_veto<0.5", "extramuon_veto"),
             ]
         )
@@ -254,18 +271,217 @@ def channel_selection(channel, era, region):
                     "againstElectronDiscriminator",
                 ),
                 (
-                    "id_tau_vsMu_Tight_3>0.5&&id_tau_vsMu_Tight_2>0.5",
+                    "id_tau_vsMu_Medium_3>0.5&&id_tau_vsMu_Medium_2>0.5",
                     "againstMuonDiscriminator",
                 ),
-                (
-                    "((q_1*q_2>0.5)*id_tau_vsJet_VTight_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0.5)*id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_VTight_3>0.5)",
-                    "tau_iso",
-                ),
                 # (
-                #     "(id_tau_vsJet_Tight_2>0.5 && id_tau_vsJet_Tight_3>0.5)",
+                #     "((q_1*q_2>0.5)*id_tau_vsJet_VTight_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0.5)*id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_VTight_3>0.5)",
                 #     "tau_iso",
                 # ),
-                ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
+                (
+                    "(id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_Medium_3>0.5)",
+                    "tau_iso",
+                ),
+                # ("deltaR_13>0.5&&deltaR_23>0.5&&deltaR_12>0.5", "deltaR_cut"),
+                ("extraelec_veto<0.5", "extraelectron_veto"),
+            ]
+        )
+        if era in ["2018", "2017"]:
+            cuts.append(
+                (
+                    "((((trg_single_mu27 == 1)&&pt_1>28) || ((trg_single_mu24 == 1)&&pt_1>25&&pt_1<=28))&& (abs(eta_1)<2.4))",
+                    "trg_selection",
+                ),
+            )
+        else:
+            cuts.append(
+                (
+                    "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_1 > 23 && (abs(eta_1)<2.1))",
+                    "trg_selection",
+                ),
+            )
+    return Selection(name="{ch}".format(ch=channel), cuts=cuts)
+
+
+def channel_selection_nn(channel, era, region):
+    # Specify general channel and era independent cuts.
+    cuts = []
+    if region == "nn_signal_plus":
+        cuts.append(("q_1>0.0", "signal_plus")),
+    elif region == "nn_signal_minus":
+        cuts.append(("q_1<0.0", "signal_minus")),
+    if channel in ["emt", "met"]:
+        cuts.extend(
+            [
+                ("q_1*q_2>0.0", "ss"),
+                ("q_2*q_3<0.0", "os"),
+                ("pt_1>15.", "pt_1_cut"),
+                ("nbtag<0.5", "b_veto"),
+                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsEle_Loose_3>0.5", "againstElectronDiscriminator"),
+                ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
+            ]
+        )
+        if channel == "emt":
+            cuts.append(("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"))
+            cuts.append(("electron_is_nonisowp90_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
+            if era == "2018":
+                cuts.append(
+                    (
+                        "((abs(eta_1)<2.1)&&((pt_1>=33 && pt_1 < 36 && (trg_single_ele32==1)) || (pt_1 >=36 && (trg_single_ele35==1))))",
+                        "trg_selection",
+                    )
+                )
+            elif era == "2017":
+                cuts.append(
+                    (
+                        "((abs(eta_1)<2.1)&&((pt_1>=33 && pt_1 < 36 && (trg_single_ele32==1)) || (pt_1 >=36 && (trg_single_ele35==1)) ||(pt_1>28&&pt_1<=33&&(trg_single_ele27==1))))",
+                        "trg_selection",
+                    )
+                )
+            elif "2016" in era:
+                cuts.append(
+                    (
+                        "(pt_1 > 26 && (abs(eta_1)<2.1) && (trg_single_ele25 == 1))",
+                        "trg_selection",
+                    )
+                )
+        elif channel == "met":
+            cuts.append(("muon_is_mediumid_1>0.5 && iso_1<0.15", "id_iso_cut_1"))
+            cuts.append(("electron_is_nonisowp90_2>0.5 && iso_2<0.15", "id_iso_cut_2"))
+            cuts.append(("pt_2>21.", "pt_2_cut"))
+            cuts.append(("deltaR_23>0.1", "deltaR_cut"))
+            # cuts.append(("predicted_max_value>0.9", "nn"))
+            # triggermatching for single ele and single mu trigger and corresponding pt requirements
+            if era == "2018":
+                cuts.append(
+                    (
+                        "(((trg_single_mu27 == 1)&&pt_1>27) || ((trg_single_mu24 == 1)&&pt_1<=27&&pt_1>25))",
+                        "trg_selection",
+                    )
+                )
+            elif era == "2017":
+                cuts.append(
+                    (
+                        "((((trg_single_mu27 == 1)&&pt_1>27) || ((trg_single_mu24 == 1)&&pt_1<=27&&pt_1>25)) && (abs(eta_1)<2.4))",
+                        "trg_selection",
+                    )
+                )
+            elif "2016" in era:
+                cuts.append(
+                    (
+                        "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_1 > 23 && (abs(eta_1)<2.1))",
+                        "trg_selection",
+                    )
+                )
+    elif channel == "mmt":
+        cuts.extend(
+            [
+                ("q_1*q_2>0.0", "ss"),
+                ("q_2*q_3<0.0", "os"),
+                ("pt_1>15.", "pt_1_cut"),
+                ("pt_2>15.", "pt_2_cut"),
+                ("nbtag<0.5", "b_veto"),
+                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsEle_VLoose_3>0.5", "againstElectronDiscriminator"),
+                ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
+                ("iso_1<0.15", "iso_cut_1"),
+                ("muon_is_mediumid_1 > 0.5", "id_cut_1"),
+                ("muon_is_mediumid_2 > 0.5 && iso_2<0.15", "id_iso_cut_2"),
+                # ("deltaR_12>0.3&&deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
+                # (
+                #     "!(Lt>100 && (abs(eta_1-eta_vis)<2.0) && (abs(deltaPhi_WH)>2.0))",
+                #     "controlcut",
+                # ),
+            ]
+        )
+        if era in ["2018", "2017"]:
+            cuts.append(
+                (
+                    "((((trg_single_mu27 == 1)&&pt_1>28) || ((trg_single_mu24 == 1)&&pt_1>25&&pt_1<=28)) && (abs(eta_1)<2.1))",
+                    "trg_selection",
+                )
+            )
+        else:
+            cuts.append(
+                (
+                    "(((trg_single_mu22 == 1) || (trg_single_mu22_tk == 1)  || (trg_single_mu22_eta2p1 == 1)  || (trg_single_mu22_tk_eta2p1 == 1)) && pt_1 > 23 && (abs(eta_1)<2.1))",
+                    "trg_selection",
+                )
+            )
+    elif channel == "ett":
+        cuts.extend(
+            [
+                ("electron_is_nonisowp90_1>0.5", "id_cut"),
+                ("pt_1>15.", "pt_1_cut"),
+                ("iso_1<0.15", "iso_cut_1"),
+                ("nbtag<0.5", "b_veto"),
+                ("q_2*q_3<0.0", "os"),
+                (
+                    "id_tau_vsEle_Medium_3>0.5&&id_tau_vsEle_Medium_2>0.5",
+                    "againstElectronDiscriminator",
+                ),
+                (
+                    "id_tau_vsMu_VLoose_3>0.5&&id_tau_vsMu_VLoose_2>0.5",
+                    "againstMuonDiscriminator",
+                ),
+                # (
+                #     "((q_1*q_2>0.5)*id_tau_vsJet_VTight_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0.5)*id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_VTight_3>0.5)",
+                #     "tau_iso",
+                # ),
+                (
+                    "(id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_Medium_3>0.5)",
+                    "tau_iso",
+                ),
+                ("extramuon_veto<0.5", "extramuon_veto"),
+            ]
+        )
+        if era == "2018":
+            cuts.append(
+                (
+                    "(abs(eta_1)<2.1) && (((trg_single_ele32 == 1)&&pt_1>33&&pt_1<=36) || ((trg_single_ele35 == 1&&pt_1>36)))",
+                    "trg_selection",
+                )
+            )
+        elif era == "2017":
+            cuts.append(
+                (
+                    "(abs(eta_1)<2.1) && (((trg_single_ele27 == 1)&&pt_1>27&&pt_1<=33) || ((trg_single_ele32 == 1)&&pt_1>33&&pt_1<=36) || ((trg_single_ele35 == 1)&&pt_1>36))",
+                    "trg_selection",
+                )
+            )
+        else:
+            cuts.append(
+                (
+                    "pt_1 > 26 && (abs(eta_1)<2.1) && (trg_single_ele25 == 1)",
+                    "trg_selection",
+                )
+            )
+
+    elif channel == "mtt":
+        cuts.extend(
+            [
+                ("muon_is_mediumid_1 > 0.5", "muon_id_cut"),
+                ("pt_1>10.", "pt_1_cut"),
+                ("iso_1<0.15", "iso_cut_1"),
+                ("nbtag<0.5", "b_veto"),
+                ("q_2*q_3<0.0", "os"),
+                (
+                    "id_tau_vsEle_VLoose_3>0.5&&id_tau_vsEle_VLoose_2>0.5",
+                    "againstElectronDiscriminator",
+                ),
+                (
+                    "id_tau_vsMu_Medium_3>0.5&&id_tau_vsMu_Medium_2>0.5",
+                    "againstMuonDiscriminator",
+                ),
+                # (
+                #     "((q_1*q_2>0.5)*id_tau_vsJet_VTight_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0.5)*id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_VTight_3>0.5)",
+                #     "tau_iso",
+                # ),
+                (
+                    "(id_tau_vsJet_Medium_2>0.5 && id_tau_vsJet_Medium_3>0.5)",
+                    "tau_iso",
+                ),
                 ("extraelec_veto<0.5", "extraelectron_veto"),
             ]
         )

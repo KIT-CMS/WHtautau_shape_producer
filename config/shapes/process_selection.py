@@ -64,17 +64,17 @@ def MC_base_process_selection(channel, era):
             )
             if "2016" in era:
                 trgweight = (
-                    "((pt_2>=23&&pt_1<=26) * trg_wgt_single_mu22) + ((pt_1>26) * trg_wgt_single_ele25)",
+                    "((pt_1>26) * trg_wgt_single_ele25)",
                     "trgweight",
                 )
             elif era == "2017":
                 trgweight = (
-                    "(((pt_2>=28*trg_wgt_single_mu27)+((pt_2>25&&pt_2<28)*trg_wgt_single_mu24))*(pt_1<28) && (abs(eta_2)<2.1))+((pt_1>=28)*trg_wgt_single_ele27orele32orele35)",
+                    "((pt_1>=28)*trg_wgt_single_ele27orele32orele35)",
                     "trgweight",
                 )
             elif era == "2018":
                 trgweight = (
-                    "(((pt_2>=28*trg_wgt_single_mu27)+((pt_2>25&&pt_2<28)*trg_wgt_single_mu24))*(pt_1<33) && (abs(eta_2)<2.1))+(pt_1>=33*trg_wgt_single_ele32orele35)",
+                    "(pt_1>=33*trg_wgt_single_ele32orele35)",
                     "trgweight",
                 )
         elif channel == "met":
@@ -88,17 +88,17 @@ def MC_base_process_selection(channel, era):
             )
             if "2016" in era:
                 trgweight = (
-                    "(pt_1>=23 * trg_wgt_single_mu22) + ((pt_2>26 && pt_1<23)* trg_wgt_single_ele25)",
+                    "(pt_1>=23 * trg_wgt_single_mu22)",
                     "trgweight",
                 )
             elif era == "2017":
                 trgweight = (
-                    "(((trg_wgt_single_mu27*(pt_1>27))+(trg_wgt_single_mu24*(pt_1<=27&&pt_1>25))*(abs(eta_1)<2.4)) +((pt_1 < 25 &&pt_1>=28)*trg_wgt_single_ele27orele32orele35))",
+                    "(((trg_wgt_single_mu27*(pt_1>27))+(trg_wgt_single_mu24*(pt_1<=27&&pt_1>25)))*(abs(eta_1)<2.4))",
                     "trgweight",
                 )
             elif era == "2018":
                 trgweight = (
-                    "(((trg_wgt_single_mu27*pt_1>27)+(trg_wgt_single_mu24*(pt_1<=27&&pt_1>25))*(abs(eta_1)<2.4))+ (pt_1 < 25 && (abs(eta_2)<2.1)*((pt_1>=33*trg_wgt_single_ele32orele35))))",
+                    "(((trg_wgt_single_mu27*pt_1>27)+(trg_wgt_single_mu24*(pt_1<=27&&pt_1>25)))*(abs(eta_1)<2.4))",
                     "trgweight",
                 )
     elif channel == "mmt":

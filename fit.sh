@@ -1,12 +1,11 @@
 # MODE options are: PRINT (print fit results), FIT, POSTFIT (produces postfit and prefit shapes), PLOT, IMPACTS
 MODE="$1"
+ERAS="2016preVFP 2016postVFP 2017 2018"
+#ERAS="all_eras"
 CHANNELS="ett mtt emt mmt all"
-#ERAS="2016preVFP 2016postVFP 2017 2018"
-ERAS="all_eras"
-#ERAS="2016preVFP 2016postVFP 2017 2018"
-#NTUPLE_TAG="11_07_shifts_all_ch"
-NTUPLE_TAG="15_03_24_triggermatchDR05_alleras_allch"
-SHAPE_TAG="fit_shapes_ssTight_osTight_18_03_24"
+#CHANNELS="mtt"
+NTUPLE_TAG="17_06_24_alleras_allch"
+SHAPE_TAG="05_07_24_nn_lltloose_lttmedium_jetinputs_fitshapes"
 BASE_PATH="output/datacard_output/${NTUPLE_TAG}/${SHAPE_TAG}"
 ulimit -s unlimited
 if [[ $MODE == "PRINT" ]]; then
@@ -26,8 +25,10 @@ if [[ $MODE == "PRINT" ]]; then
 done
 fi
 if [[ $MODE == "FIT" ]]; then
+    source utils/setup_cmssw.sh
     for ERA in $ERAS
     do
+        echo $ERA
         if [[ $ERA == "all_eras" ]]; then
             for CHANNEL in $CHANNELS
             do
@@ -52,7 +53,7 @@ if [[ $MODE == "FIT" ]]; then
                 --X-rtd MINIMIZER_analytic \
                 --cminDefaultMinimizerStrategy 0 \
                 --setParameters r_S=1.3693,r_A=0.224 \
-                --setParameterRanges r_S=0.01,50:r_A=-1,1 \
+                --setParameterRanges r_S=0.01,10:r_A=-1,1 \
                 --redefineSignalPOIs r_S,r_A \
                 -n $ERA -v1 \
                 --parallel 1 --there \
@@ -60,6 +61,7 @@ if [[ $MODE == "FIT" ]]; then
                 echo "${CHANNEL} done"
             done
         else
+            echo "Huhu"
             SYNCED_DIR_EMT=output/shapes/${NTUPLE_TAG}/${ERA}/emt/${SHAPE_TAG}/synced_shapes
             SYNCED_DIR_MMT=output/shapes/${NTUPLE_TAG}/${ERA}/mmt/${SHAPE_TAG}/synced_shapes
             SYNCED_DIR_MET=output/shapes/${NTUPLE_TAG}/${ERA}/met/${SHAPE_TAG}/synced_shapes
@@ -217,36 +219,36 @@ if [[ $MODE == "PLOT" ]]; then
     else 
     for ERA in $ERAS
     do
-        if [[ "$ERA" == "2016preVFP" || "$ERA" == "2016postVFP" ]]; then
+        # if [[ "$ERA" == "2016preVFP" || "$ERA" == "2016postVFP" ]]; then
+        #     for CHANNEL in $CHANNELS
+        #     do
+        #         INPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb/postfitshape.root"
+        #         for CAT in all_cats_minus all_cats_plus
+        #         do
+        #             OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
+        #             python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} --prefit 
+        #             python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} 
+        #         done
+        #     done
+        # else
             for CHANNEL in $CHANNELS
             do
                 INPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb/postfitshape.root"
-                for CAT in all_cats_minus all_cats_plus
+                for CAT in sig_nn_signal_plus sig_nn_signal_minus misc_nn_signal_plus misc_nn_signal_minus diboson_nn_signal_plus diboson_nn_signal_minus
                 do
                     OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
                     python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} --prefit 
                     python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} 
                 done
             done
-        else
-            for CHANNEL in $CHANNELS
-            do
-                INPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb/postfitshape.root"
-                for CAT in control_minus control_plus sig_plus sig_minus
-                do
-                    OUTPUT=plots/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
-                    python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} --prefit 
-                    python plotting/plot_prefit_postfit.py --category ${CAT} --era ${ERA} --input ${INPUT} --channels ${CHANNEL} --output ${OUTPUT} 
-                done
-            done
-        fi
+        #fi
     done
     fi
 fi
 if [[ $MODE == "IMPACTS" ]]; then
     source utils/setup_cmssw.sh
-    CHANNELS="all"
-    ERAS="all_eras"
+    # CHANNELS="all"
+    # ERAS="all_eras"
     for ERA in $ERAS
     do
     for CHANNEL in $CHANNELS

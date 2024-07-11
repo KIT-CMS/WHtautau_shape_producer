@@ -17,6 +17,7 @@ from ntuple_processor import (
 )
 
 from config.shapes.channel_selection import channel_selection
+from config.shapes.channel_selection import channel_selection_nn
 from config.shapes.file_names import files
 
 from config.shapes.process_selection import (
@@ -248,6 +249,9 @@ def parse_arguments():
 
 
 def main(args):
+    from config.shapes.category_selection import nn_cat
+
+    categorization = nn_cat(args.channels[0])
     # Parse given arguments.
     friend_directories = {
         "emt": args.emt_friend_directory,
@@ -525,14 +529,197 @@ def main(args):
             ],
         }
 
+    def nn_units(channel, era, region, datasets):
+        return {
+            "data": [
+                Unit(
+                    datasets["data"],
+                    [channel_selection_nn(channel, era, region), category_selection],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "ggzz": [
+                Unit(
+                    datasets["ggZZ"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        VV_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "wz": [
+                Unit(
+                    datasets["WZ"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        VV_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "zz": [
+                Unit(
+                    datasets["ZZ"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        VV_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "zh": [
+                Unit(
+                    datasets["ZH"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        H_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "ggzh": [
+                Unit(
+                    datasets["ggZH"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        H_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "tt": [
+                Unit(
+                    datasets["TT"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        TT_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "rem_ttbar": [
+                Unit(
+                    datasets["rem_ttbar"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        TT_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "vvv": [
+                Unit(
+                    datasets["VVV"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        VVV_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "wh_htt_minus": [
+                Unit(
+                    datasets["WH_htt_minus"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        H_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "wh_htt_plus": [
+                Unit(
+                    datasets["WH_htt_plus"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        H_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "wh_hww_minus": [
+                Unit(
+                    datasets["WH_hww_minus"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        H_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "wh_hww_plus": [
+                Unit(
+                    datasets["WH_hww_plus"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        H_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "wjets": [
+                Unit(
+                    datasets["Wjets"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        W_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+            "dy": [
+                Unit(
+                    datasets["DY"],
+                    [
+                        channel_selection_nn(channel, era, region),
+                        DY_process_selection(channel, era),
+                        category_selection,
+                    ],
+                    actions,
+                )
+                for category_selection, actions in categorization[channel]
+            ],
+        }
+
     # Step 1: create units and book actions
     for channel in args.channels:
-        print(channel)
         nominals[args.era]["datasets"][channel] = get_nominal_datasets(
             args.era, channel
         )
         if args.control_plots:
             nominals[args.era]["units"][channel] = get_control_units(
+                channel, args.era, region, nominals[args.era]["datasets"][channel]
+            )
+        else:
+            nominals[args.era]["units"][channel] = nn_units(
                 channel, args.era, region, nominals[args.era]["datasets"][channel]
             )
     um = UnitManager()
@@ -557,7 +744,6 @@ def main(args):
         }
     else:
         procS = args.process_selection
-    print(args.process_selection)
     print("Processes to be computed: ", procS)
     dataS = {"data"} & procS
     simulatedProcsDS = {}
@@ -886,8 +1072,8 @@ def main(args):
                 args.era, ",".join(args.channels), args.region, ",".join(sorted(procS))
             )
         else:
-            graph_file_name = "analysis_unit_graphs-{}-{}-{}-{}.pkl".format(
-                args.tag, args.era, ",".join(args.channels), args.region, args.proc_arr
+            graph_file_name = "nn_unit_graphs-{}-{}-{}-{}.pkl".format(
+                args.era, ",".join(args.channels), args.region, ",".join(sorted(procS))
             )
         if args.graph_dir is not None:
             graph_file = os.path.join(args.graph_dir, graph_file_name)
@@ -911,5 +1097,5 @@ if __name__ == "__main__":
         log_file = args.output_file.replace(".root", ".log")
     else:
         log_file = "{}.log".format(args.output_file)
-    setup_logging(log_file, logging.DEBUG)
+    setup_logging(log_file, logging.INFO)
     main(args)

@@ -29,7 +29,7 @@ def channel_selection(
         if wp_vs_jet == "VVVLoose":
             cuts.append(
                 (
-                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_VTight_3<0.5".format(
+                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_Medium_3<0.5".format(
                         wp_vs_jet=wp_vs_jet
                     ),
                     "tau_iso",
@@ -67,14 +67,18 @@ def channel_selection(
             ("mt_3<40", "mt_cut"),
             ("muon_is_mediumid_1 > 0.5 && muon_is_mediumid_2 > 0.5", "muon_id_cut"),
             ("nbtag<0.5", "b_veto"),
-            # ("electron_is_nonisowp90_3>0.5", "ele_id_cut"),
         ]
         # tight
         if id_wp_ele == "Tight":
             cuts.append(("iso_3<0.15", "iso_3"))
             cuts.append(("electron_is_nonisowp90_3>0.5", "ele_id_cut"))
         else:
-            cuts.append(("iso_3>0.15 || electron_is_nonisowp90_3<0.5", "id_iso_3"))
+            cuts.append(
+                (
+                    "((iso_3>0.15 && iso_3<0.5) || electron_is_nonisowp90_3<0.5)",
+                    "id_iso_3",
+                )
+            )
 
         # trigger requirements
         if era in ["2018", "2017"]:
@@ -112,7 +116,9 @@ def channel_selection(
             cuts.append(("iso_3<0.15", "iso_3"))
             cuts.append(("muon_is_mediumid_3>0.5", "mu_id_cut"))
         else:
-            cuts.append(("iso_3>0.15 || muon_is_mediumid_3<0.5", "id_iso_3"))
+            cuts.append(
+                ("(iso_3<0.5 && iso_3>0.15) || muon_is_mediumid_3<0.5", "id_iso_3")
+            )
         if era == "2018":
             cuts.append(
                 (

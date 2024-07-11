@@ -84,22 +84,32 @@ def main(info):
         "mmt": "#font[42]{#mu#mu#tau_{#font[42]{h}}}",
         "mtt": "#font[42]{#mu#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
         "ett": "#font[42]{#scale[0.85]{e}#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
+        "llt": "#font[42]{ll#tau_{#font[42]{h}}}",
+        "ltt": "#font[42]{l#tau_{#font[42]{h}}#tau_{#font[42]{h}}}",
         "mm": "#mu#mu",
         "mt": "#mu#tau_{#font[42]{h}}",
         "tt": "#tau_{#font[42]{h}}#tau_{#font[42]{h}}",
     }
-    if "2016" in era:
-        category_dict = {
-            "all_cats_plus": "1",
-            "all_cats_minus": "2",
-        }
-    else:
-        category_dict = {
-            "sig_plus": "1",
-            "sig_minus": "2",
-            "control_plus": "3",
-            "control_minus": "4",
-        }
+    # if "2016" in era:
+    #     category_dict = {
+    #         "all_cats_plus": "1",
+    #         "all_cats_minus": "2",
+    #     }
+    # else:
+    # category_dict = {
+    #     "sig_plus": "1",
+    #     "sig_minus": "2",
+    #     "control_plus": "3",
+    #     "control_minus": "4",
+    # }
+    category_dict = {
+        "sig_nn_signal_plus": "1",
+        "sig_nn_signal_minus": "2",
+        "misc_nn_signal_plus": "3",
+        "misc_nn_signal_minus": "4",
+        "diboson_nn_signal_plus": "5",
+        "diboson_nn_signal_minus": "6",
+    }
     rare = ["ggZZ", "TTV", "VVV"]
     rem_H = ["ggZH", "ZH"]
     bkg_processes = [
@@ -119,9 +129,7 @@ def main(info):
         fittype = "prefit"
     else:
         fittype = "postfit"
-    print(cat)
-    rootfile = rootfile_parser.Rootfile_parser(args.input, fittype)
-    print(rootfile)
+    rootfile = rootfile_parser.Rootfile_parser(args.input, "CombineHarvester", fittype)
     legend_bkg_processes = copy.deepcopy(bkg_processes)
     legend_bkg_processes.reverse()
     legend_sig_processes = copy.deepcopy(signal_processes)
@@ -252,7 +260,7 @@ def main(info):
         2.1,
     )
     # if "m_tt" in cat:
-    plot.subplot(2).setXlabel("m(#tau#tau) / GeV")
+    plot.subplot(2).setXlabel("NN Score")
     # elif "pt_W" in cat:
     #     plot.subplot(2).setXlabel("p_{T}(W) / GeV")
     # else:

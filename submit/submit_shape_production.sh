@@ -9,7 +9,8 @@ REGION=$6
 CONTROL=$7
 OUTPUT=$8
 FF_FRIEND_TAG=$9
-PROC=${10}
+NN_FRIEND_TAG=${10}
+PROC=${11}
 if [[ "$PROC" == "all" ]]; then
     PROC="data,dy,ggzh,ggzz,rem_ttbar,tt,vvv,wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus,wjets,wz,zh,zz"
 elif [[ "$PROC" == "data" ]]; then
@@ -23,7 +24,7 @@ elif [[ "$PROC" == "sig" ]]; then
 elif [[ "$PROC" == "bkg3" ]]; then
     PROC="vvv,wjets,wz"
 fi
-echo "producing shapes for processes era=$ERA, ch=$CHANNEL sub_mod=$SUBMIT_MODE ntupletag=$NTUPLE_TAG shapetag=$SHAPE_TAG region=$REGION crtl_arg=$CONTROL output=$OUTPUT ff=$FF_FRIEND_TAG proc=$PROC"
+echo "producing shapes for processes era=$ERA, ch=$CHANNEL sub_mod=$SUBMIT_MODE ntupletag=$NTUPLE_TAG shapetag=$SHAPE_TAG region=$REGION crtl_arg=$CONTROL output=$OUTPUT ff=$FF_FRIEND_TAG nn=$NN_FRIEND_TAG proc=$PROC"
 [[ ! -z $1 && ! -z $2 && ! -z $3 && ! -z $4 && ! -z $5 ]] || (
     echo "[ERROR] Number of given parameters is too small."
     exit 1
@@ -31,7 +32,16 @@ echo "producing shapes for processes era=$ERA, ch=$CHANNEL sub_mod=$SUBMIT_MODE 
 [[ ! -z $6 ]] || CONTROL=0
 CONTROL_ARG=""
 if [[ $REGION == "control" ]]; then
-    CONTROL_ARG="--control-plot-set m_tt,pt_1,pt_2,pt_3 --skip-systematic-variations" # "
+    CONTROL_ARG="--control-plot-set m_tt,pt_1,pt_2,pt_3 --skip-systematic-variations --control-plots" # "
+    echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
+elif [[ $REGION == "nn_control" ]]; then
+    CONTROL_ARG="--control-plot-set m_vis,met,pt_1,pt_2,pt_3 --skip-systematic-variations --control-plots" # "
+    echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
+elif [[ $REGION == "nn_control_max_value" ]]; then
+    CONTROL_ARG="--control-plot-set predicted_max_value,m_vis,met,pt_1,pt_2,pt_3,eta_1,eta_2,eta_3,deltaR_12,deltaR_13,deltaR_23,njets,phi_1,phi_2,phi_3,jpt_1,jpt_2 --skip-systematic-variations" # "
+    echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
+elif [[ $REGION == "nn_signal_plus" ]] || [[ $REGION == "nn_signal_minus" ]]; then
+    CONTROL_ARG="--control-plot-set predicted_max_value" # "
     echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
 else
     CONTROL_ARG="--control-plot-set m_tt" # ,m_vis,mjj,njets,pt_vis,nbtag,pt_W,m_tt,m_vis,pt_1,pt_2,pt_3"
@@ -41,16 +51,13 @@ source utils/setup_samples.sh $NTUPLE_TAG $ERA
 source utils/setup_root.sh
 source utils/bashFunctionCollection.sh
 
-echo "Hi"
-echo $ERA 
-echo $PROC
 if [[ "$SUBMIT_MODE" == "multigraph" ]]; then
     echo "[ERROR] Not implemented yet."
     exit 1
 elif [[ "$SUBMIT_MODE" == "singlegraph" ]]; then
     echo "[INFO] Preparing graph for processes $PROC for submission..."
     echo "[INFO] Using tag $TAG"
-    echo "[INFO] Using friends $XSEC_FRIENDS $FF_FRIENDS"
+    echo "[INFO] Using friends $XSEC_FRIENDS $FF_FRIENDS $NN_FRIENDS"
     [[ ! -d $OUTPUT ]] && mkdir -p $OUTPUT
     echo "[INFO] Using ntuples in $NTUPLES"
 
@@ -58,9 +65,8 @@ elif [[ "$SUBMIT_MODE" == "singlegraph" ]]; then
     --output-file dummy.root \
     --directory $NTUPLES \
     --ntuple_type crown \
-    --$CHANNEL-friend-directory $XSEC_FRIENDS $FF_FRIENDS \
+    --$CHANNEL-friend-directory $XSEC_FRIENDS $FF_FRIENDS $NN_FRIENDS\
     --era $ERA \
-    --control-plots \
     --optimization-level 1 \
     --process-selection $PROC \
     --region ${REGION} \
@@ -71,8 +77,15 @@ elif [[ "$SUBMIT_MODE" == "singlegraph" ]]; then
     fi
     # Set output graph file name produced during graph creation.
     echo $PROC
-    GRAPH_FILE_FULL_NAME=${OUTPUT}/control_unit_graphs-${ERA}-${CHANNEL}-${REGION}-${PROC}.pkl
-    GRAPH_FILE=${OUTPUT}/control_unit_graphs-${ERA}-${CHANNEL}-${NTUPLE_TAG}-${SHAPE_TAG}-${REGION}-${PROC}.pkl
+    if [[ "${REGION}" == *"nn_"* ]];
+    then
+        GRAPH_FILE_FULL_NAME=${OUTPUT}/nn_unit_graphs-${ERA}-${CHANNEL}-${REGION}-${PROC}.pkl
+        GRAPH_FILE=${OUTPUT}/nn_unit_graphs-${ERA}-${CHANNEL}-${NTUPLE_TAG}-${SHAPE_TAG}-${REGION}-${PROC}.pkl
+        echo "nn_analysis"
+    else
+        GRAPH_FILE_FULL_NAME=${OUTPUT}/control_unit_graphs-${ERA}-${CHANNEL}-${REGION}-${PROC}.pkl
+        GRAPH_FILE=${OUTPUT}/control_unit_graphs-${ERA}-${CHANNEL}-${NTUPLE_TAG}-${SHAPE_TAG}-${REGION}-${PROC}.pkl
+    fi
 
     # rename the graph file to a shorter name
     mv $GRAPH_FILE_FULL_NAME $GRAPH_FILE

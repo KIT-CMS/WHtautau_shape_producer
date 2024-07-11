@@ -147,6 +147,12 @@ def parse_arguments():
         help="working point vs. jets for fake rate measurement",
     )
     parser.add_argument(
+        "--wp_vs_jet_tight",
+        required=True,
+        type=str,
+        help="upper working point vs. jets for fake rate measurement. Needed for for upper boundary in loose wp region",
+    )
+    parser.add_argument(
         "--wp_vs_ele",
         required=True,
         type=str,
@@ -660,37 +666,37 @@ def main(args):
                     ],
                 )
             ],
-            "wjets": [
-                Unit(
-                    datasets["Wjets"],
-                    [
-                        channel_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            decay_mode,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                        W_process_selection(
-                            channel,
-                            era,
-                            wp_vs_jet,
-                            wp_vs_mu,
-                            wp_vs_ele,
-                            id_wp_ele,
-                            id_wp_mu,
-                        ),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
+            # "wjets": [
+            #     Unit(
+            #         datasets["Wjets"],
+            #         [
+            #             channel_selection(
+            #                 channel,
+            #                 era,
+            #                 wp_vs_jet,
+            #                 wp_vs_mu,
+            #                 wp_vs_ele,
+            #                 decay_mode,
+            #                 id_wp_ele,
+            #                 id_wp_mu,
+            #             ),
+            #             W_process_selection(
+            #                 channel,
+            #                 era,
+            #                 wp_vs_jet,
+            #                 wp_vs_mu,
+            #                 wp_vs_ele,
+            #                 id_wp_ele,
+            #                 id_wp_mu,
+            #             ),
+            #         ],
+            #         [
+            #             control_binning[channel][v]
+            #             for v in set(control_binning[channel].keys())
+            #             & set(args.control_plot_set)
+            #         ],
+            #     )
+            # ],
             "dy": [
                 Unit(
                     datasets["DY"],
@@ -753,7 +759,7 @@ def main(args):
             # simulated fake estimation
             "dy",
             "tt",
-            "wjets",
+            # "wjets",
         }
     else:
         procS = args.process_selection
@@ -777,7 +783,7 @@ def main(args):
             # simulated fake estimation
             "dy",
             "tt",
-            "wjets",
+            # "wjets",
         }
     for ch_ in args.channels:
         print("procs:", (simulatedProcsDS[ch_] & procS))

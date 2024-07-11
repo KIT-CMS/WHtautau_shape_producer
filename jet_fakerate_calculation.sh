@@ -5,15 +5,16 @@ source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc9-opt/setup.
 NTUPLE_TAG=$1
 ERA=$2
 DATE=$3
+WP_VS_JET=$4
+WP_VS_MU=$5
+WP_VS_ELE=$6
 # #jet to tau fakerates
-INPUT_FILE="output/shapes/${NTUPLE_TAG}/${ERA}/mmt/fakerate_measurement_${DATE}/VTightvsJets"
-OUTPUT_FILE="friends/${ERA}/jetfakes_lib_tau_${NTUPLE_TAG}_VTightvsJets_${DATE}.json"
-PLOT_OUTPUT="plots/${NTUPLE_TAG}/${ERA}/jet_to_tau_fakerates_VTightvsJets_${DATE}"
+INPUT_FILE="output/shapes/${NTUPLE_TAG}/${ERA}/mmt/fakerate_measurement_${DATE}/${WP_VS_JET}vsJets"
+OUTPUT_FILE="friends/${ERA}/jetfakes_lib_tau_${NTUPLE_TAG}_${WP_VS_JET}vsJets_${DATE}.json"
+PLOT_OUTPUT="plots/${NTUPLE_TAG}/${ERA}/jet_to_tau_fakerates_${WP_VS_JET}vsJets_${DATE}"
 # unc in %
 SYST_UNC=10
-WP_VS_JET="VTight"
-WP_VS_MU="Tight,VLoose"
-WP_VS_ELE="Tight,VLoose"
+
 mkdir -p ${PLOT_OUTPUT}
 mkdir -p friends/${ERA}/
 

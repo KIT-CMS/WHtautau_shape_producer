@@ -55,7 +55,7 @@ def plot_rates(rates_dict, plot_output):
         markersize="7",
     )
     plt.grid()
-    plt.ylim(0.003, 0.018)
+    # plt.ylim(0.003, 0.018)
     plt.ylabel(r"jet $\rightarrow \mathrm{e}$ fake rate")
     plt.xlabel(r"$\mathrm{p_{T}} (\mathrm{e})\, (\mathrm{GeV})$")
     plt.savefig(
@@ -101,7 +101,7 @@ def rates(shapes, base_path, syst_unc):
         "rem_ttbar": "rem_ttbar#mme-TT#Nominal#pt_3",
     }
     for shape in shapes:
-        if not "Loose" in shape:
+        if not "Loose" in shape.split("/")[-1]:
             tight_file = R.TFile(shape, "READ")
             tight_data = tight_file.Get("data#mme#Nominal#pt_3")
             base = base_file(base_path)

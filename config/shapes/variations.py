@@ -21,7 +21,7 @@ from ntuple_processor.variations import ChangeDatasetReplaceMultipleCutsAndAddWe
 anti_iso_llt_tau = ReplaceCutAndAddWeight(
     "tau_anti_iso",
     "tau_iso",
-    Cut("id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
+    Cut("id_tau_vsJet_Loose_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5", "tau_anti_iso"),
     Weight("tau_fakerate_Era", "fake_factor"),
 )
 anti_isoid_mu_1 = ReplaceMultipleCutsAndAddWeight(
@@ -40,7 +40,7 @@ anti_isoid_mu_2 = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2"],
     [
         Cut(
-            "(iso_2>0.15 || muon_is_mediumid_2<0.5)",
+            "((iso_2<0.5 && iso_2>0.15) || muon_is_mediumid_2<0.5)",
             "mu_2_anti_isoid",
         )
     ],
@@ -51,7 +51,7 @@ mmt_anti_isoid_mu_2 = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2"],
     [
         Cut(
-            "(iso_2>0.15 || muon_is_mediumid_2<0.5)",
+            "((iso_2<0.5 && iso_2>0.15) || muon_is_mediumid_2<0.5)",
             "mmt_mu_2_anti_isoid",
         )
     ],
@@ -73,7 +73,7 @@ anti_isoid_ele_2 = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2"],
     [
         Cut(
-            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5)",
+            "(iso_2<0.5 && iso_2>0.15) || electron_is_nonisowp90_2<0.5",
             "ele_2_anti_isoid",
         )
     ],
@@ -99,10 +99,10 @@ anti_isoid_mu_2_tau = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2", "tau_iso"],
     [
         Cut(
-            "(iso_2>0.15 || muon_is_mediumid_2<0.5)",
+            "((iso_2<0.5 && iso_2>0.15) || muon_is_mediumid_2<0.5)",
             "mu_2_anti_iso",
         ),
-        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Loose_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_2_fakerate_Era",
@@ -114,10 +114,10 @@ mmt_anti_isoid_mu_2_tau = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2", "tau_iso"],
     [
         Cut(
-            "(iso_2>0.15|| muon_is_mediumid_2<0.5)",
+            "((iso_2<0.5 && iso_2>0.15)|| muon_is_mediumid_2<0.5)",
             "mu_2_anti_iso",
         ),
-        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Loose_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_2_fakerate_Era",
@@ -144,34 +144,34 @@ anti_isoid_ele_2_tau = ReplaceMultipleCutsAndAddWeight(
     ["id_iso_cut_2", "tau_iso"],
     [
         Cut(
-            "(iso_2>0.15 || electron_is_nonisowp90_2<0.5)",
+            "(iso_2<0.5 && iso_2>0.15) || electron_is_nonisowp90_2<0.5",
             "ele_2_anti_iso",
         ),
-        Cut("(id_tau_vsJet_Tight_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
+        Cut("(id_tau_vsJet_Loose_3<0.5&&id_tau_vsJet_VVVLoose_3>0.5)", "tau_anti_iso"),
     ],
     Weight(
         "-tau_fakerate_Era*lep_2_fakerate_Era",
         "fake_factor",
     ),
 )
-anti_iso_ltt = ReplaceCutAndAddWeight(
-    "tau_anti_iso",
-    "tau_iso",
-    Cut(
-        "(((q_1*q_2>0) && id_tau_vsJet_VTight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_VTight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_Medium_2>0.5))",
-        "tau_anti_iso",
-    ),
-    Weight("tau_fakerate_Era", "fake_factor"),
-)
 # anti_iso_ltt = ReplaceCutAndAddWeight(
 #     "tau_anti_iso",
 #     "tau_iso",
 #     Cut(
-#         "(((q_1*q_2>0) && id_tau_vsJet_Tight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_Tight_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_Tight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_Tight_2>0.5))",
+#         "(((q_1*q_2>0) && id_tau_vsJet_VTight_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_VTight_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_Medium_2>0.5))",
 #         "tau_anti_iso",
 #     ),
 #     Weight("tau_fakerate_Era", "fake_factor"),
 # )
+anti_iso_ltt = ReplaceCutAndAddWeight(
+    "tau_anti_iso",
+    "tau_iso",
+    Cut(
+        "(((q_1*q_2>0) && id_tau_vsJet_Medium_2<0.5 && id_tau_vsJet_VVVLoose_2>0.5 && id_tau_vsJet_Medium_3>0.5) || ((q_1*q_3>0) && id_tau_vsJet_Medium_3<0.5 && id_tau_vsJet_VVVLoose_3>0.5 && id_tau_vsJet_Medium_2>0.5))",
+        "tau_anti_iso",
+    ),
+    Weight("tau_fakerate_Era", "fake_factor"),
+)
 anti_iso_ltt_var = [
     ReplaceCutAndAddWeight(
         "tau_anti_iso_{unc}_Era{shift}".format(unc=unc, shift=shift),

@@ -1,11 +1,15 @@
 MODE=$1
-NTUPLE_TAG="06_05_24_FF_ntuples"
+NTUPLE_TAG="31_05_24_ff_ntuples_2"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 FRIEND_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/"
 ERAS="2016preVFP 2016postVFP 2017 2018"
 #ERAS="2016postVFP"
 ulimit -s unlimited
-DATE="07_05_24"
+DATE="12_06_24_MediumvsJetvsL"
+#for jet to tau fake shapes
+WP_VS_JET="Medium"
+WP_VS_ELE="Medium,VLoose"
+WP_VS_MU="Medium,VLoose"
 #if you want to change the TauvsJets WP you have to change the scripts: 
 #jet_to_tau_fakerate_shapes.sh
 #jet_fakerate_caluclation.sh
@@ -14,7 +18,10 @@ DATE="07_05_24"
 if [[ $MODE == "JET_SHAPES" ]]; then
     for ERA in $ERAS
     do
-        bash jet_to_tau_fakerate_shapes.sh $NTUPLE_TAG $NTUPLE_PATH $FRIEND_PATH $ERA $DATE
+        for WP_MU in $WP_VS_MU
+        do
+            bash jet_to_tau_fakerate_shapes.sh $NTUPLE_TAG $NTUPLE_PATH $FRIEND_PATH $ERA $DATE $WP_VS_JET $WP_ELE $WP_MU 
+        done
     done
 fi
 if [[ $MODE == "LEPTON_SHAPES" ]]; then
@@ -26,6 +33,6 @@ fi
 if [[ $MODE == "FF_CALC" ]]; then
     for ERA in $ERAS
     do
-        bash jet_fakerate_calculation.sh $NTUPLE_TAG $ERA $DATE
+        bash jet_fakerate_calculation.sh $NTUPLE_TAG $ERA $DATE $WP_VS_JET $WP_VS_ELE $WP_VS_MU 
     done
 fi

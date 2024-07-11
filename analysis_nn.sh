@@ -6,6 +6,7 @@ NTUPLE_TAG="17_06_24_alleras_allch"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 #this date and WP is only for FF friends
 FF_FRIEND_WP_VS_JET="Medium"
+FF_FRIEND_WP_VS_LEP="Medium"
 FF_DATE="12_06_24_${FF_FRIEND_WP_VS_JET}vsJetvsL"
 FF_FRIEND_TAG_LLT="jetfakes_wpVSjet_Loose_12_06_24_LoosevsJetvsL"
 FF_FRIEND_TAG_LTT="jetfakes_wpVSjet_Medium_12_06_24_MediumvsJetvsL"
@@ -26,10 +27,7 @@ if [[ $MODE == "XSEC" ]]; then
     bash friendtree_production.sh XSEC $NTUPLE_TAG $NTUPLE_PATH "" ""
 fi
 if [[ $MODE == "FF_FRIEND" ]]; then
-    for ERA in $ERAS
-    do
-        bash friendtree_production.sh FF $NTUPLE_TAG $NTUPLE_PATH $ERA $FF_NTUPLE_TAG $FF_DATE $FF_FRIEND_WP_VS_JET
-    done
+    bash friendtree_production.sh FF $NTUPLE_TAG $NTUPLE_PATH $FF_NTUPLE_TAG $FF_DATE $FF_FRIEND_WP_VS_JET $FF_FRIEND_WP_VS_LEP
 fi
 if [[ $MODE == "LOCAL" ]]; then
     source utils/setup_root.sh

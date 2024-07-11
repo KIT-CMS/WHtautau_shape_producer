@@ -228,6 +228,7 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
                 )
             )
         )
+        print(variation)
         base_hist.Add(
             rootfile.Get(
                 _name_string.format(
@@ -252,7 +253,7 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
     return base_hist
 
 
-def jet_fakes_nominal(rootfile, channel, category, variable, variation):
+def jet_fakes_nominal(rootfile, channel, selection, variable, variation):
     # function that adds all contributions from jetfakes together to a nominal histogram
     if "Up" in variation or "Down" in variation:
         unc = "_CMS_ff_{syst}_{shift}".format(
@@ -283,13 +284,25 @@ def jet_fakes_nominal(rootfile, channel, category, variable, variation):
             "mu2tau_anti_isoid",
             "mu2_anti_isoid",
         ]
+    # print(
+    #     "Nominal jetfakes histogram -- Trying to get object {}".format(
+    #         _name_string.format(
+    #             dataset="jetFakes",
+    #             channel=channel,
+    #             process="-jetFakes",
+    #             selection="-" + selection if selection != "" else "",
+    #             variation="tau_anti_iso{unc}".format(unc=unc),
+    #             variable=variable,
+    #         )
+    #     )
+    # )
     logger.debug(
         "Nominal jetfakes histogram -- Trying to get object {}".format(
             _name_string.format(
                 dataset="jetFakes",
                 channel=channel,
                 process="-jetFakes",
-                selection=category,
+                selection="-" + selection if selection != "" else "",
                 variation="tau_anti_iso{unc}".format(unc=unc),
                 variable=variable,
             )
@@ -300,7 +313,7 @@ def jet_fakes_nominal(rootfile, channel, category, variable, variation):
             dataset="jetFakes",
             channel=channel,
             process="-jetFakes",
-            selection=category,
+            selection="-" + selection if selection != "" else "",
             variation="tau_anti_iso{unc}".format(unc=unc),
             variable=variable,
         )
@@ -313,7 +326,7 @@ def jet_fakes_nominal(rootfile, channel, category, variable, variation):
                         dataset="jetFakes",
                         channel=channel,
                         process="-jetFakes",
-                        selection=category,
+                        selection="-" + selection if selection != "" else "",
                         variation="{var_}{unc}".format(var_=var_, unc=unc),
                         variable=variable,
                     )
@@ -325,7 +338,7 @@ def jet_fakes_nominal(rootfile, channel, category, variable, variation):
                         dataset="jetFakes",
                         channel=channel,
                         process="-jetFakes",
-                        selection=category,
+                        selection="-" + selection if selection != "" else "",
                         variation="{var_}{unc}".format(var_=var_, unc=unc),
                         variable=variable,
                     )
@@ -350,7 +363,7 @@ def main(args):
         logger.debug("Processing histogram %s", key.GetName())
         dataset, selection, variation, variable = key.GetName().split("#")
         if "anti_iso" in variation:
-            sel_split = selection.split("-", maxsplit=1)
+            sel_split = selection.split("-")
             # Set category to default since not present in control plots.
             category = ""
             # Treat data hists seperately because only channel selection is applied to data.
@@ -363,18 +376,16 @@ def main(args):
             else:
                 channel = sel_split[0]
                 #  Check if analysis category present in root file.
-                if (
-                    len(sel_split[1].split("-")) > 2
-                    or ("Embedded" in sel_split[1] and len(sel_split[1].split("-")) > 1)
-                    or ("W" in sel_split[1] and len(sel_split[1].split("-")) > 1)
-                ):
-                    process = "-".join(sel_split[1].split("-")[:-1])
-                    category = sel_split[1].split("-")[-1]
+                if len(sel_split) > 2:
+                    process = sel_split[1]
+                    category = sel_split[2]
                 else:
                     # Set only process if no categorization applied.
                     process = sel_split[1]
             if channel in ff_inputs:
                 if category in ff_inputs[channel]:
+                    # print(key.GetName())
+                    # print(category)
                     if variable in ff_inputs[channel][category]:
                         if variation in ff_inputs[channel][category][variable]:
                             ff_inputs[channel][category][variable][variation].append(

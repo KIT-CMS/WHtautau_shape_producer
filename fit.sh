@@ -1,11 +1,12 @@
 # MODE options are: PRINT (print fit results), FIT, POSTFIT (produces postfit and prefit shapes), PLOT, IMPACTS
 MODE="$1"
-ERAS="2016preVFP 2016postVFP 2017 2018"
+ERAS="2018"
+ERAS="2016preVFP 2016postVFP"
 #ERAS="all_eras"
-CHANNELS="ett mtt emt mmt all"
-#CHANNELS="mtt"
-NTUPLE_TAG="17_06_24_alleras_allch"
-SHAPE_TAG="05_07_24_nn_lltloose_lttmedium_jetinputs_fitshapes"
+CHANNELS="llt ltt"
+#CHANNELS="all"
+NTUPLE_TAG="11_07_24_alleras_allch"
+SHAPE_TAG="05_08_24_nn_fit_shapes3"
 BASE_PATH="output/datacard_output/${NTUPLE_TAG}/${SHAPE_TAG}"
 ulimit -s unlimited
 if [[ $MODE == "PRINT" ]]; then
@@ -53,7 +54,7 @@ if [[ $MODE == "FIT" ]]; then
                 --X-rtd MINIMIZER_analytic \
                 --cminDefaultMinimizerStrategy 0 \
                 --setParameters r_S=1.3693,r_A=0.224 \
-                --setParameterRanges r_S=0.01,10:r_A=-1,1 \
+                --setParameterRanges r_S=0.01,5:r_A=-1,1 \
                 --redefineSignalPOIs r_S,r_A \
                 -n $ERA -v1 \
                 --parallel 1 --there \
@@ -67,6 +68,8 @@ if [[ $MODE == "FIT" ]]; then
             SYNCED_DIR_MET=output/shapes/${NTUPLE_TAG}/${ERA}/met/${SHAPE_TAG}/synced_shapes
             SYNCED_DIR_ETT=output/shapes/${NTUPLE_TAG}/${ERA}/ett/${SHAPE_TAG}/synced_shapes
             SYNCED_DIR_MTT=output/shapes/${NTUPLE_TAG}/${ERA}/mtt/${SHAPE_TAG}/synced_shapes
+            SYNCED_DIR_LLT=output/shapes/${NTUPLE_TAG}/${ERA}/llt/${SHAPE_TAG}/synced_shapes
+            SYNCED_DIR_LTT=output/shapes/${NTUPLE_TAG}/${ERA}/ltt/${SHAPE_TAG}/synced_shapes
             for CHANNEL in $CHANNELS
             do
                 DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}"
@@ -80,6 +83,8 @@ if [[ $MODE == "FIT" ]]; then
                     --input_folder_mmt=$SYNCED_DIR_MMT \
                     --input_folder_ett=$SYNCED_DIR_ETT \
                     --input_folder_mtt=$SYNCED_DIR_MTT \
+                    --input_folder_llt=$SYNCED_DIR_LLT \
+                    --input_folder_ltt=$SYNCED_DIR_LTT \
                     --real_data=false \
                     --classic_bbb=false \
                     --binomial_bbb=false \
@@ -179,10 +184,11 @@ if [[ $MODE == "POSTFIT" ]]; then
             -n .$ERA \
             -M FitDiagnostics \
             -m 125 -d $WORKSPACE \
+            --setParameters r_S=1.3693,r_A=0.224 \
             --robustFit 1 -v1 \
             --robustHesse 1 \
             --X-rtd MINIMIZER_analytic \
-            --cminDefaultMinimizerStrategy 0
+            --cminDefaultMinimizerStrategy 0 
         mv fitDiagnostics.${ERA}.root $FITFILE
         echo "[INFO] Building Prefit/Postfit shapes"
         PostFitShapesFromWorkspace -w ${WORKSPACE} \

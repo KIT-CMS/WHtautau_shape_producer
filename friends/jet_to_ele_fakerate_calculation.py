@@ -61,6 +61,9 @@ def plot_rates(rates_dict, plot_output):
     plt.savefig(
         "{plot_output}/jet_to_ele_fakerates.png".format(plot_output=plot_output)
     )
+    plt.savefig(
+        "{plot_output}/jet_to_ele_fakerates.pdf".format(plot_output=plot_output)
+    )
     plt.close()
 
 

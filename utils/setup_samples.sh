@@ -7,6 +7,11 @@ KINGMAKER_BASEDIR="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 KINGMAKER_BASEDIR_XROOTD=" root://cmsdcache-kit-disk.gridka.de/${KINGMAKER_BASEDIR}"
 XSEC_FRIENDS="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/crosssection/"
 FF_FRIENDS="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/${FF_FRIEND_TAG}/"
+if [[ $NN_FRIEND_TAG == "None" ]]; then
+    NN_FRIENDS=""
+else
+    NN_FRIENDS="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/${NN_FRIEND_TAG}/"
+fi
 echo $ERA 
 if [[ $ERA == *"2016preVFP"* ]]; then
     NTUPLES=$KINGMAKER_BASEDIR

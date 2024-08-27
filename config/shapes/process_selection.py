@@ -345,7 +345,8 @@ def WZZ_process_selection(channel, era):
     if era == "2018":
         WZZ_process_weights.extend(
             [
-                ("1./(300000+9994000)", "numberGeneratedEventsWeight"),
+                #("1./(300000+9994000)", "numberGeneratedEventsWeight"),
+                ("1./(300000)", "numberGeneratedEventsWeight"),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -356,7 +357,8 @@ def WZZ_process_selection(channel, era):
     elif era == "2017":
         WZZ_process_weights.extend(
             [
-                ("1./(298000+9898000)", "numberGeneratedEventsWeight"),
+                #("1./(298000+9898000)", "numberGeneratedEventsWeight"),
+                ("1./(298000)", "numberGeneratedEventsWeight"),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -367,7 +369,8 @@ def WZZ_process_selection(channel, era):
     elif era == "2016postVFP":
         WZZ_process_weights.extend(
             [
-                ("1./(137000+4554000)", "numberGeneratedEventsWeight"),
+                #("1./(137000+4191000)", "numberGeneratedEventsWeight"),
+                ("1./(137000)", "numberGeneratedEventsWeight"),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -378,7 +381,8 @@ def WZZ_process_selection(channel, era):
     elif era == "2016preVFP":
         WZZ_process_weights.extend(
             [
-                ("1./(160000+5394000)", "numberGeneratedEventsWeight"),
+                #("1./(160000+5394000)", "numberGeneratedEventsWeight"),
+                ("1./(160000)", "numberGeneratedEventsWeight"),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
@@ -470,7 +474,7 @@ def VVV_process_selection(channel, era):
         VVV_process_weights.extend(
             [
                 (
-                    "(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(72000+4534000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(137000+4554000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(67000+4595000)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(69000+4159000)",
+                    "(crossSectionPerEventWeight<0.01477&&crossSectionPerEventWeight>0.01475)*1./(72000+4534000)+(crossSectionPerEventWeight<0.05710&&crossSectionPerEventWeight>0.05708)*1./(137000)+(crossSectionPerEventWeight<0.1708&&crossSectionPerEventWeight>0.1706)*1./(67000+4595000)+(crossSectionPerEventWeight<0.2159&&crossSectionPerEventWeight>0.2157)*1./(69000+4159000)",
                     "numberGeneratedEventsWeight",
                 ),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),

@@ -5,11 +5,11 @@ FRIEND_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/"
 ERAS="2016preVFP 2016postVFP 2017 2018"
 #ERAS="2016postVFP"
 ulimit -s unlimited
-DATE="12_06_24_MediumvsJetvsL"
+DATE="19_08_24_mediumvsj_tightvsl"
 #for jet to tau fake shapes
 WP_VS_JET="Medium"
-WP_VS_ELE="Medium,VLoose"
-WP_VS_MU="Medium,VLoose"
+WP_VS_ELE="Tight,VLoose"
+WP_VS_MU="Tight,VLoose"
 #if you want to change the TauvsJets WP you have to change the scripts: 
 #jet_to_tau_fakerate_shapes.sh
 #jet_fakerate_caluclation.sh
@@ -20,7 +20,10 @@ if [[ $MODE == "JET_SHAPES" ]]; then
     do
         for WP_MU in $WP_VS_MU
         do
-            bash jet_to_tau_fakerate_shapes.sh $NTUPLE_TAG $NTUPLE_PATH $FRIEND_PATH $ERA $DATE $WP_VS_JET $WP_ELE $WP_MU 
+            for WP_ELE in $WP_VS_ELE
+            do 
+                bash jet_to_tau_fakerate_shapes.sh $NTUPLE_TAG $NTUPLE_PATH $FRIEND_PATH $ERA $DATE $WP_VS_JET $WP_ELE $WP_MU 
+            done
         done
     done
 fi

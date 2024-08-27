@@ -198,6 +198,7 @@ def main(args):
         "mmt": args.mmt_friend_directory,
     }
     wp_vs_jet = args.wp_vs_jet
+    wp_vs_jet_tight = args.wp_vs_jet_tight
     wp_vs_mu = args.wp_vs_mu
     wp_vs_ele = args.wp_vs_ele
     decay_mode = args.decay_mode
@@ -270,6 +271,7 @@ def main(args):
             decay_mode,
             id_wp_ele,
             id_wp_mu,
+            wp_vs_jet_tight
         )
         return {
             "data": [
@@ -284,7 +286,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         )
                     ],
                     [
@@ -306,7 +309,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         VV_process_selection(
                             channel,
@@ -337,7 +341,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         VV_process_selection(
                             channel,
@@ -368,7 +373,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         VV_process_selection(
                             channel,
@@ -399,7 +405,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         H_process_selection(
                             channel,
@@ -430,7 +437,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         H_process_selection(
                             channel,
@@ -461,7 +469,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         TT_process_selection(
                             channel,
@@ -492,7 +501,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         TT_process_selection(
                             channel,
@@ -523,7 +533,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         VVV_process_selection(
                             channel,
@@ -554,7 +565,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         H_process_selection(
                             channel,
@@ -585,7 +597,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         H_process_selection(
                             channel,
@@ -616,7 +629,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         H_process_selection(
                             channel,
@@ -647,7 +661,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         H_process_selection(
                             channel,
@@ -709,7 +724,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu,
+                            id_wp_mu, wp_vs_jet_tight
+
                         ),
                         DY_process_selection(
                             channel,

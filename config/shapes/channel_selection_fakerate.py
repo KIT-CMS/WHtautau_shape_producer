@@ -5,7 +5,7 @@ import ROOT as R
 
 ##### wh analysis selction
 def channel_selection(
-    channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, decay_mode, id_wp_ele, id_wp_mu
+    channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, decay_mode, id_wp_ele, id_wp_mu, wp_vs_jet_tight
 ):
     # jet to tau fakerate
     if channel == "mmt":
@@ -29,8 +29,8 @@ def channel_selection(
         if wp_vs_jet == "VVVLoose":
             cuts.append(
                 (
-                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_Medium_3<0.5".format(
-                        wp_vs_jet=wp_vs_jet
+                    "id_tau_vsJet_{wp_vs_jet}_3>0.5 && id_tau_vsJet_{wp_vs_jet_tight}_3<0.5".format(
+                        wp_vs_jet=wp_vs_jet, wp_vs_jet_tight=wp_vs_jet_tight
                     ),
                     "tau_iso",
                 )
@@ -64,7 +64,7 @@ def channel_selection(
             ("pt_2>10", "pt_2_cut"),
             ("iso_1<0.15", "iso_1"),
             ("iso_2<0.15", "iso_2"),
-            ("mt_3<40", "mt_cut"),
+            # ("mt_3<40", "mt_cut"),
             ("muon_is_mediumid_1 > 0.5 && muon_is_mediumid_2 > 0.5", "muon_id_cut"),
             ("nbtag<0.5", "b_veto"),
         ]
@@ -103,7 +103,7 @@ def channel_selection(
             ("pt_2>10", "pt_2_cut"),
             ("iso_1<0.15", "iso_1"),
             ("iso_2<0.15", "iso_2"),
-            ("mt_3<40", "mt_cut"),
+            # ("mt_3<40", "mt_cut"),
             (
                 "electron_is_nonisowp90_1>0.5 && electron_is_nonisowp90_2>0.5",
                 "ele_id_cut",

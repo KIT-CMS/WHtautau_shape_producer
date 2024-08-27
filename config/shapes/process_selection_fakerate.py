@@ -345,7 +345,7 @@ def WZZ_process_selection(
     elif era == "2016postVFP":
         WZZ_process_weights.extend(
             [
-                ("1./(137000+4554000)", "numberGeneratedEventsWeight"),
+                ("1./(137000+4191000)", "numberGeneratedEventsWeight"),
                 ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
                 (
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",

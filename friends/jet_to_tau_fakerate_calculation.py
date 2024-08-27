@@ -90,11 +90,18 @@ def plot_rates(rates_dict, wp_vs_jets, wp_vs_mu, wp_vs_ele, DM, plot_output):
                             ),
                         )
             plt.legend()
-            plt.ylim(0, 0.2)
+            plt.ylim(0, 0.45)
             plt.ylabel(r"jet $\rightarrow\tau_{\mathrm{h}}$ fake rate")
             plt.xlabel(r"$\mathrm{p_{T}}(\tau_{\mathrm{h}})\, (\mathrm{GeV})$")
             plt.savefig(
                 "{plot_output}/{wps_jets}__{dm}.png".format(
+                    plot_output=plot_output,
+                    wps_jets=wp_jets,
+                    dm=dm,
+                )
+            )
+            plt.savefig(
+                "{plot_output}/{wps_jets}__{dm}.pdf".format(
                     plot_output=plot_output,
                     wps_jets=wp_jets,
                     dm=dm,
@@ -434,4 +441,5 @@ if __name__ == "__main__":
     wp_vs_jets = args.wp_vs_jets
     wp_vs_mu = args.wp_vs_mu
     wp_vs_ele = args.wp_vs_ele
+    print(wp_vs_jets, wp_vs_ele, wp_vs_mu)
     main(wp_vs_jets, wp_vs_mu, wp_vs_ele, base_path, output_file, plot_output, syst_unc)

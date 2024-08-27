@@ -2,31 +2,78 @@
 # 2016prevfp remtt control_minus mtt
 # 2016prevfp zzz sig_minus ett
 MODE=$1
-NTUPLE_TAG="31_05_24_ff_ntuples_2"
+NTUPLE_TAG="11_07_24_alleras_allch"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
-#this date is only for FF friends
-DATE="07_05_24"
-FF_FRIEND_TAG_LLT="jetfakes_wpVSjet_Tight_${DATE}"
-FF_FRIEND_TAG_LTT="jetfakes_wpVSjet_VTight_${DATE}"
-FF_NTUPLE_TAG="06_05_24_FF_ntuples"
-#NN_FRIEND_TAG needed for submit file. Just pass an empty string
-NN_FRIEND_TAG=""
-#FF_FRIENDS="/store/user/rschmieder/CROWN/ntuples/21_08_23_all_ch_17_18_shifts/CROWNFriends"
-CHANNELS="emt met mmt ett mtt"
-SHAPE_TAG="fit_shapes_13_05_24_lep1DR"
+#this date and WP is only for FF friends. The date is the date of today, when FF Friends are produced
+FF_FRIEND_WP_VS_JET="VTight"
+FF_FRIEND_WP_VS_LEP="Tight"
+FF_DATE="07_06_24"
+FF_FRIEND_TAG_LLT="jetfakes_wpVSjet_Tight_07_06_24"
+FF_FRIEND_TAG_LTT="jetfakes_wpVSjet_VTight_07_06_24"
+FF_NTUPLE_TAG="31_05_24_ff_ntuples_2"
+NN_FRIEND_TAG="None"
+CHANNELS="met emt mmt mtt ett"
+SHAPE_TAG="05_08_24_control_plots_kinvars"
 ERAS="2016preVFP 2016postVFP 2017 2018"
-REGIONS="control_plus control_minus sig_plus sig_minus"
 CONTROL=0
 PROCESSES="sig data bkg1 bkg2 bkg3"
+PLOT_CATS="sig diboson misc"
+#REGION can be either nn_control (pt_1, pt_2, m_tt, pt_3, ..), nn_control_max_value (predicted_max_value) or nn_signal_plus (predicted_max_value+systematics)
+REGIONS="control"
+
 
 if [[ $MODE == "XSEC" ]]; then
     bash friendtree_production.sh XSEC $NTUPLE_TAG $NTUPLE_PATH "" ""
 fi
 if [[ $MODE == "FF_FRIEND" ]]; then
+    bash friendtree_production.sh FF $NTUPLE_TAG $NTUPLE_PATH $FF_NTUPLE_TAG $FF_DATE $FF_FRIEND_WP_VS_JET $FF_FRIEND_WP_VS_LEP
+fi
+if [[ $MODE == "LOCAL" ]]; then
+    source utils/setup_root.sh
+    echo "[INFO] Running LOCAL"
     for ERA in $ERAS
-    do
-        bash friendtree_production.sh FF $NTUPLE_TAG $NTUPLE_PATH $ERA $FF_NTUPLE_TAG $DATE
-    done
+    do  
+        for CHANNEL in $CHANNELS
+        do
+            if [ "$CHANNEL" = "ett" ] || [ "$CHANNEL" = "mtt" ] ; then
+                FF_FRIEND_TAG=$FF_FRIEND_TAG_LTT
+                NN_FRIEND_TAG=$NN_FRIEND_TAG_LTT
+            else
+                FF_FRIEND_TAG=$FF_FRIEND_TAG_LLT
+                NN_FRIEND_TAG=$NN_FRIEND_TAG_LLT
+            fi
+            source utils/setup_samples.sh $NTUPLE_TAG $ERA
+            echo $XSEC_FRIENDS $FF_FRIENDS $NN_FRIENDS
+            echo "--------------------------------------"
+            for REGION in $REGIONS
+            do
+                FILENAME="${REGION}"
+                OUTPUT_FILE="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${FILENAME}"
+                mkdir -p output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}
+                if [[ $REGION == "control" ]]; then
+                    CONTROL_ARG="--control-plot-set m_tt,pt_1,pt_2,pt_3 --skip-systematic-variations --control-plots" # "
+                    echo "[INFO] Control shapes for cutbased analysis will be produced. Argument: ${CONTROL_ARG}"
+                else
+                    CONTROL_ARG="--control-plot-set m_tt" # ,m_vis,mjj,njets,pt_vis,nbtag,pt_W,m_tt,m_vis,pt_1,pt_2,pt_3"
+                    echo "[INFO] Analysis shapes for cutbased analysis will be produced. Argument: ${CONTROL_ARG}"
+                fi
+                python shapes/produce_shapes.py --channels $CHANNEL \
+                --output-file ${OUTPUT_FILE} \
+                --directory $NTUPLES \
+                --ntuple_type crown \
+                --$CHANNEL-friend-directory $XSEC_FRIENDS $FF_FRIENDS \
+                --era $ERA \
+                --num-processes 1 \
+                --num-threads 1 \
+                --optimization-level 1 \
+                --region ${REGION} \
+                --xrootd \
+                $CONTROL_ARG
+                bash shapes/do_estimations.sh ${ERA} ${OUTPUT_FILE}.root 0 
+            done
+        done
+    done    
+    echo "[INFO] finished"
 fi
 if [[ $MODE == "CONDOR" ]]; then
     source utils/setup_root.sh

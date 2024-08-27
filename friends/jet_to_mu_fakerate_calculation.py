@@ -39,6 +39,7 @@ def parse_arguments():
 
 
 def plot_rates(rates_dict, plot_output):
+    print(rates_dict)
     pts = rates_dict["Tight"]["pt"]
     pt_center = np.zeros(len(pts) - 1)
     binsize = np.zeros(len(pts) - 1)
@@ -55,10 +56,11 @@ def plot_rates(rates_dict, plot_output):
         markersize="7",
     )
     plt.grid()
-    plt.ylim(-0.002, 0.045)
+    # plt.ylim(-0.002, 0.045)
     plt.ylabel(r"jet $\rightarrow\mu$ fake rate")
     plt.xlabel(r"$\mathrm{p_{T}}(\mu)\, (\mathrm{GeV})$")
     plt.savefig("{plot_output}/jet_to_mu_fakerates.png".format(plot_output=plot_output))
+    plt.savefig("{plot_output}/jet_to_mu_fakerates.pdf".format(plot_output=plot_output))
     plt.close()
 
 
@@ -99,7 +101,7 @@ def rates(shapes, base_path, syst_unc):
         "rem_ttbar": "rem_ttbar#eem-TT#Nominal#pt_3",
     }
     for shape in shapes:
-        if not "Loose" in shape:
+        if not "Loose" in shape.split("/")[-1]:
             tight_file = R.TFile(shape, "READ")
             tight_data = tight_file.Get("data#eem#Nominal#pt_3")
             base = base_file(base_path)
@@ -257,4 +259,5 @@ if __name__ == "__main__":
     syst_unc = args.syst_unc / 100.0
     path = os.path.join(base_path, "*.root")
     shapes = glob.glob(path)
+    print(shapes)
     main(shapes, base_path, output_file, plot_output, syst_unc)

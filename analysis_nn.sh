@@ -2,22 +2,22 @@
 # 2016prevfp remtt control_minus mtt
 # 2016prevfp zzz sig_minus ett
 MODE=$1
-NTUPLE_TAG="17_06_24_alleras_allch"
+NTUPLE_TAG="11_07_24_alleras_allch"
 NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
 #this date and WP is only for FF friends
 FF_FRIEND_WP_VS_JET="Medium"
-FF_FRIEND_WP_VS_LEP="Medium"
-FF_DATE="12_06_24_${FF_FRIEND_WP_VS_JET}vsJetvsL"
-FF_FRIEND_TAG_LLT="jetfakes_wpVSjet_Loose_12_06_24_LoosevsJetvsL"
-FF_FRIEND_TAG_LTT="jetfakes_wpVSjet_Medium_12_06_24_MediumvsJetvsL"
+FF_FRIEND_WP_VS_LEP="Tight"
+FF_DATE="19_08_24_mediumvsj_tightvsl"
+FF_FRIEND_TAG_LLT="jetfakes_wpVSjet_Loose_19_08_24_loosevsj_tightvsl"
+FF_FRIEND_TAG_LTT="jetfakes_wpVSjet_Medium_19_08_24_mediumvsj_tightvsl"
 FF_NTUPLE_TAG="31_05_24_ff_ntuples_2"
-NN_FRIEND_TAG_LLT="nn_friends_05_07_24_LoosevsJL"
-NN_FRIEND_TAG_LTT="nn_friends_04_07_24_MediumvsJL"
-CHANNELS="met"
-SHAPE_TAG="09_07_24_nn_lltloose_lttmedium_met_deltaR23_01_pt2_21"
-ERAS="2018"
+NN_FRIEND_TAG_LLT="nn_friends_18_07_24_LoosevsJL"
+NN_FRIEND_TAG_LTT="nn_friends_17_07_24_MediumvsJL"
+CHANNELS="emt met mmt mtt ett"
+SHAPE_TAG="20_08_24_nn_controlshapes"
+ERAS="2016preVFP 2016postVFP 2017 2018"
 CONTROL=0
-PROCESSES="sig data bkg1 bkg2 bkg3"
+PROCESSES="bkg3" #"sig data bkg1 bkg2 bkg3"
 PLOT_CATS="sig diboson misc"
 #REGION can be either nn_control (pt_1, pt_2, m_tt, pt_3, ..), nn_control_max_value (predicted_max_value) or nn_signal_plus (predicted_max_value+systematics)
 REGIONS="nn_control_max_value"
@@ -280,7 +280,7 @@ if [[ $MODE == "PLOT" ]]; then
                 else
                     for PLOT_CAT in $PLOT_CATS
                     do
-                        for VAR in predicted_max_value,deltaR_23,pt_2 #m_vis,met,pt_1,pt_2,pt_3,eta_1,eta_2,eta_3,deltaR_12,deltaR_13,njets,phi_1,phi_2,phi_3,jpt_1,jpt_2 #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
+                        for VAR in predicted_max_value,deltaR_23,pt_2 m_vis,met,pt_1,pt_2,pt_3,eta_1,eta_2,eta_3,deltaR_12,deltaR_13,njets,phi_1,phi_2,phi_3,jpt_1,jpt_2 #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
                         do
                             python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} --category-postfix $PLOT_CAT #--blinded #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
                             python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --category-postfix $PLOT_CAT #--blinded #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width

@@ -116,8 +116,8 @@ def channel_selection(channel, era, region):
                 ("pt_1>15.", "pt_1_cut"),
                 # ("pt_2>15.", "pt_2_cut"),
                 ("nbtag<0.5", "b_veto"),
-                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
-                ("id_tau_vsEle_Loose_3>0.5", "againstElectronDiscriminator"),
+                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsEle_Tight_3>0.5", "againstElectronDiscriminator"),
                 ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
                 # ("deltaR_12>0.3&&deltaR_13>0.5&&deltaR_23>0.5", "deltaR_cut"),
             ]
@@ -185,7 +185,7 @@ def channel_selection(channel, era, region):
                 ("pt_1>15.", "pt_1_cut"),
                 ("pt_2>15.", "pt_2_cut"),
                 ("nbtag<0.5", "b_veto"),
-                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
                 ("id_tau_vsEle_VLoose_3>0.5", "againstElectronDiscriminator"),
                 ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
                 ("iso_1<0.15", "iso_cut_1"),
@@ -217,7 +217,7 @@ def channel_selection(channel, era, region):
                 ("nbtag<0.5", "b_veto"),
                 ("q_2*q_3<0.0", "os"),
                 (
-                    "id_tau_vsEle_Medium_3>0.5&&id_tau_vsEle_Medium_2>0.5",
+                    "id_tau_vsEle_Tight_3>0.5&&id_tau_vsEle_Tight_2>0.5",
                     "againstElectronDiscriminator",
                 ),
                 (
@@ -271,7 +271,7 @@ def channel_selection(channel, era, region):
                     "againstElectronDiscriminator",
                 ),
                 (
-                    "id_tau_vsMu_Medium_3>0.5&&id_tau_vsMu_Medium_2>0.5",
+                    "id_tau_vsMu_Tight_3>0.5&&id_tau_vsMu_Tight_2>0.5",
                     "againstMuonDiscriminator",
                 ),
                 # (
@@ -317,8 +317,8 @@ def channel_selection_nn(channel, era, region):
                 ("q_2*q_3<0.0", "os"),
                 ("pt_1>15.", "pt_1_cut"),
                 ("nbtag<0.5", "b_veto"),
-                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
-                ("id_tau_vsEle_Loose_3>0.5", "againstElectronDiscriminator"),
+                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsEle_Tight_3>0.5", "againstElectronDiscriminator"),
                 ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
             ]
         )
@@ -382,7 +382,7 @@ def channel_selection_nn(channel, era, region):
                 ("pt_1>15.", "pt_1_cut"),
                 ("pt_2>15.", "pt_2_cut"),
                 ("nbtag<0.5", "b_veto"),
-                ("id_tau_vsMu_Loose_3>0.5", "againstMuonDiscriminator"),
+                ("id_tau_vsMu_Tight_3>0.5", "againstMuonDiscriminator"),
                 ("id_tau_vsEle_VLoose_3>0.5", "againstElectronDiscriminator"),
                 ("id_tau_vsJet_Loose_3>0.5", "tau_iso"),
                 ("iso_1<0.15", "iso_cut_1"),
@@ -418,7 +418,7 @@ def channel_selection_nn(channel, era, region):
                 ("nbtag<0.5", "b_veto"),
                 ("q_2*q_3<0.0", "os"),
                 (
-                    "id_tau_vsEle_Medium_3>0.5&&id_tau_vsEle_Medium_2>0.5",
+                    "id_tau_vsEle_Tight_3>0.5&&id_tau_vsEle_Tight_2>0.5",
                     "againstElectronDiscriminator",
                 ),
                 (
@@ -471,7 +471,7 @@ def channel_selection_nn(channel, era, region):
                     "againstElectronDiscriminator",
                 ),
                 (
-                    "id_tau_vsMu_Medium_3>0.5&&id_tau_vsMu_Medium_2>0.5",
+                    "id_tau_vsMu_Tight_3>0.5&&id_tau_vsMu_Tight_2>0.5",
                     "againstMuonDiscriminator",
                 ),
                 # (

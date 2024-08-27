@@ -200,7 +200,26 @@ def nn_cat(channel):
                         )
                     ],
                 ),
-                [hist, deltaR_23, pt_2],
+                [
+                    hist,
+                    m_vis,
+                    met,
+                    pt_1,
+                    pt_2,
+                    pt_3,
+                    eta_1,
+                    eta_2,
+                    eta_3,
+                    deltaR_12,
+                    deltaR_13,
+                    deltaR_23,
+                    njets,
+                    phi_1,
+                    phi_2,
+                    phi_3,
+                    jpt_1,
+                    jpt_2,
+                ],
             )
         )
     nn_categorization = {"{ch}".format(ch=channel): catsL_}

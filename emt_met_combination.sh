@@ -1,7 +1,7 @@
 ERAS="2016preVFP 2016postVFP"
 NTUPLE_TAG="03_11_23_allch_alleras_shifts"
-SHAPE_TAG_REF="fit_shapes_ssTight_osTight"
-SHAPE_TAG="${SHAPE_TAG_REF}_emt_met_comb_2016combcats"
+SHAPE_TAG="fit_shapes_ssTight_osTight"
+#SHAPE_TAG="${SHAPE_TAG_REF}_emt_met_comb_2016combcats"
 REGIONS="control_plus control_minus sig_plus sig_minus"
 OTHER_CHANNELS="ett mtt mmt"
 source utils/setup_root.sh

@@ -87,7 +87,7 @@ if [[ $MODE == "LOCAL" ]]; then
                     CONTROL_ARG="--control-plot-set m_tt" # ,m_vis,mjj,njets,pt_vis,nbtag,pt_W,m_tt,m_vis,pt_1,pt_2,pt_3"
                     echo "[INFO] Analysis shapes for cutbased analysis will be produced. Argument: ${CONTROL_ARG}"
                 fi
-                python -m cProfile -s time shapes/produce_shapes.py --channels $CHANNEL \
+                python shapes/produce_shapes.py --channels $CHANNEL \
                 --output-file ${OUTPUT_FILE} \
                 --directory $NTUPLES \
                 --ntuple_type crown \

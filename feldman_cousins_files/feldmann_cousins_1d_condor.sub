@@ -1,0 +1,26 @@
+Universe = docker
+docker_image = mschnepf/slc7-condocker
+arguments=$(POINT)
+executable = ./feldmann_cousins_1d_condor.sh
+
+request_cpus = 1
+request_memory = 4000
+request_disk = 500000
++RequestWalltime = 86400
+
+# log = log.log
+# stdout = stdout.log
+# stderr = stderr.log
+
+Output = condor_jobs/job_$(Cluster)_$(Process)_$(POINT).out
+Error  = condor_jobs/job_$(Cluster)_$(Process)_$(POINT).err
+Log    = condor_jobs/job_$(Cluster)_$(Process)_$(POINT).log
+
+requirements = TARGET.ProvidesEKPResources
+
+accounting_group = cms.higgs
+
+transfer_input_files = feldmann_cousins_1d_condor.sh
+
+queue arguments from feldmann_cousins_1d_condor_variables.txt
+ 

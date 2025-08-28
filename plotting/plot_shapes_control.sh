@@ -2,60 +2,40 @@
 source utils/setup_root.sh
 export PYTHONPATH=$PYTHONPATH:$PWD/Dumbledraw
 
-
-ERAS="2016preVFP" # 2016postVFP 2017 2018"
-CHANNELS="mtt"
-NTUPLE_TAG="16_02_24_charge_req_in_ntuple_alleras_allch"
-SHAPE_TAG="test_shapes_ssTight_osTight_08_03_24"
-REGIONS="control"
+NTUPLE_TAG="31_05_24_ff_ntuples_2"
+NTUPLE_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNRun/"
+FRIEND_PATH="/store/user/rschmieder/CROWN/ntuples/${NTUPLE_TAG}/CROWNFriends/"
+ERAS="2016preVFP 2016postVFP 2017"
+CHANNELS="mme"
+SHAPE_TAG="fakerate_measurement_12_07_24_mt_control"
+REGIONS="Loose Tight"
+PLOT_CATS="diboson misc"
 for ERA in $ERAS
 do
 for CHANNEL in $CHANNELS
 do
-    if [ "$CHANNEL" = "eem" ]
-    then
-        for WP in Loose Tight
-        do 
-            FILENAME="id_wp_mu_${WP}"
-            INPUT="output/shapes/09_02_eem_mme_2/${CHANNEL}/fakerate_measurement_incl_bveto_ortho_det_reg/${FILENAME}.root"
-            TAG="09_02_eem_mme_2/${CHANNEL}/${FILENAME}_incl_red_bkg_nbbwidth_incl_bveto_ortho_det_reg_AN_binning"
-            for VAR in pt_3 mt_3 met #m_vis pt_1 pt_2 m_vis mjj njets pt_vis phi_2 eta_2 phi_1 nbtag met_uncorrected pfmet pfmet_uncorrected metphi metphi_uncorrected pfmetphi pfmetphi_uncorrected
+    for REGION in $REGIONS
+    do
+        INPUT="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/id_wp_ele_${REGION}.root"
+        TAG="${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}"
+        #if [ "$REGION" = "control" ]; then
+            for VAR in mt_3 #m_vis pt_W pt_1 pt_2 pt_3
             do
-                python plotting/plot_shapes_control_eem_mme.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --normalize-by-bin-width
+                #python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
+                python plotting/plot_shapes_control_eem_mme.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
             done
-        done 
-    elif [ "$CHANNEL" = "mme" ]
-    then 
-        for WP in Loose Tight
-        do     
-            FILENAME="id_wp_ele_${WP}"
-            INPUT="output/shapes/09_02_eem_mme_2/${CHANNEL}/fakerate_measurement_incl_bveto_ortho_det_reg/${FILENAME}.root"
-            TAG="09_02_eem_mme_2/${CHANNEL}/${FILENAME}_incl_red_bkg_nbbwidth_incl_bveto_ortho_det_reg_AN_binning"
-            for VAR in pt_3 mt_3 met #m_vis pt_1 pt_2 m_vis mjj njets pt_vis phi_2 eta_2 phi_1 nbtag met_uncorrected pfmet pfmet_uncorrected metphi metphi_uncorrected pfmetphi pfmetphi_uncorrected
-            do
-                python plotting/plot_shapes_control_eem_mme.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --normalize-by-bin-width
-            done
-        done 
-    else 
-        for REGION in $REGIONS
-        do
-            INPUT="output/shapes/${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}.root"
-            TAG="${NTUPLE_TAG}/${ERA}/${CHANNEL}/${SHAPE_TAG}/${REGION}"
-            if [ "$REGION" = "control" ]; then
-                for VAR in m_tt #m_vis pt_W pt_1 pt_2 pt_3
-                do
-                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
-                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
-                done
-            else
-                for VAR in m_tt #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
-                do
-                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG} #--blinded #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
-                    python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation #--blinded #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
-                done
-            fi
-        done
-    fi
+        # else
+        #     echo "hi"
+        #     for VAR in predicted_max_value #m_vis mjj njets pt_vis phi_2 eta_2 nbtag #pt_W m_tt m_vis pt_1 pt_2 pt_3
+        #     do
+        #         for PLOT_CAT in $PLOT_CATS
+        #         do 
+        #             python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}  --category-postfix $PLOT_CAT #--blinded #--draw-jet-fake-variation tau_anti_iso #--normalize-by-bin-width
+        #             python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --channels ${CHANNEL} --tag ${TAG}_simulation --simulation --category-postfix $PLOT_CAT #--blinded #--draw-jet-fake-variation tau_anti_iso # --normalize-by-bin-width
+        #         done
+        #     done
+        #fi
+    done
 done
 done
 # CHANNEL="mmt"

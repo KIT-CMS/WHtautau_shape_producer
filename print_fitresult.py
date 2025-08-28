@@ -3,6 +3,7 @@
 
 
 import ROOT
+
 ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
 import sys
 
@@ -16,7 +17,9 @@ if __name__ == "__main__":
 
     tree = f.Get("limit")
     if tree == None:
-        raise Exception("[ERROR] Tree {} not found in file {}.".format("limit", filename))
+        raise Exception(
+            "[ERROR] Tree {} not found in file {}.".format("limit", filename)
+        )
     num_entries = tree.GetEntries()
 
     indices = {}
@@ -32,14 +35,17 @@ if __name__ == "__main__":
     for i, row in enumerate(tree):
         for name in indices:
             if i == 0:
+                print(name, getattr(row, name))
                 results[name][0] = getattr(row, name)
             elif i == indices[name]:
+                print(name, getattr(row, name))
                 results[name][1] = getattr(row, name)
-            elif i == indices[name]+1:
+            elif i == indices[name] + 1:
+                print(name, getattr(row, name))
                 results[name][2] = getattr(row, name)
 
     for name in results:
         r = results[name][0]
         d = results[name][1]
         u = results[name][2]
-        print("[INFO] {0:<30}: {1:.4f} {2:.4f} +{3:.4f}".format(name, r, d-r, u-r))
+        print("[INFO] {0:<30}: {1:.4f} {2:.4f} +{3:.4f}".format(name, r, d - r, u - r))

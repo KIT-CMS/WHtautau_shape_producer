@@ -33,7 +33,44 @@ minimal_control_plot_set = [
     "m_tt",
     "pt_W",
 ]
-
+binning_incl_an_plots = {
+    "pt_W": Histogram("pt_W", "pt_W", [0, 50, 80, 110, 200]),
+    # "pt_W": Histogram("pt_W", "pt_W", np.arange(0, 220, 20)),
+    "m_tt": Histogram("m_tt", "m_tt", [30, 50, 70, 90, 110,130,150,170]),
+    "m_vis": Histogram("m_vis", "m_vis", [0, 40, 50, 70, 200]),
+    "pt_vis": Histogram("pt_vis", "pt_vis", [0, 25, 35, 50, 200]),
+    "pt_1": Histogram("pt_1", "pt_1", [0, 35, 50, 70, 200]),
+    "pt_2": Histogram("pt_2", "pt_2", [0, 25, 30, 40, 200]),
+    "pt_3": Histogram("pt_3", "pt_3", [0, 25, 35, 45, 200]),
+    "Lt": Histogram("Lt", "Lt", [50, 100, 130, 180, 280]),
+    "eta_1": Histogram(
+        "eta_1",
+        "eta_1",
+        [-2.5, -1.0, 0.0, 1.0, 2.5],
+    ),
+    "eta_2": Histogram(
+        "eta_2",
+        "eta_2",
+        [-2.5, -1.0, 0.0, 1.0, 2.5],
+    ),
+    "eta_3": Histogram(
+        "eta_3",
+        "eta_3",
+        [-2.5, -1.0, 0.0, 1.0, 2.5],
+    ),
+    "jpt_1": Histogram("jpt_1", "jpt_1", [30, 40, 60, 90, 200]),
+    "jpt_2": Histogram("jpt_2", "jpt_2", [30, 40, 60, 90, 200]),
+    "njets": Histogram("njets", "njets", [-0.5, 0.5, 1.5, 2.5, 3.5, 6.5]),
+    "mt_1": Histogram("mt_1", "mt_1", [0, 50, 70, 100, 200]),
+    "mt_2": Histogram("mt_2", "mt_2", [0, 25, 45, 70, 200]),
+    "mt_3": Histogram("mt_3", "mt_3", [0, 35, 55, 75, 200]),
+    "mjj": Histogram("mjj", "mjj", [0, 30, 50, 70, 200]),
+    "met": Histogram("met", "met", [0, 25, 45, 65, 85,105,125,150,175]),
+    "pt_123met": Histogram("pt_123met", "pt_123met", [0, 30, 50, 70, 90,110,130,150,170,190]),
+    "deltaR_13": Histogram("deltaR_13", "deltaR_13", [0.0, 1.5, 2.5, 3.0, 5.0]),
+    "deltaR_12": Histogram("deltaR_12", "deltaR_12", [0.0, 1.5, 2.5, 3.0, 5.0]),
+    "deltaR_23": Histogram("deltaR_23", "deltaR_23", [0.0, 1.5, 2.5, 3.0, 5.0]),
+}
 binning_llt = {
     "pt_W": Histogram("pt_W", "pt_W", [0, 225]),
     # "pt_W": Histogram("pt_W", "pt_W", np.arange(0, 220, 20)),
@@ -53,7 +90,7 @@ binning_llt = {
     "eta_sv_puppi": Histogram(
         "eta_sv_puppi", "eta_sv_puppi", np.linspace(-2.5, 2.5, 50)
     ),
-    "m_vis": Histogram("m_vis", "m_vis", np.arange(15, 200, 20)),
+    "m_vis": Histogram("m_vis", "m_vis", [0, 200]),
     "pt_vis": Histogram("pt_vis", "pt_vis", np.arange(15, 200, 20)),
     "ME_q2v1": Histogram("ME_q2v1", "ME_q2v1", np.arange(0, 300000, 6000)),
     "ME_q2v2": Histogram("ME_q2v1", "ME_q2v1", np.arange(0, 300000, 6000)),
@@ -64,8 +101,8 @@ binning_llt = {
     ),
     "ME_phi": Histogram("ME_phi", "ME_phi", np.linspace(-3.14, 3.14, 50)),
     "ME_phi1": Histogram("ME_phi1", "ME_phi1", np.linspace(-3.14, 3.14, 50)),
-    "pfmetphi": Histogram("pfmetphi", "pfmetphi", np.linspace(-3.14, 3.14, 50)),
-    "metphi": Histogram("metphi", "metphi", np.linspace(-3.14, 3.14, 50)),
+    "pfmetphi": Histogram("pfmetphi", "pfmetphi", np.linspace(-3.14, 3.14, 7)),
+    "metphi": Histogram("metphi", "metphi", np.linspace(-3.14, 3.14, 7)),
     "pfmetphi_uncorrected": Histogram(
         "pfmetphi_uncorrected", "pfmetphi_uncorrected", np.linspace(-3.14, 3.14, 50)
     ),
@@ -74,14 +111,27 @@ binning_llt = {
     ),
     "mt_tot": Histogram("mt_tot", "mt_tot", np.arange(0, 400, 8)),
     "mt_tot_puppi": Histogram("mt_tot_puppi", "mt_tot_puppi", np.arange(0, 400, 8)),
-    "pt_1": Histogram("pt_1", "pt_1", np.arange(15, 200, 20)),
-    "pt_2": Histogram("pt_2", "pt_2", np.arange(15, 200, 20)),
-    "pt_3": Histogram("pt_3", "pt_3", np.arange(20, 200, 20)),
-    # "pt_3": Histogram("pt_3", "pt_3", [20, 25, 30, 35, 40, 50, 60, 120]),
+    "pt_1": Histogram("pt_1", "pt_1", [15, 35, 55, 75, 95, 140, 200, 300]),
+    "pt_2": Histogram("pt_2", "pt_2", [15, 35, 55, 140]),
+    "pt_3": Histogram("pt_3", "pt_3", [20, 40, 60, 140]),
+    # "pt_3": Histogram("pt_3", "pt_3", np.arange(20, 160, 20)),
+    "pt_3": Histogram("pt_3", "pt_3", [20, 25, 30, 35, 40, 50, 60, 120]),
     "Lt": Histogram("Lt", "Lt", np.arange(0, 100, 5)),
-    "eta_1": Histogram("eta_1", "eta_1", np.linspace(-2.5, 2.5, 5)),
-    "eta_2": Histogram("eta_2", "eta_2", np.linspace(-2.5, 2.5, 5)),
-    "eta_3": Histogram("eta_3", "eta_3", np.linspace(-2.5, 2.5, 5)),
+    "eta_1": Histogram(
+        "eta_1",
+        "eta_1",
+        [-2.5, -2.1, -1.56, -1.4442, -1.0, 0.0, 1.0, 1.4442, 1.56, 2.1, 2.5],
+    ),
+    "eta_2": Histogram(
+        "eta_2",
+        "eta_2",
+        [-2.5, -2.1, -1.56, -1.4442, -1.0, 0.0, 1.0, 1.4442, 1.56, 2.1, 2.5],
+    ),
+    "eta_3": Histogram(
+        "eta_3",
+        "eta_3",
+        [-2.5, -2.1, -1.56, -1.4442, -1.0, 0.0, 1.0, 1.4442, 1.56, 2.1, 2.5],
+    ),
     "jpt_1": Histogram(
         "jpt_1", "jpt_1", np.append(np.array([0]), np.arange(20, 160, 5))
     ),
@@ -93,7 +143,7 @@ binning_llt = {
     "jphi_1": Histogram("jphi_1", "jphi_1", np.linspace(-3.14, 3.14, 50)),
     "jphi_2": Histogram("jphi_2", "jphi_2", np.linspace(-3.14, 3.14, 50)),
     "jdeta": Histogram("jdeta", "jdeta", np.arange(0, 6, 0.2)),
-    "njets": Histogram("njets", "njets", [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5]),
+    "njets": Histogram("njets", "njets", [-0.5, 0.5, 1.5, 2.5, 3.5, 6.5]),
     "nbtag": Histogram("nbtag", "nbtag", [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5]),
     "decayMode_1": Histogram(
         "decayMode_1",
@@ -118,7 +168,7 @@ binning_llt = {
     "pt_tt_pf": Histogram("pt_tt_pf", "pt_tt_pf", np.arange(0, 160, 5)),
     "pt_ttjj": Histogram("pt_ttjj", "pt_ttjj", np.arange(0, 160, 5)),
     "mjj": Histogram("mjj", "mjj", np.arange(0, 300, 10)),
-    "met": Histogram("met", "met", np.arange(0, 200, 10)),
+    "met": Histogram("met", "met", [20, 40, 60, 80, 120]),
     "pfmet": Histogram("pfmet", "pfmet", np.arange(0, 160, 10)),
     "met_uncorrected": Histogram(
         "met_uncorrected", "met_uncorrected", np.arange(0, 160, 10)
@@ -158,7 +208,7 @@ binning_ltt = {
     "eta_sv_puppi": Histogram(
         "eta_sv_puppi", "eta_sv_puppi", np.linspace(-2.5, 2.5, 50)
     ),
-    "m_vis": Histogram("m_vis", "m_vis", np.arange(15, 200, 20)),
+    "m_vis": Histogram("m_vis", "m_vis", [0, 200]),
     "pt_vis": Histogram("pt_vis", "pt_vis", np.arange(15, 200, 20)),
     "ME_q2v1": Histogram("ME_q2v1", "ME_q2v1", np.arange(0, 300000, 6000)),
     "ME_q2v2": Histogram("ME_q2v1", "ME_q2v1", np.arange(0, 300000, 6000)),
@@ -169,8 +219,8 @@ binning_ltt = {
     ),
     "ME_phi": Histogram("ME_phi", "ME_phi", np.linspace(-3.14, 3.14, 50)),
     "ME_phi1": Histogram("ME_phi1", "ME_phi1", np.linspace(-3.14, 3.14, 50)),
-    "pfmetphi": Histogram("pfmetphi", "pfmetphi", np.linspace(-3.14, 3.14, 50)),
-    "metphi": Histogram("metphi", "metphi", np.linspace(-3.14, 3.14, 50)),
+    "pfmetphi": Histogram("pfmetphi", "pfmetphi", np.linspace(-3.14, 3.14, 7)),
+    "metphi": Histogram("metphi", "metphi", np.linspace(-3.14, 3.14, 7)),
     "pfmetphi_uncorrected": Histogram(
         "pfmetphi_uncorrected", "pfmetphi_uncorrected", np.linspace(-3.14, 3.14, 50)
     ),
@@ -179,15 +229,15 @@ binning_ltt = {
     ),
     "mt_tot": Histogram("mt_tot", "mt_tot", np.arange(0, 400, 8)),
     "mt_tot_puppi": Histogram("mt_tot_puppi", "mt_tot_puppi", np.arange(0, 400, 8)),
-    "pt_1": Histogram("pt_1", "pt_1", np.arange(15, 200, 20)),
-    "pt_2": Histogram("pt_2", "pt_2", np.arange(15, 200, 20)),
-    "pt_3": Histogram("pt_3", "pt_3", np.arange(20, 200, 20)),
+    "pt_1": Histogram("pt_1", "pt_1", [15, 35, 55, 75, 95, 140, 200, 300]),
+    "pt_2": Histogram("pt_2", "pt_2", [20, 40, 60, 80, 140]),
+    "pt_3": Histogram("pt_3", "pt_3", [20, 40, 60, 140]),
     # "pt_3": Histogram("pt_3", "pt_3", [20, 25, 30, 35, 40, 50, 60, 120]),
     # "pt_3": Histogram("pt_3", "pt_3", np.arange(20, 200, 20)),
     "Lt": Histogram("Lt", "Lt", np.arange(0, 100, 5)),
     "eta_1": Histogram("eta_1", "eta_1", np.linspace(-2.5, 2.5, 50)),
     "eta_2": Histogram("eta_2", "eta_2", np.linspace(-2.5, 2.5, 50)),
-    "eta_3": Histogram("eta_3", "eta_3", np.linspace(-2.5, 2.5, 50)),
+    "eta_3": Histogram("eta_3", "eta_3", np.linspace(-2.5, 2.5, 10)),
     "jpt_1": Histogram(
         "jpt_1", "jpt_1", np.append(np.array([0]), np.arange(20, 160, 5))
     ),
@@ -199,7 +249,7 @@ binning_ltt = {
     "jphi_1": Histogram("jphi_1", "jphi_1", np.linspace(-3.14, 3.14, 50)),
     "jphi_2": Histogram("jphi_2", "jphi_2", np.linspace(-3.14, 3.14, 50)),
     "jdeta": Histogram("jdeta", "jdeta", np.arange(0, 6, 0.2)),
-    "njets": Histogram("njets", "njets", [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5]),
+    "njets": Histogram("njets", "njets", [-0.5, 0.5, 1.5, 2.5, 3.5, 6.5]),
     "nbtag": Histogram("nbtag", "nbtag", [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5]),
     "decayMode_1": Histogram(
         "decayMode_1",
@@ -224,7 +274,7 @@ binning_ltt = {
     "pt_tt_pf": Histogram("pt_tt_pf", "pt_tt_pf", np.arange(0, 160, 5)),
     "pt_ttjj": Histogram("pt_ttjj", "pt_ttjj", np.arange(0, 160, 5)),
     "mjj": Histogram("mjj", "mjj", np.arange(0, 300, 10)),
-    "met": Histogram("met", "met", np.arange(0, 200, 20)),
+    "met": Histogram("met", "met", [20, 40, 60, 80, 120]),
     "pfmet": Histogram("pfmet", "pfmet", np.arange(0, 160, 10)),
     "met_uncorrected": Histogram(
         "met_uncorrected", "met_uncorrected", np.arange(0, 160, 10)
@@ -293,7 +343,7 @@ eem_mme_binning = {
     "Lt": Histogram("Lt", "Lt", np.arange(0, 100, 5)),
     "eta_1": Histogram("eta_1", "eta_1", np.linspace(-2.5, 2.5, 50)),
     "eta_2": Histogram("eta_2", "eta_2", np.linspace(-2.5, 2.5, 50)),
-    "eta_3": Histogram("eta_3", "eta_3", np.linspace(-2.5, 2.5, 50)),
+    "eta_3": Histogram("eta_3", "eta_3", np.linspace(-2.5, 2.5, 10)),
     "jpt_1": Histogram(
         "jpt_1", "jpt_1", np.append(np.array([0]), np.arange(20, 160, 5))
     ),
@@ -330,7 +380,7 @@ eem_mme_binning = {
     "pt_tt_pf": Histogram("pt_tt_pf", "pt_tt_pf", np.arange(0, 160, 5)),
     "pt_ttjj": Histogram("pt_ttjj", "pt_ttjj", np.arange(0, 160, 5)),
     "mjj": Histogram("mjj", "mjj", np.arange(0, 300, 10)),
-    "met": Histogram("met", "met", np.arange(0, 160, 10)),
+    "met": Histogram("met", "met", [0, 10, 20, 30, 40, 50, 60, 80, 100, 200]),
     "pfmet": Histogram("pfmet", "pfmet", np.arange(0, 160, 10)),
     "met_uncorrected": Histogram(
         "met_uncorrected", "met_uncorrected", np.arange(0, 160, 10)
@@ -355,8 +405,8 @@ eem_mme_binning = {
 control_binning = {}
 for channel in ["emt", "met", "mmt", "ett", "mtt", "eem", "mme"]:
     if channel in ["emt", "met", "mmt"]:
-        control_binning[channel] = binning_llt
+        control_binning[channel] = binning_incl_an_plots
     elif channel in ["eem", "mme"]:
         control_binning[channel] = eem_mme_binning
     else:
-        control_binning[channel] = binning_ltt
+        control_binning[channel] = binning_incl_an_plots

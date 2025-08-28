@@ -18,7 +18,11 @@ from ntuple_processor import (
 
 from config.shapes.channel_selection_fakerate import channel_selection
 from config.shapes.file_names import files
-
+from config.shapes.variations import (
+    anti_iso_mmt_closure,
+    anti_iso_mme_closure,
+    anti_iso_eem_closure,
+)
 from config.shapes.process_selection_fakerate import (
     VV_process_selection,
     H_process_selection,
@@ -187,6 +191,11 @@ def parse_arguments():
         action="store_true",
         help="Read input ntuples and friends via xrootd from gridka dCache",
     )
+    parser.add_argument(
+        "--closure_corr",
+        action="store_true",
+        help="Apply anti iso cuts for closure correction calculation",
+    )
     return parser.parse_args()
 
 
@@ -271,7 +280,7 @@ def main(args):
             decay_mode,
             id_wp_ele,
             id_wp_mu,
-            wp_vs_jet_tight
+            wp_vs_jet_tight,
         )
         return {
             "data": [
@@ -286,8 +295,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         )
                     ],
                     [
@@ -309,8 +318,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         VV_process_selection(
                             channel,
@@ -341,8 +350,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         VV_process_selection(
                             channel,
@@ -373,8 +382,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         VV_process_selection(
                             channel,
@@ -405,8 +414,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         H_process_selection(
                             channel,
@@ -437,8 +446,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         H_process_selection(
                             channel,
@@ -469,8 +478,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         TT_process_selection(
                             channel,
@@ -501,8 +510,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         TT_process_selection(
                             channel,
@@ -533,8 +542,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         VVV_process_selection(
                             channel,
@@ -565,8 +574,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         H_process_selection(
                             channel,
@@ -597,8 +606,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         H_process_selection(
                             channel,
@@ -629,8 +638,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         H_process_selection(
                             channel,
@@ -661,8 +670,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         H_process_selection(
                             channel,
@@ -681,37 +690,38 @@ def main(args):
                     ],
                 )
             ],
-            # "wjets": [
-            #     Unit(
-            #         datasets["Wjets"],
-            #         [
-            #             channel_selection(
-            #                 channel,
-            #                 era,
-            #                 wp_vs_jet,
-            #                 wp_vs_mu,
-            #                 wp_vs_ele,
-            #                 decay_mode,
-            #                 id_wp_ele,
-            #                 id_wp_mu,
-            #             ),
-            #             W_process_selection(
-            #                 channel,
-            #                 era,
-            #                 wp_vs_jet,
-            #                 wp_vs_mu,
-            #                 wp_vs_ele,
-            #                 id_wp_ele,
-            #                 id_wp_mu,
-            #             ),
-            #         ],
-            #         [
-            #             control_binning[channel][v]
-            #             for v in set(control_binning[channel].keys())
-            #             & set(args.control_plot_set)
-            #         ],
-            #     )
-            # ],
+            "wjets": [
+                Unit(
+                    datasets["Wjets"],
+                    [
+                        channel_selection(
+                            channel,
+                            era,
+                            wp_vs_jet,
+                            wp_vs_mu,
+                            wp_vs_ele,
+                            decay_mode,
+                            id_wp_ele,
+                            id_wp_mu,
+                            wp_vs_jet_tight,
+                        ),
+                        W_process_selection(
+                            channel,
+                            era,
+                            wp_vs_jet,
+                            wp_vs_mu,
+                            wp_vs_ele,
+                            id_wp_ele,
+                            id_wp_mu,
+                        ),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
             "dy": [
                 Unit(
                     datasets["DY"],
@@ -724,8 +734,8 @@ def main(args):
                             wp_vs_ele,
                             decay_mode,
                             id_wp_ele,
-                            id_wp_mu, wp_vs_jet_tight
-
+                            id_wp_mu,
+                            wp_vs_jet_tight,
                         ),
                         DY_process_selection(
                             channel,
@@ -775,7 +785,7 @@ def main(args):
             # simulated fake estimation
             "dy",
             "tt",
-            # "wjets",
+            "wjets",
         }
     else:
         procS = args.process_selection
@@ -799,7 +809,7 @@ def main(args):
             # simulated fake estimation
             "dy",
             "tt",
-            # "wjets",
+            "wjets",
         }
     for ch_ in args.channels:
         print("procs:", (simulatedProcsDS[ch_] & procS))
@@ -812,7 +822,43 @@ def main(args):
                 ],
                 enable_check=args.enable_booking_check,
             )
-
+        if args.closure_corr:
+            if ch_ == "mmt":
+                um.book(
+                    [
+                        unit
+                        for d in dataS | (simulatedProcsDS[ch_] & procS)
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    [
+                        anti_iso_mmt_closure,
+                    ],
+                    enable_check=args.enable_booking_check,
+                )
+            if ch_ == "eem":
+                um.book(
+                    [
+                        unit
+                        for d in dataS | (simulatedProcsDS[ch_] & procS)
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    [
+                        anti_iso_eem_closure,
+                    ],
+                    enable_check=args.enable_booking_check,
+                )
+            if ch_ == "mme":
+                um.book(
+                    [
+                        unit
+                        for d in dataS | (simulatedProcsDS[ch_] & procS)
+                        for unit in nominals[args.era]["units"][ch_][d]
+                    ],
+                    [
+                        anti_iso_mme_closure,
+                    ],
+                    enable_check=args.enable_booking_check,
+                )
         if args.skip_systematic_variations:
             pass
         else:

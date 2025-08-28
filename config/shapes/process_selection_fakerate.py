@@ -1,5 +1,5 @@
 from ntuple_processor.utils import Selection
-
+import json
 
 """Base processes
 
@@ -20,6 +20,14 @@ List of base processes, mostly containing only weights:
     - HTT_process_selection
     - HWW_process_selection
 """
+
+
+def btag_correction(era, channel, proc):
+    file_path = "/work/rschmieder/WH_analysis/btagweight_study/shape_producer/WHtautau_shape_producer/btagweight_corrfactors_FF.json"
+    with open(file_path, "r") as json_file:
+        corr_factors = json.load(json_file)
+    corr_factor = corr_factors[era][channel][proc]
+    return corr_factor
 
 
 def lumi_weight(era):
@@ -84,10 +92,11 @@ def MC_base_process_selection(
             )
         else:
             trgweight = (
-                "((pt_1>=25&&pt_1<=28) * trg_wgt_single_mu24) || (pt_1>28*trg_wgt_single_mu27)",
+                "trg_wgt_single_mu24ormu27",
                 "trgweight",
             )
         MC_base_process_weights = [
+            ("btag_weight", "btagWeight"),
             ("puweight", "puweight"),
             lumi_weight(era),
             prefiring_weight(era),
@@ -107,6 +116,10 @@ def MC_base_process_selection(
             "id_wgt_mu_1 * id_wgt_mu_2* (id_wgt_ele_wp90nonIso_3*electron_is_nonisowp90_3>0.5+1.0*electron_is_nonisowp90_3<0.5)",
             "idweight",
         )
+        recoweight = (
+            "((pt_3<20.)*reco_ptst20_wgt_ele_3)+((pt_3>20.)*reco_ptgt20_wgt_ele_3)",
+            "recoweight",
+        )
         if "2016" in era:
             trgweight = (
                 "(pt_1>=23 * trg_wgt_single_mu22)",
@@ -114,12 +127,13 @@ def MC_base_process_selection(
             )
         else:
             trgweight = (
-                "((pt_1>=25&&pt_1<=28) * trg_wgt_single_mu24) || (pt_1>28*trg_wgt_single_mu27)",
+                "trg_wgt_single_mu24ormu27",
                 "trgweight",
             )
         MC_base_process_weights = [
             ("puweight", "puweight"),
             lumi_weight(era),
+            recoweight,
             isoweight,
             idweight,
             trgweight,
@@ -133,6 +147,10 @@ def MC_base_process_selection(
             "iso_wgt_ele_1*iso_wgt_ele_2*(iso_wgt_mu_3*(iso_3<0.15)+1.*(iso_3>0.15))",
             "isoweight",
         )
+        recoweight = (
+            "(((pt_1<20.)*reco_ptst20_wgt_ele_1)+((pt_1>20.)*reco_ptgt20_wgt_ele_1))*(((pt_2<20.)*reco_ptst20_wgt_ele_2)+((pt_2>20.)*reco_ptgt20_wgt_ele_2))",
+            "recoweight",
+        )
         if "2016" in era:
             trgweight = ("trg_wgt_single_ele25", "trgweight")
         elif "2017" in era:
@@ -140,8 +158,10 @@ def MC_base_process_selection(
         elif "2018" in era:
             trgweight = ("trg_wgt_single_ele32orele35", "trgweight")
         MC_base_process_weights = [
+            ("btag_weight", "btagWeight"),
             ("puweight", "puweight"),
             lumi_weight(era),
+            recoweight,
             isoweight,
             idweight,
             trgweight,
@@ -175,6 +195,7 @@ def TT_process_selection(
     TT_process_weights = MC_base_process_selection(
         channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, id_wp_ele, id_wp_mu
     ).weights
+    btag_corr = btag_correction(era, channel, "tt_procs")
     TT_process_weights.extend(
         [
             ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
@@ -184,6 +205,7 @@ def TT_process_selection(
                 "generator_weight",
             ),
             ("topPtReweightWeight", "topPtReweightWeight"),
+            ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
         ]
     )
     return Selection(name="TT", weights=TT_process_weights)
@@ -195,6 +217,7 @@ def VV_process_selection(
     VV_process_weights = MC_base_process_selection(
         channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, id_wp_ele, id_wp_mu
     ).weights
+    btag_corr = btag_correction(era, channel, "vv_procs")
     VV_process_weights.extend(
         [
             ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
@@ -203,6 +226,7 @@ def VV_process_selection(
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                 "generator_weight",
             ),
+            ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
         ]
     )
     return Selection(name="VV", weights=VV_process_weights)
@@ -438,6 +462,7 @@ def VVV_process_selection(
     VVV_process_weights = MC_base_process_selection(
         channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, id_wp_ele, id_wp_mu
     ).weights
+    btag_corr = btag_correction(era, channel, "vvv_procs")
     if era == "2016preVFP":
         VVV_process_weights.extend(
             [
@@ -450,6 +475,7 @@ def VVV_process_selection(
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                     "generator_weight",
                 ),
+                ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
             ]
         )
     elif era == "2016postVFP":
@@ -464,6 +490,7 @@ def VVV_process_selection(
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                     "generator_weight",
                 ),
+                ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
             ]
         )
     elif era == "2017":
@@ -478,6 +505,7 @@ def VVV_process_selection(
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                     "generator_weight",
                 ),
+                ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
             ]
         )
     elif era == "2018":
@@ -492,6 +520,7 @@ def VVV_process_selection(
                     "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                     "generator_weight",
                 ),
+                ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
             ]
         )
     return Selection(name="VVV", weights=VVV_process_weights)
@@ -539,6 +568,7 @@ def HWW_process_selection(
     HWW_process_weights = MC_base_process_selection(
         channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, id_wp_ele, id_wp_mu
     ).weights
+    btag_corr = btag_correction(era, channel, "vh_procs")
     HWW_process_weights.extend(
         [
             ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
@@ -547,6 +577,7 @@ def HWW_process_selection(
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                 "generator_weight",
             ),
+            ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
         ]
     )
     return Selection(name="HWW", weights=HWW_process_weights)
@@ -558,6 +589,7 @@ def VH_process_selection(
     VH_process_weights = MC_base_process_selection(
         channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, id_wp_ele, id_wp_mu
     ).weights
+    btag_corr = btag_correction(era, channel, "vh_procs")
     VH_process_weights.extend(
         [
             ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
@@ -566,6 +598,7 @@ def VH_process_selection(
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                 "generator_weight",
             ),
+            ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
         ]
     )
     return Selection(name="VH", weights=VH_process_weights)
@@ -577,6 +610,7 @@ def H_process_selection(
     H_process_weights = MC_base_process_selection(
         channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, id_wp_ele, id_wp_mu
     ).weights
+    btag_corr = btag_correction(era, channel, "vh_procs")
     H_process_weights.extend(
         [
             ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
@@ -585,6 +619,7 @@ def H_process_selection(
                 "1./generator_weight*(genWeight>0)-1./generator_weight*(genWeight<0)",
                 "generator_weight",
             ),
+            ("{btag_corr}".format(btag_corr=btag_corr), "btag_correction"),
         ]
     )
     return Selection(name="H", weights=H_process_weights)

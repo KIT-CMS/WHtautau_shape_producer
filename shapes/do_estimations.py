@@ -163,14 +163,14 @@ def replace_negative_entries_and_renormalize(histogram, tolerance):
 def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nominal"):
     procs_to_subtract = [
         "VVV",
-        "ggZZ",
+        # "ggZZ",
         "ZZ",
         "rem_ttbar",
         "WZ",
         # "ggH",
         "ZH",
         # "qqH",
-        # "ttH",
+        "ttH",
         "ggZH",
     ]
     logger.debug(
@@ -185,6 +185,7 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
             )
         )
     )
+    print(variable)
     print(
         _name_string.format(
             dataset="data",
@@ -256,6 +257,8 @@ def jet_fakes_estimation(rootfile, channel, selection, variable, variation="Nomi
 def jet_fakes_nominal(rootfile, channel, selection, variable, variation):
     # function that adds all contributions from jetfakes together to a nominal histogram
     if "Up" in variation or "Down" in variation:
+        print(variation)
+        print(variation.split("_")[-2], variation.split("_")[-1])
         unc = "_CMS_ff_{syst}_{shift}".format(
             syst=variation.split("_")[-2], shift=variation.split("_")[-1]
         )
@@ -308,17 +311,29 @@ def jet_fakes_nominal(rootfile, channel, selection, variable, variation):
             )
         )
     )
-    base_hist = rootfile.Get(
-        _name_string.format(
-            dataset="jetFakes",
-            channel=channel,
-            process="-jetFakes",
-            selection="-" + selection if selection != "" else "",
-            variation="tau_anti_iso{unc}".format(unc=unc),
-            variable=variable,
-        )
-    ).Clone()
-    if channel not in ["ett", "mtt"]:
+    if channel in ["eem", "mme"]:
+        base_hist = rootfile.Get(
+            _name_string.format(
+                dataset="jetFakes",
+                channel=channel,
+                process="-jetFakes",
+                selection="-" + selection if selection != "" else "",
+                variation="anti_id_iso_3{unc}".format(unc=unc),
+                variable=variable,
+            )
+        ).Clone()
+    else:
+        base_hist = rootfile.Get(
+            _name_string.format(
+                dataset="jetFakes",
+                channel=channel,
+                process="-jetFakes",
+                selection="-" + selection if selection != "" else "",
+                variation="tau_anti_iso{unc}".format(unc=unc),
+                variable=variable,
+            )
+        ).Clone()
+    if channel not in ["ett", "mtt", "eem", "mme"]:
         for var_ in fake_contributions:
             logger.debug(
                 "Nominal jetfakes histogram -- Trying to fetch root histogram {}".format(
@@ -330,6 +345,16 @@ def jet_fakes_nominal(rootfile, channel, selection, variable, variation):
                         variation="{var_}{unc}".format(var_=var_, unc=unc),
                         variable=variable,
                     )
+                )
+            )
+            print(
+                _name_string.format(
+                    dataset="jetFakes",
+                    channel=channel,
+                    process="-jetFakes",
+                    selection="-" + selection if selection != "" else "",
+                    variation="{var_}{unc}".format(var_=var_, unc=unc),
+                    variable=variable,
                 )
             )
             base_hist.Add(
@@ -345,9 +370,16 @@ def jet_fakes_nominal(rootfile, channel, selection, variable, variation):
                 ),
                 1,
             )
-    variation_name = base_hist.GetName().replace(
-        "tau_anti_iso{unc}".format(unc=unc), ff_variation
-    )
+    if channel in ["eem", "mme"]:
+        variation_name = base_hist.GetName().replace(
+            "anti_id_iso_3{unc}".format(unc=unc), ff_variation
+        )
+        print(variation_name)
+    else:
+        variation_name = base_hist.GetName().replace(
+            "tau_anti_iso{unc}".format(unc=unc), ff_variation
+        )
+
     base_hist.SetName(variation_name)
     base_hist.SetTitle(variation_name)
     return base_hist
@@ -362,7 +394,12 @@ def main(args):
     for key in input_file.GetListOfKeys():
         logger.debug("Processing histogram %s", key.GetName())
         dataset, selection, variation, variable = key.GetName().split("#")
-        if "anti_iso" in variation:
+        if "njets" in key:
+            print(
+                "-------------------------------------------------------------------------------------------"
+            )
+            print(key)
+        if "anti_iso" in variation or "anti_id_iso" in variation:
             sel_split = selection.split("-")
             # Set category to default since not present in control plots.
             category = ""
@@ -401,6 +438,7 @@ def main(args):
                     ff_inputs[channel][category] = {variable: {variation: [process]}}
             else:
                 ff_inputs[channel] = {category: {variable: {variation: [process]}}}
+    print(ff_inputs)
     # Loop over available ff inputs and do the estimations
     logger.info("Starting estimations for fake factors and their variations")
     logger.debug("%s", json.dumps(ff_inputs, sort_keys=True, indent=4))
@@ -418,7 +456,11 @@ def main(args):
         for cat in ff_inputs[ch]:
             for var in ff_inputs[ch][cat]:
                 for variation in ff_inputs[ch][cat][var]:
-                    if variation == "tau_anti_iso" or "tau_anti_iso_CMS" in variation:
+                    if (
+                        variation == "tau_anti_iso"
+                        or "tau_anti_iso_CMS" in variation
+                        or "anti_id_iso" in variation
+                    ):
                         estimated_hist = jet_fakes_nominal(
                             input_file, ch, cat, var, variation
                         )

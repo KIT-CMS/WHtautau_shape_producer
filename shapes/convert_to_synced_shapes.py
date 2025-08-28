@@ -156,6 +156,34 @@ def write_hists_per_category(cat_hists: tuple):
             name_output = name_output.replace(
                 f"Down_{channel}_{args.era}", f"{channel}_{args.era}Down"
             )
+        if "_ff_" in name_output:
+            name_output = name_output.replace("_ff_", "_fake_")
+        if "systpt1" in name_output:
+            if "nn_signal_minus" in ifname:
+                name_output = name_output.replace("systpt1", "pt1")
+            else:
+                name_output = name_output.replace("systpt1", "pt1")
+        # if "fake_stat" in name_output:
+        #     if "nn_signal_minus" in ifname:
+        #         name_output = name_output.replace("fake_stat", "fake_m_stat")
+        #     else:
+        #         name_output = name_output.replace("fake_stat", "fake_p_stat")
+        if "systmet" in name_output:
+            if "nn_signal_minus" in ifname:
+                name_output = name_output.replace("systmet", "met")
+            else:
+                name_output = name_output.replace("systmet", "met")
+        if "fake_syst" in name_output:
+            if "nn_signal_minus" in ifname:
+                name_output = name_output.replace("syst", "irredbkg")
+            else:
+                name_output = name_output.replace("syst", "irredbkg")
+        if "CMS_topPtRew" in name_output:
+            name_output = name_output.replace("CMS_topPtRew", "top_pt_reweighting")
+        if "CMS_PileUp" in name_output:
+            name_output = name_output.replace("CMS_PileUp", "CMS_pileup")
+        if "pdf_qqbar" in name_output:
+            name_output = name_output.replace("pdf_qqbar", "pdf_WH")
         hist.SetTitle(name_output)
         hist.SetName(name_output)
         hist.Write()

@@ -48,24 +48,31 @@ def setup_logging(output_file, level=logging.INFO):
     logger.addHandler(file_handler)
     return
 
+
 def main(args):
     input_file_emt = ROOT.TFile(args.input_emt, "READ")
     input_file_met = ROOT.TFile(args.input_met, "READ")
     output_file = ROOT.TFile(args.output, "RECREATE")
     output_file.cd()
     # Loop over histograms to extract relevant information for synced files.
-    logging.info("Reading input histograms from files emt %s met %s", args.input_emt, args.input_met)
+    logging.info(
+        "Reading input histograms from files emt %s met %s",
+        args.input_emt,
+        args.input_met,
+    )
     for key in input_file_emt.GetListOfKeys():
         if "anti_iso" not in key.GetName():
             emt_hist = input_file_emt.Get(key.GetName())
             met_hist = input_file_met.Get(key.GetName().replace("#emt", "#met"))
+            print(key.GetName())
             comb_hist = emt_hist.Clone()
-            comb_hist.Add(met_hist,1.0)
+            comb_hist.Add(met_hist, 1.0)
             comb_hist.SetTitle(key.GetName())
             comb_hist.SetName(key.GetName())
             comb_hist.Write()
-    
+
     logging.info("Successfully written all histograms to file.")
+
 
 if __name__ == "__main__":
     args = parse_args()

@@ -12,7 +12,7 @@ eval `scramv1 runtime -sh`
 git clone git@github.com:cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 cd HiggsAnalysis/CombinedLimit
 git fetch origin
-git checkout v9.0.1
+git checkout v9.1.0
 cd -
 
 # CombineHarvester (current master for 102X)

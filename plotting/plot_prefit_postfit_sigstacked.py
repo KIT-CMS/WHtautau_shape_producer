@@ -107,6 +107,12 @@ def calculate_poisson_errors(hist):
     return x_vals, y_vals, errors_low, errors_high
 
 
+def zero_errors(hist):
+    for i in range(1, hist.GetNbinsX() + 1):
+        hist.SetBinError(i, 0.0)
+    return hist
+
+
 def main(info):
     args = info["args"]
     channel = info["channel"]
@@ -154,12 +160,12 @@ def main(info):
         "diboson_nn_signal_comb": "8",
     }
     category_label_dict = {
-        "sig_nn_signal_plus": "WH^{+}",
-        "sig_nn_signal_minus": "WH^{-}",
-        "misc_nn_signal_plus": "F_{F}^{+}",
-        "misc_nn_signal_minus": "F_{F}^{-}",
-        "diboson_nn_signal_plus": "WZ^{+}",
-        "diboson_nn_signal_minus": "WZ^{-}",
+        "sig_nn_signal_plus": ["WH", "+"],
+        "sig_nn_signal_minus": ["WH", "-"],
+        "misc_nn_signal_plus": ["F_{F}", "+"],
+        "misc_nn_signal_minus": ["F_{F}", "-"],
+        "diboson_nn_signal_plus": ["WZ", "+"],
+        "diboson_nn_signal_minus": ["WZ", "-"],
         "misc_nn_signal_comb": "F_{F}",
         "diboson_nn_signal_comb": "WZ",
     }
@@ -171,6 +177,10 @@ def main(info):
         "rare",
         "ZZ",
         "WZ",
+        # "WH_htt_plus",
+        # "WH_htt_minus",
+        # "WH_hww_plus",
+        # "WH_hww_minus",
     ]
     signal_processes = [
         "WH_htt_plus",
@@ -183,9 +193,9 @@ def main(info):
     else:
         fittype = "postfit"
     rootfile = rootfile_parser.Rootfile_parser(args.input)
-    legend_bkg_processes = copy.deepcopy(bkg_processes)
+    legend_bkg_processes = copy.deepcopy(bkg_processes + signal_processes)
     legend_bkg_processes.reverse()
-    legend_sig_processes = copy.deepcopy(signal_processes)
+    # legend_sig_processes = copy.deepcopy(signal_processes)
     # create plot
     width = 600
     plot = dd.Plot([0.3, [0.3, 0.28]], "ModTDR", r=0.04, l=0.14, width=width)
@@ -244,22 +254,27 @@ def main(info):
             )
 
         plot.setGraphStyle(process, "hist", fillcolor=styles.color_dict[process])
-
+    for signal in signal_processes:
+        hist = rootfile.get(era, channel, category_dict[cat], signal)
+        hist_zero_error = zero_errors(hist.Clone())
+        total_bkg.Add(hist_zero_error)
+        plot.add_hist(hist, signal, "bkg")
+        plot.setGraphStyle(signal, "hist", fillcolor=styles.color_dict[signal])
     plot.add_hist(total_bkg, "total_bkg")
     plot.setGraphStyle(
         "total_bkg", "e2", markersize=0, fillcolor=styles.color_dict["unc"], linecolor=0
     )
-    sig_dict = {}
-    for signal in signal_processes:
-        sig_dict[signal] = rootfile.get(
-            era, channel, category_dict[cat], signal
-        ).Clone()
-    for signal in sig_dict:
-        plot.subplot(0).add_hist(sig_dict[signal], signal)
-        plot.subplot(2).add_hist(sig_dict[signal], signal)
-        plot.subplot(0).setGraphStyle(
-            signal, "hist", linecolor=styles.color_dict[signal], linewidth=2
-        )
+    # sig_dict = {}
+    # for signal in signal_processes:
+    #     sig_dict[signal] = rootfile.get(
+    #         era, channel, category_dict[cat], signal
+    #     ).Clone()
+    # for signal in sig_dict:
+    #     plot.subplot(0).add_hist(sig_dict[signal], signal)
+    #     plot.subplot(2).add_hist(sig_dict[signal], signal)
+    #     plot.subplot(0).setGraphStyle(
+    #         signal, "hist", linecolor=styles.color_dict[signal], linewidth=2
+    #     )
     # add data hist
     plot.add_hist(
         rootfile.get(era, channel, category_dict[cat], "data_obs"),
@@ -281,7 +296,8 @@ def main(info):
     # plot.subplot(2).setGraphStyle("data_obs", "e0")
 
     # stack background processess
-    plot.create_stack(bkg_processes, "stack")
+
+    plot.create_stack(bkg_processes + signal_processes, "stack")
 
     # normalize stacks by bin-width
     # if args.normalize_by_bin_width:
@@ -289,20 +305,20 @@ def main(info):
     #     plot.subplot(1).normalizeByBinWidth()
 
     # add signal to bkg in ratio plot
-    for signal in sig_dict:
-        plot.subplot(2).get_hist(signal).Add(plot.subplot(2).get_hist("total_bkg"))
-        plot.subplot(2).setGraphStyle(
-            signal, "hist", linecolor=styles.color_dict[signal], linewidth=3
-        )
+    # for signal in sig_dict:
+    #     plot.subplot(2).get_hist(signal).Add(plot.subplot(2).get_hist("total_bkg"))
+    #     plot.subplot(2).setGraphStyle(
+    #         signal, "hist", linecolor=styles.color_dict[signal], linewidth=3
+    #     )
     # normalize ratio plot
     plot.subplot(2).normalize(
         [
             "total_bkg",
             "data_obs2",
-            "WH_htt_plus",
-            "WH_htt_minus",
-            "WH_hww_plus",
-            "WH_hww_minus",
+            # "WH_htt_plus",
+            # "WH_htt_minus",
+            # "WH_hww_plus",
+            # "WH_hww_minus",
         ],
         "total_bkg",
     )
@@ -319,16 +335,16 @@ def main(info):
     )
     plot.subplot(2).setYlims(
         -0.1,
-        2.6,
+        1.9,
     )
     # if "m_tt" in cat:
-    x_label = "y^{%s}" % (category_label_dict[cat])
+    x_label = "y^{%s}(%s)" % (category_label_dict[cat][0], category_label_dict[cat][1])
     plot.subplot(2).setXlabel(x_label)
     # elif "pt_W" in cat:
     #     plot.subplot(2).setXlabel("p_{T}(W) / GeV")
     # else:
     #     plot.subplot(2).setXlabel(cat)
-    plot.subplot(0).setYlabel("N_{events}")
+    plot.subplot(0).setYlabel("Events")
     plot.subplot(2).setYlabel("#scale[0.6]{data/pred.}")
     plot.scaleYTitleOffset(1.1)
     plot.subplot(2).scaleYTitleOffset(0.8)
@@ -336,9 +352,9 @@ def main(info):
     plot.scaleYLabelSize(0.8)
     # draw subplots. Argument contains names of objects to be drawn in corresponding order.
 
-    procs_to_draw = ["stack", "total_bkg", "data_obs2"] + signal_processes
+    procs_to_draw = ["stack", "total_bkg", "data_obs2"]
     plot.subplot(0).Draw(procs_to_draw)
-    plot.subplot(2).Draw(["total_bkg", "data_obs2"] + signal_processes)
+    plot.subplot(2).Draw(["total_bkg", "data_obs2"])
     # create legends
     for i in range(2):
         plot.add_legend(width=0.525, height=0.15)
@@ -349,29 +365,29 @@ def main(info):
                 styles.legend_label_dict[process],
                 "f",
             )
-        for signal in legend_sig_processes:
-            plot.legend(i).add_entry(
-                0,
-                signal,
-                styles.legend_label_dict[signal],
-                "f",
-            )
+        # for signal in legend_sig_processes:
+        #     plot.legend(i).add_entry(
+        #         0,
+        #         signal,
+        #         styles.legend_label_dict[signal],
+        #         "f",
+        #     )
         plot.legend(i).add_entry(0, "total_bkg", "Bkg. tot. unc.", "f")
-        plot.legend(i).add_entry(0, "data_obs2", "Observed", "PE2L")
+        plot.legend(i).add_entry(0, "data_obs2", "Data", "PE2L")
         plot.legend(i).setNColumns(2)
     plot.legend(0).Draw()
     plot.legend(1).setAlpha(0.0)
     plot.legend(1).Draw()
     for i in range(2):
         plot.add_legend(reference_subplot=2, pos=1, width=0.6, height=0.03)
-        plot.legend(i + 2).add_entry(0, "data_obs2", "Observed", "PE2L")
+        plot.legend(i + 2).add_entry(0, "data_obs2", "Data", "PE2L")
         plot.legend(i + 2).add_entry(0, "total_bkg", "Bkg. tot. unc.", "f")
         plot.legend(i + 2).setNColumns(4)
     plot.legend(2).Draw()
     plot.legend(3).setAlpha(0.0)
     plot.legend(3).Draw()
     # draw additional labels
-    plot.DrawCMS(thesisstyle=True, preliminary=True)
+    plot.DrawCMS(position="outside", thesisstyle=True, preliminary=True)
     if "2016preVFP" in args.era:
         plot.DrawLumi("19.5 fb^{-1} (2016preVFP, 13 TeV)")
     elif "2016postVFP" in args.era:
@@ -381,16 +397,16 @@ def main(info):
     elif "2018" in args.era:
         plot.DrawLumi("59.7 fb^{-1} (2018, 13 TeV)")
     elif "all_eras" in args.era:
-        plot.DrawLumi("138 fb^{-1} (Run 2, 13 TeV)")
+        plot.DrawLumi("138 fb^{-1} (13 TeV)")
     else:
         logger.critical("Era {} is not implemented.".format(args.era))
         raise Exception
 
     posChannelCategoryLabelLeft = None
-    plot.DrawChannelCategoryLabel(
-        "{ch}, {cat}".format(ch=channel_dict[channel], cat=category_label_dict[cat]),
-        begin_left=posChannelCategoryLabelLeft,
-    )
+    # plot.DrawChannelCategoryLabel(
+    #     "{ch}, {cat}".format(ch=channel_dict[channel], cat=category_label_dict[cat]),
+    #     begin_left=posChannelCategoryLabelLeft,
+    # )
     if not os.path.exists(
         "{output}/{pre_post}".format(output=args.output, pre_post=args.prepost)
     ):

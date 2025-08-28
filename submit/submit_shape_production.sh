@@ -11,20 +11,22 @@ OUTPUT=$8
 FF_FRIEND_TAG=$9
 NN_FRIEND_TAG=${10}
 PROC=${11}
+FF_MET_SHAPE_FRIEND_TAG=${12}
+FF_PT1_SHAPE_FRIEND_TAG=${13}
+FF_NN_SHAPE_FRIEND_TAG=${14}
+echo "hiiiiiiiiii"
+echo $FF_NN_SHAPE_FRIEND_TAG
 if [[ "$PROC" == "all" ]]; then
     PROC="data,dy,ggzh,ggzz,rem_ttbar,tt,vvv,wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus,wjets,wz,zh,zz"
 elif [[ "$PROC" == "data" ]]; then
     PROC="data"
 elif [[ "$PROC" == "bkg1" ]]; then
-    PROC="dy,ggzz,rem_ttbar,zz"
+    PROC="ggzz,rem_ttbar,tth,zz"
 elif [[ "$PROC" == "bkg2" ]]; then
-    PROC="ggzh,tt,zh"
+    PROC="ggzh,vvv,wz,zh"
 elif [[ "$PROC" == "sig" ]]; then
     PROC="wh_htt_minus,wh_htt_plus,wh_hww_minus,wh_hww_plus"
-elif [[ "$PROC" == "bkg3" ]]; then
-    PROC="vvv,wjets,wz"
 fi
-echo "producing shapes for processes era=$ERA, ch=$CHANNEL sub_mod=$SUBMIT_MODE ntupletag=$NTUPLE_TAG shapetag=$SHAPE_TAG region=$REGION crtl_arg=$CONTROL output=$OUTPUT ff=$FF_FRIEND_TAG nn=$NN_FRIEND_TAG proc=$PROC"
 [[ ! -z $1 && ! -z $2 && ! -z $3 && ! -z $4 && ! -z $5 ]] || (
     echo "[ERROR] Number of given parameters is too small."
     exit 1
@@ -35,10 +37,10 @@ if [[ $REGION == "control" ]]; then
     CONTROL_ARG="--control-plot-set m_tt,pt_1,pt_2,pt_3 --skip-systematic-variations --control-plots" # "
     echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
 elif [[ $REGION == "nn_control" ]]; then
-    CONTROL_ARG="--control-plot-set m_vis,met,pt_1,pt_2,pt_3 --skip-systematic-variations --control-plots" # "
+    CONTROL_ARG="--control-plot-set met,m_tt,pt_123met --skip-systematic-variations --control-plots" # "
     echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
 elif [[ $REGION == "nn_control_max_value" ]]; then
-    CONTROL_ARG="--control-plot-set predicted_max_value,m_vis,met,pt_1,pt_2,pt_3,eta_1,eta_2,eta_3,deltaR_12,deltaR_13,deltaR_23,njets,phi_1,phi_2,phi_3,jpt_1,jpt_2 --skip-systematic-variations" # "
+    CONTROL_ARG="--control-plot-set predicted_max_value,njets,met,m_vis,pt_1 --skip-systematic-variations" # "
     echo "[INFO] Control plots will be produced. Argument: ${CONTROL_ARG}"
 elif [[ $REGION == "nn_signal_plus" ]] || [[ $REGION == "nn_signal_minus" ]]; then
     CONTROL_ARG="--control-plot-set predicted_max_value" # "
@@ -60,12 +62,14 @@ elif [[ "$SUBMIT_MODE" == "singlegraph" ]]; then
     echo "[INFO] Using friends $XSEC_FRIENDS $FF_FRIENDS $NN_FRIENDS"
     [[ ! -d $OUTPUT ]] && mkdir -p $OUTPUT
     echo "[INFO] Using ntuples in $NTUPLES"
-
+    echo "##########"
+    echo "--$CHANNEL-friend-directory $XSEC_FRIENDS $FF_FRIENDS $NN_FRIENDS $MET_SHAPE_FRIENDS $PT_SHAPE_FRIENDS $NN_SHAPE_FRIENDS"
+    #$MET_SHAPE_FRIENDS $PT_SHAPE_FRIENDS $NN_SHAPE_FRIENDS \
     python shapes/produce_shapes.py --channels $CHANNEL \
     --output-file dummy.root \
     --directory $NTUPLES \
     --ntuple_type crown \
-    --$CHANNEL-friend-directory $XSEC_FRIENDS $FF_FRIENDS $NN_FRIENDS\
+    --$CHANNEL-friend-directory $XSEC_FRIENDS $FF_FRIENDS $NN_FRIENDS $PT_SHAPE_FRIENDS $MET_SHAPE_FRIENDS \
     --era $ERA \
     --optimization-level 1 \
     --process-selection $PROC \
@@ -106,6 +110,7 @@ elif [[ "$SUBMIT_MODE" == "singlegraph" ]]; then
     echo "error = log/condorShapes/${GF_NAME%.pkl}/\$(cluster).\$(Process).err" >>$OUTPUT/produce_shapes_cc7.jdl
     echo "log = log/condorShapes/${GF_NAME%.pkl}/\$(cluster).\$(Process).log" >>$OUTPUT/produce_shapes_cc7.jdl
     echo "queue a3,a2,a1 from $OUTPUT/arguments.txt" >>$OUTPUT/produce_shapes_cc7.jdl
+    echo "x509userproxy = /home/rschmieder/.globus/x509up" >>$OUTPUT/produce_shapes_cc7.jdl
     echo "JobBatchName = Shapes_${CHANNEL}_${ERA}" >>$OUTPUT/produce_shapes_cc7.jdl
 
     # Prepare the multicore jdl.
@@ -113,11 +118,11 @@ elif [[ "$SUBMIT_MODE" == "singlegraph" ]]; then
     cp submit/produce_shapes_cc7.jdl $OUTPUT/produce_shapes_cc7_multicore.jdl
     # Replace the values in the config which differ for multicore jobs.
     if [[ $CONTROL == 1 ]]; then
-        sed -i '/^RequestMemory/c\RequestMemory = 16000' $OUTPUT/produce_shapes_cc7_multicore.jdl
+        sed -i '/^RequestMemory/c\RequestMemory = 12000' $OUTPUT/produce_shapes_cc7_multicore.jdl
     else
-        sed -i '/^RequestMemory/c\RequestMemory = 10000' $OUTPUT/produce_shapes_cc7_multicore.jdl
+        sed -i '/^RequestMemory/c\RequestMemory = 8000' $OUTPUT/produce_shapes_cc7_multicore.jdl
     fi
-    sed -i '/^RequestCpus/c\RequestCpus = 8' $OUTPUT/produce_shapes_cc7_multicore.jdl
+    sed -i '/^RequestCpus/c\RequestCpus = 4' $OUTPUT/produce_shapes_cc7_multicore.jdl
     sed -i '/^arguments/c\arguments = $(a1) $(a2) $(a3) $(a4)' ${OUTPUT}/produce_shapes_cc7_multicore.jdl
     # Add log file locations to output file.
     echo "output = log/condorShapes/${GF_NAME%.pkl}/multicore.\$(cluster).\$(Process).out" >>$OUTPUT/produce_shapes_cc7_multicore.jdl

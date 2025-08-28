@@ -5,7 +5,15 @@ import ROOT as R
 
 ##### wh analysis selction
 def channel_selection(
-    channel, era, wp_vs_jet, wp_vs_mu, wp_vs_ele, decay_mode, id_wp_ele, id_wp_mu, wp_vs_jet_tight
+    channel,
+    era,
+    wp_vs_jet,
+    wp_vs_mu,
+    wp_vs_ele,
+    decay_mode,
+    id_wp_ele,
+    id_wp_mu,
+    wp_vs_jet_tight,
 ):
     # jet to tau fakerate
     if channel == "mmt":
@@ -64,14 +72,13 @@ def channel_selection(
             ("pt_2>10", "pt_2_cut"),
             ("iso_1<0.15", "iso_1"),
             ("iso_2<0.15", "iso_2"),
-            # ("mt_3<40", "mt_cut"),
+            ("mt_3<40", "mt_cut"),
             ("muon_is_mediumid_1 > 0.5 && muon_is_mediumid_2 > 0.5", "muon_id_cut"),
             ("nbtag<0.5", "b_veto"),
         ]
         # tight
         if id_wp_ele == "Tight":
-            cuts.append(("iso_3<0.15", "iso_3"))
-            cuts.append(("electron_is_nonisowp90_3>0.5", "ele_id_cut"))
+            cuts.append(("(electron_is_nonisowp90_3>0.5) && (iso_3<0.15)", "id_iso_3"))
         else:
             cuts.append(
                 (
@@ -103,7 +110,7 @@ def channel_selection(
             ("pt_2>10", "pt_2_cut"),
             ("iso_1<0.15", "iso_1"),
             ("iso_2<0.15", "iso_2"),
-            # ("mt_3<40", "mt_cut"),
+            ("mt_3<40", "mt_cut"),
             (
                 "electron_is_nonisowp90_1>0.5 && electron_is_nonisowp90_2>0.5",
                 "ele_id_cut",
@@ -113,8 +120,7 @@ def channel_selection(
         ]
         # tight
         if id_wp_mu == "Tight":
-            cuts.append(("iso_3<0.15", "iso_3"))
-            cuts.append(("muon_is_mediumid_3>0.5", "mu_id_cut"))
+            cuts.append(("(muon_is_mediumid_3>0.5) && (iso_3<0.15)", "id_iso_3"))
         else:
             cuts.append(
                 ("(iso_3<0.5 && iso_3>0.15) || muon_is_mediumid_3<0.5", "id_iso_3")

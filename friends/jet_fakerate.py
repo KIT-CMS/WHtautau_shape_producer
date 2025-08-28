@@ -134,7 +134,7 @@ def args_parser():
     parser.add_argument(
         "--tempdir",
         type=str,
-        default="tmp_dir_ff",
+        default="tmp_dir_ff_3",
         help="Temporary directory to store intermediate files",
     )
     parser.add_argument(
@@ -232,21 +232,21 @@ def convert_to_xrootd(path):
 
 
 def working_points(channel, wp_vs_jets, wp_vs_lep):
-    if channel == "emt" or channel == "met":
+    if channel in ["emt", "met", "eem", "mme"]:
         wp_vs_jets = wp_vs_jets
         wp_vs_mu = wp_vs_lep
         wp_vs_ele = wp_vs_lep
     elif channel == "mmt":
         wp_vs_jets = wp_vs_jets
         wp_vs_mu = wp_vs_lep
-        wp_vs_ele = "VLoose"
+        wp_vs_ele = wp_vs_lep
     elif channel == "mtt":
         wp_vs_jets = wp_vs_jets
         wp_vs_mu = wp_vs_lep
-        wp_vs_ele = "VLoose"
+        wp_vs_ele = wp_vs_lep
     elif channel == "ett":
         wp_vs_jets = wp_vs_jets
-        wp_vs_mu = "VLoose"
+        wp_vs_mu = wp_vs_lep
         wp_vs_ele = wp_vs_lep
     return [wp_vs_jets, wp_vs_mu, wp_vs_ele]
 
@@ -327,7 +327,7 @@ def friend_producer(
         print(f"Processing {inputfile}")
         print(f"Outputting to {temp_output_file}")
     os.makedirs(os.path.dirname(temp_output_file), exist_ok=True)
-    if channel in ["eem", "mme", "et", "mt"]:
+    if channel in ["et", "mt"]:
         return
     if not is_file_empty(inputfile, debug):
         if not check_file_exists_remote(output_path, final_output_file):
@@ -364,6 +364,90 @@ def build_rdf(
     wp_vs_jets = working_points(channel, wp_vs_jets, wp_vs_lep)[0]
     wp_vs_mu = working_points(channel, wp_vs_jets, wp_vs_lep)[1]
     wp_vs_ele = working_points(channel, wp_vs_jets, wp_vs_lep)[2]
+    if channel == "eem":
+        rdf = rdf.Define(
+            "lep_3_fakerate_Era",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "nom")'.format(
+                corr_file=corr_file_mu,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_syst_EraUp",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "syst_up")'.format(
+                corr_file=corr_file_mu,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_syst_EraDown",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "syst_down")'.format(
+                corr_file=corr_file_mu,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_stat_EraUp",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "stat_up")'.format(
+                corr_file=corr_file_mu,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_stat_EraDown",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "stat_down")'.format(
+                corr_file=corr_file_mu,
+            ),
+        )
+        rdf.Snapshot(
+            "ntuple",
+            output_file,
+            [
+                "lep_3_fakerate_Era",
+                "lep_3_fakerate_CMS_ff_syst_EraUp",
+                "lep_3_fakerate_CMS_ff_syst_EraDown",
+                "lep_3_fakerate_CMS_ff_stat_EraUp",
+                "lep_3_fakerate_CMS_ff_stat_EraDown",
+            ],
+        )
+    if channel == "mme":
+        rdf = rdf.Define(
+            "lep_3_fakerate_Era",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "nom")'.format(
+                corr_file=corr_file_ele,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_syst_EraUp",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "syst_up")'.format(
+                corr_file=corr_file_ele,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_syst_EraDown",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "syst_down")'.format(
+                corr_file=corr_file_ele,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_stat_EraUp",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "stat_up")'.format(
+                corr_file=corr_file_ele,
+            ),
+        )
+        rdf = rdf.Define(
+            "lep_3_fakerate_CMS_ff_stat_EraDown",
+            '(float) lep_fakerate(pt_3,"{corr_file}", "stat_down")'.format(
+                corr_file=corr_file_ele,
+            ),
+        )
+        rdf.Snapshot(
+            "ntuple",
+            output_file,
+            [
+                "lep_3_fakerate_Era",
+                "lep_3_fakerate_CMS_ff_syst_EraUp",
+                "lep_3_fakerate_CMS_ff_syst_EraDown",
+                "lep_3_fakerate_CMS_ff_stat_EraUp",
+                "lep_3_fakerate_CMS_ff_stat_EraDown",
+            ],
+        )
     if channel in ["emt", "met", "mmt"]:
         rdf = rdf.Define(
             "tau_fakerate_Era",
@@ -755,8 +839,6 @@ if __name__ == "__main__":
     wp_vs_jets = args.wp_vs_jets
     wp_vs_lep = args.wp_vs_lep
     ntuples = glob.glob(base_path)
-    print(args.eras)
-    print(base_path)
     corr_file_dict_tau = {}
     corr_file_dict_ele = {}
     corr_file_dict_mu = {}

@@ -53,6 +53,32 @@ def args_parser():
     return parser.parse_args()
 
 
+ROOT.gInterpreter.Declare(
+    """
+    float lhepdf_up(ROOT::RVec<Float_t>& lhe_pdf_weight) {
+        float sum = 0.0f;
+        float pdf_up;
+        for (int i = 0; i < 100; i++) {
+            float diff = lhe_pdf_weight[i] -1;
+            sum += diff * diff;        
+        }
+        pdf_up = 1+std::sqrt(sum/100);
+        return pdf_up;
+    };
+    float lhepdf_down(ROOT::RVec<Float_t>& lhe_pdf_weight) {
+        float sum = 0.0f;
+        float pdf_down;
+        for (int i = 0; i < 100; i++) {
+            float diff = lhe_pdf_weight[i] -1;
+            sum += diff * diff;        
+        }
+        pdf_down = 1-std::sqrt(sum/100);
+        return pdf_down;
+    };
+    """
+)
+
+
 def parse_filepath(path):
     """
     filepaths always look like this:
@@ -164,15 +190,37 @@ def build_rdf(inputfile, dataset_proc, output_file):
         "generator_weight",
         "(float){generator_weight}".format(generator_weight=generator_weight),
     )
-    rdf.Snapshot(
-        "ntuple",
-        output_file,
-        [
-            "numberGeneratedEventsWeight",
-            "crossSectionPerEventWeight",
-            "generator_weight",
-        ],
-    )
+    if dataset_proc["sample_type"] != "ggZZ":
+        rdf = rdf.Define(
+            "lhe_pdf_weight_up",
+            "(float) lhepdf_up(lhe_pdf_weight)",
+        )
+        rdf = rdf.Define(
+            "lhe_pdf_weight_down",
+            "(float) lhepdf_down(lhe_pdf_weight)",
+        )
+    if dataset_proc["sample_type"] != "ggZZ":
+        rdf.Snapshot(
+            "ntuple",
+            output_file,
+            [
+                "numberGeneratedEventsWeight",
+                "crossSectionPerEventWeight",
+                "generator_weight",
+                "lhe_pdf_weight_down",
+                "lhe_pdf_weight_up",
+            ],
+        )
+    else:
+        rdf.Snapshot(
+            "ntuple",
+            output_file,
+            [
+                "numberGeneratedEventsWeight",
+                "crossSectionPerEventWeight",
+                "generator_weight",
+            ],
+        )
     rootfile.Close()
 
 
